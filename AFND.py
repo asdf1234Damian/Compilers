@@ -1,3 +1,6 @@
+import networkx as nx
+import matplotlib.pyplot as plt
+
 class Estado:
     def __init__(self, esFinal):
         self.final = esFinal
@@ -11,14 +14,15 @@ class Estado:
             self.transiciones[simbolo] = [destino]
 
 
+
 class Graph:
-    cNode = 1
+    cNode = 0
 
     def __init__(self):
         self.estados = {}
-        self.estados[0] = Estado(False)
-        self.inicial = 0
-        self.final = 0
+        self.estados[Graph.cNode] = Estado(False)
+        self.inicial = Graph.cNode
+        self.final = Graph.cNode
 
     def basico(self, simbolo):
         self.estados[Graph.cNode] = Estado(True)
@@ -47,5 +51,14 @@ class Graph:
 test = Graph()
 test.basico('a')
 test.opcional()
+
+test1 = Graph()
+test1.basico('a')
+test1.opcional()
+test1.opcional()
+print('Test')
 for key, value in test.estados.items():
+    print(key, value.transiciones, value.final)
+print('Test 1')
+for key, value in test1.estados.items():
     print(key, value.transiciones, value.final)
