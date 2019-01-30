@@ -1,8 +1,10 @@
 import networkx as nx
 import matplotlib.pyplot as plt
+from graphviz import Digraph
 
 class Estado:
-    def __init__(self, esFinal):
+    def __init__(self,esFinal):
+        # self.id = id
         self.final = esFinal
         self.transiciones = {}
 
@@ -14,24 +16,37 @@ class Estado:
             self.transiciones[simbolo] = [destino]
 
 
-
 class Graph:
     cNode = 0
 
     def __init__(self):
+        self.G = Digraph()
         self.estados = {}
-        self.estados[Graph.cNode] = Estado(False)
-        self.inicial = Graph.cNode
-        self.final = Graph.cNode
+        self.inicial=None
+        self.final=None
 
     def basico(self, simbolo):
-        self.estados[Graph.cNode] = Estado(True)
-        self.final = Graph.cNode
-        self.estados[self.inicial].addTransicion(simbolo, Graph.cNode)
-        Graph.cNode += 1
+        #Se agregan el estado inicial
+        self.inicial = Graph.cNode
+        self.final = Graph.cNode+1
+        #Se crean los estados
+        self.estados[self.inicial] = Estado(False)
+        self.estados[self.final] = Estado(True)
+        #Se crea la transicion entre inical y final
+        self.estados[self.inicial].addTransicion(simbolo,self.final)
+        # Se actualiza el counter de los nodos
+        Graph.cNode += 2
+
+    def plot(self):
+        for origin,states in self.estados.items():
+            for simbol,destiny in states.transiciones.items():
+                for end in destiny:
+                    self.G.edge(str(origin), str(end), label=simbol)
+                    self.G.view(filename=None, directory=None, cleanup=False)
+                    print('Origin: ',origin,'simb: ',simbol, end)
 
 
-    def opcional(self):# λ
+    def opcional(self):# ε
         # Se crean los nuevos estados iniciales y finales
         nInicial = Graph.cNode
         nFinal = Graph.cNode+1
@@ -39,9 +54,9 @@ class Graph:
         self.estados[nInicial] = Estado(False)
         self.estados[nFinal] = Estado(True)
         # El nuevo inicial apunta al inicial original y al nuevo final
-        self.estados[nInicial].addTransicion('λ', self.inicial)
-        self.estados[nInicial].addTransicion('λ', nFinal)
-        self.estados[self.final].addTransicion('λ', nFinal)
+        self.estados[nInicial].addTransicion('ε', self.inicial)
+        self.estados[nInicial].addTransicion('ε', nFinal)
+        self.estados[self.final].addTransicion('ε', nFinal)
         self.estados[self.final].final=False
         # Se actualizan los estados iniciales y finales
         self.inicial = nInicial
@@ -57,8 +72,6 @@ test1.basico('a')
 test1.opcional()
 test1.opcional()
 print('Test')
-for key, value in test.estados.items():
-    print(key, value.transiciones, value.final)
-print('Test 1')
-for key, value in test1.estados.items():
-    print(key, value.transiciones, value.final)
+
+test.plot()
+test1.plot()
