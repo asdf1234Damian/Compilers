@@ -7,6 +7,6 @@
 * Unir automata F1 con F2 [⏳]
 * Concatenar 2 AFN [⏳]
 * Operacion Opcional [✔]
-* Cerradura+ [⏳]
-* Cerradura* [⏳]
+* Cerradura+ [✔]
+* Cerradura* [✔]
 * Analizar cadena &sigma; [⏳]
