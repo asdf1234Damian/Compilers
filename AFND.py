@@ -61,7 +61,39 @@ class Graph:
         # Se actualizan los estados iniciales y finales
         self.inicial = nInicial
         self.final = nFinal
-
+        
+    def cerradura_positiva(self):
+        # Se crean los nuevos estados iniciales y finales
+        nInicial = Graph.cNode
+        nFinal = Graph.cNode+1
+        Graph.cNode+=2
+        self.estados[nInicial] = Estado(False)
+        self.estados[nFinal] = Estado(True)
+        # El nuevo inicial apunta al inicial original y el final original apunta al inicial original
+        self.estados[nInicial].addTransicion('ε', self.inicial)
+        self.estados[self.final].addTransicion('ε', self.inicial)
+        self.estados[self.final].addTransicion('ε', nFinal)
+        self.estados[self.final].final=False
+        # Se actualizan los estados iniciales y finales
+        self.inicial = nInicial
+        self.final = nFinal
+        
+    def cerradura_kleene(self):
+        # Se crean los nuevos estados iniciales y finales
+        nInicial = Graph.cNode
+        nFinal = Graph.cNode+1
+        Graph.cNode+=2
+        self.estados[nInicial] = Estado(False)
+        self.estados[nFinal] = Estado(True)
+        # El nuevo inicial apunta al inicial original y al nuevo final, y el final original apunta al inicial original
+        self.estados[nInicial].addTransicion('ε', self.inicial)
+        self.estados[nInicial].addTransicion('ε', nFinal)
+        self.estados[self.final].addTransicion('ε', self.inicial)
+        self.estados[self.final].addTransicion('ε', nFinal)
+        self.estados[self.final].final=False
+        # Se actualizan los estados iniciales y finales
+        self.inicial = nInicial
+        self.final = nFinal
 
 test = Graph()
 test.basico('a')
@@ -71,7 +103,17 @@ test1 = Graph()
 test1.basico('a')
 test1.opcional()
 test1.opcional()
+
+test2 = Graph()
+test2.basico('b')
+test2.cerradura_positiva()
+
+test3 = Graph()
+test3.basico('c')
+test3.cerradura_kleene()
 print('Test')
 
 test.plot()
 test1.plot()
+test2.plot()
+test3.plot()
