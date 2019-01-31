@@ -1,6 +1,8 @@
 import networkx as nx
 import matplotlib.pyplot as plt
 from graphviz import Digraph
+import os
+os.environ["PATH"] += os.pathsep + 'C:/Program Files (x86)/Graphviz2.38/bin/'
 
 class Estado:
     def __init__(self,esFinal):
@@ -19,8 +21,10 @@ class Estado:
 class Graph:
     cNode = 0
 
-    def __init__(self):
+    def __init__(self,id):
+        self.id = id
         self.G = Digraph()
+        self.G.attr(rankdir = 'LR')
         self.estados = {}
         self.inicial=None
         self.final=None
@@ -42,8 +46,7 @@ class Graph:
             for simbol,destiny in states.transiciones.items():
                 for end in destiny:
                     self.G.edge(str(origin), str(end), label=simbol)
-                    self.G.view(filename=None, directory=None, cleanup=False)
-                    print('Origin: ',origin,'simb: ',simbol, end)
+        self.G.render(filename=self.id,view=True,directory='resources', cleanup=True, format='png')
 
 
     def opcional(self):# ε
@@ -61,7 +64,7 @@ class Graph:
         # Se actualizan los estados iniciales y finales
         self.inicial = nInicial
         self.final = nFinal
-        
+
     def cerradura_positiva(self):
         # Se crean los nuevos estados iniciales y finales
         nInicial = Graph.cNode
@@ -77,7 +80,7 @@ class Graph:
         # Se actualizan los estados iniciales y finales
         self.inicial = nInicial
         self.final = nFinal
-        
+
     def cerradura_kleene(self):
         # Se crean los nuevos estados iniciales y finales
         nInicial = Graph.cNode
@@ -95,25 +98,28 @@ class Graph:
         self.inicial = nInicial
         self.final = nFinal
 
-test = Graph()
-test.basico('a')
-test.opcional()
+    #def union(self, graph):
+     #   self.id = 'Union'
+      #  nInicial = self.inicial
+      #  nFinal = graph.final
+      #  self.estados[self.final].final = False
+      #  self.estados[self.final].addTransicion('ε',graph.inicial)
+      #  self.inical = nInicial
+      #  self.final = nFinal
 
-test1 = Graph()
-test1.basico('a')
-test1.opcional()
-test1.opcional()
 
-test2 = Graph()
-test2.basico('b')
-test2.cerradura_positiva()
 
-test3 = Graph()
-test3.basico('c')
-test3.cerradura_kleene()
-print('Test')
+#test2 = Graph('CerraduraP')
+#test2.basico('b')
+#test2.cerradura_positiva()
 
-test.plot()
-test1.plot()
-test2.plot()
-test3.plot()
+#test.union(test2)
+
+#test3 = Graph('CerraduraK')
+#test3.basico('c')
+#test3.cerradura_kleene()
+
+
+#test.plot()
+#test2.plot()
+#test3.plot()
