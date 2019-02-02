@@ -97,29 +97,6 @@ class Graph:
         # Se actualizan los estados iniciales y finales
         self.inicial = nInicial
         self.final = nFinal
-
-    #def union(self, graph):
-     #   self.id = 'Union'
-      #  nInicial = self.inicial
-      #  nFinal = graph.final
-      #  self.estados[self.final].final = False
-      #  self.estados[self.final].addTransicion('ε',graph.inicial)
-      #  self.inical = nInicial
-      #  self.final = nFinal
+        
 
 
-
-#test2 = Graph('CerraduraP')
-#test2.basico('b')
-#test2.cerradura_positiva()
-
-#test.union(test2)
-
-#test3 = Graph('CerraduraK')
-#test3.basico('c')
-#test3.cerradura_kleene()
-
-
-#test.plot()
-#test2.plot()
-#test3.plot()
