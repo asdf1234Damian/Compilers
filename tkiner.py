@@ -30,6 +30,7 @@ class myButton:
 			
 
 root = Tk()
+root.resizable(width=FALSE, height=FALSE)
 topFrame = Frame(root)
 topFrame.pack(side=LEFT)
 bottomFrame = Frame(root)
