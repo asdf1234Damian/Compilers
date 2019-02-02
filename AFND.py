@@ -1,10 +1,10 @@
-import networkx as nx
 import matplotlib.pyplot as plt
 from graphviz import Digraph
 
+EPS = 'ε'
+
 class Estado:
     def __init__(self,esFinal):
-        # self.id = id
         self.final = esFinal
         self.transiciones = {}
 
@@ -18,12 +18,20 @@ class Estado:
 
 class Graph:
     cNode = 0
-
-    def __init__(self,id):
+    #El alfabeto puede venir dividido por comas o en un rango separado por un guion, sin espacios en ambos casos.
+    def __init__(self,id,alf):
         self.id = id
         self.G = Digraph()
         self.G.attr(rankdir = 'LR')
         self.estados = {}
+        self.alf=set()
+        #En caso de que sea con comas
+        if alf.count(','):
+            self.alf= set(alf.split(','))
+        else:
+            min,max = alf.split('-')
+            for i in range(ord(max)+1-ord(min)):
+                self.alf.add(chr(ord(min)+i))
         self.inicial=None
         self.final=None
 
@@ -41,11 +49,30 @@ class Graph:
 
     def plot(self):
         for origin,states in self.estados.items():
+            if states.final:
+                self.G.node(str(origin),shape='doublecircle')
             for simbol,destiny in states.transiciones.items():
                 for end in destiny:
                     self.G.edge(str(origin), str(end), label=simbol)
-        self.G.render(filename=self.id,view=True,directory='resources', cleanup=True, format='png')
+        self.G.render(filename=self.id,view=True,directory='resources', cleanup=False, format='png')
 
+    def getEstados(self):
+        return set(self.estados.keys)
+
+    #Regresa los estados alcanzables por transiciones epsilo desde cualquier estado en edos
+    def cEpsilon(self, edos, Cerr):
+        for estado in edos:
+            if (not estado in Cerr) and EPS in self.estados[estado].transiciones:
+                for i in self.estados[estado].transiciones[EPS]:
+                    Cerr.add(i)
+                    Cerr.union(self.cEpsilon({i},Cerr))
+        return Cerr
+
+    def mover_A(self,edos,s):
+        return edos[s]
+
+    def ir_A(self,edos,s):
+        return self.cEpsilon(mover_A(edos,s))
 
     def opcional(self):# ε
         # Se crean los nuevos estados iniciales y finales
@@ -55,9 +82,9 @@ class Graph:
         self.estados[nInicial] = Estado(False)
         self.estados[nFinal] = Estado(True)
         # El nuevo inicial apunta al inicial original y al nuevo final
-        self.estados[nInicial].addTransicion('ε', self.inicial)
-        self.estados[nInicial].addTransicion('ε', nFinal)
-        self.estados[self.final].addTransicion('ε', nFinal)
+        self.estados[nInicial].addTransicion(EPS, self.inicial)
+        self.estados[nInicial].addTransicion(EPS, nFinal)
+        self.estados[self.final].addTransicion(EPS, nFinal)
         self.estados[self.final].final=False
         # Se actualizan los estados iniciales y finales
         self.inicial = nInicial
@@ -71,9 +98,9 @@ class Graph:
         self.estados[nInicial] = Estado(False)
         self.estados[nFinal] = Estado(True)
         # El nuevo inicial apunta al inicial original y el final original apunta al inicial original
-        self.estados[nInicial].addTransicion('ε', self.inicial)
-        self.estados[self.final].addTransicion('ε', self.inicial)
-        self.estados[self.final].addTransicion('ε', nFinal)
+        self.estados[nInicial].addTransicion(EPS, self.inicial)
+        self.estados[self.final].addTransicion(EPS, self.inicial)
+        self.estados[self.final].addTransicion(EPS, nFinal)
         self.estados[self.final].final=False
         # Se actualizan los estados iniciales y finales
         self.inicial = nInicial
@@ -87,27 +114,30 @@ class Graph:
         self.estados[nInicial] = Estado(False)
         self.estados[nFinal] = Estado(True)
         # El nuevo inicial apunta al inicial original y al nuevo final, y el final original apunta al inicial original
-        self.estados[nInicial].addTransicion('ε', self.inicial)
-        self.estados[nInicial].addTransicion('ε', nFinal)
-        self.estados[self.final].addTransicion('ε', self.inicial)
-        self.estados[self.final].addTransicion('ε', nFinal)
+        self.estados[nInicial].addTransicion(EPS, self.inicial)
+        self.estados[nInicial].addTransicion(EPS, nFinal)
+        self.estados[self.final].addTransicion(EPS, self.inicial)
+        self.estados[self.final].addTransicion(EPS, nFinal)
         self.estados[self.final].final=False
         # Se actualizan los estados iniciales y finales
         self.inicial = nInicial
         self.final = nFinal
 
-test = Graph('Opcional')
+test = Graph('Opcional','a,b,c')
 test.basico('a')
 test.opcional()
+print(test.cEpsilon(test.estados,set()))
+print(test.alf)
 
-test2 = Graph('CerraduraP')
-test2.basico('b')
-test2.cerradura_positiva()
+# test2 = Graph('CerraduraP','a,b,c')
+# test2.basico('b')
+# test2.cerradura_positiva()
 
-test3 = Graph('CerraduraK')
-test3.basico('c')
-test3.cerradura_kleene()
+# test3 = Graph('CerraduraK','a-f')
+# test3.basico('c')
+# print('alfabeto:',test3.alf)
+# test3.cerradura_kleene()
 
-test.plot()
-test2.plot()
-test3.plot()
+# test.plot()
+# test2.plot()
+# test3.plot()
