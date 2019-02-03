@@ -63,16 +63,28 @@ class Graph:
     def cEpsilon(self, edos, Cerr):
         for estado in edos:
             if (not estado in Cerr) and EPS in self.estados[estado].transiciones:
-                for i in self.estados[estado].transiciones[EPS]:
+        stack = []
+        if isinstance(edos,int):
+            stack.append(edos)
+        else:
+            stack = list(edos)
+
+        while len(stack)!=0:
+            edo = stack[0]
+            del stack[0]
+            if (not (edo in Cerr)) and EPS in self.estados[edo].transiciones:
+                for i in self.estados[edo].transiciones[EPS]:
+                    stack.append(i)
+                    Cerr.union(self.cEpsilon(i,Cerr))
                     Cerr.add(i)
-                    Cerr.union(self.cEpsilon({i},Cerr))
+            # print(edos)
         return Cerr
 
-    def mover_A(self,edos,s):
-        return edos[s]
+    def moverA(self,edos,s):
+        return set(edos[s])
 
-    def ir_A(self,edos,s):
-        return self.cEpsilon(mover_A(edos,s))
+    def irA(self,edos,s):
+        return self.cEpsilon(moverA(edos,s),set({}))
 
     def opcional(self):# ε
         # Se crean los nuevos estados iniciales y finales
