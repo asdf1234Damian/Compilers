@@ -61,8 +61,6 @@ class Graph:
 
     #Regresa los estados alcanzables por transiciones epsilo desde cualquier estado en edos
     def cEpsilon(self, edos, Cerr):
-        for estado in edos:
-            if (not estado in Cerr) and EPS in self.estados[estado].transiciones:
         stack = []
         if isinstance(edos,int):
             stack.append(edos)
@@ -185,18 +183,23 @@ class Graph:
 test = Graph('Opcional','a,b,c')
 test.basico('a')
 test.opcional()
-print(test.cEpsilon(test.estados,set()))
-print(test.alf)
+# print(test.cEpsilon(test.estados,set()))
+# print(test.alf)
 
-# test2 = Graph('CerraduraP','a,b,c')
-# test2.basico('b')
-# test2.cerradura_positiva()
+test2 = Graph('CerraduraP','a,b,c')
+test2.basico('b')
+test2.cerradura_positiva()
 
+test.unir(test2)
 # test3 = Graph('CerraduraK','a-f')
 # test3.basico('c')
 # print('alfabeto:',test3.alf)
 # test3.cerradura_kleene()
 
 # test.plot()
+# print()
+# for key, value in test.estados.items():
+#     print(key,value.final,value.transiciones)
+print(test.cEpsilon(test.inicial, set()))
 # test2.plot()
 # test3.plot()
