@@ -9,7 +9,7 @@ class Estado:
         self.transiciones = {}
 
     def addTransicion(self, simbolo, destino):
-        #Checa si el simbolo ya esta en el diccionario antes de hacele append
+        #Checa si el simbolo ya esta en el diccionario antes de hacerle append
         if simbolo in self.transiciones:
             self.transiciones[simbolo].append(destino)
         else:
@@ -68,7 +68,7 @@ class Graph:
     def getEstados(self):
         return set(self.estados.keys)
 
-    #Regresa los estados alcanzables por transiciones epsilo desde cualquier estado en edos
+    #Regresa los estados alcanzables por transiciones epsilon desde cualquier estado en edos
     def cEpsilon(self, edos, Cerr):
         stack = []
         if isinstance(edos,int):
@@ -80,6 +80,7 @@ class Graph:
             edo = stack[0]
             del stack[0]
             if (not (edo in Cerr)) and EPS in self.estados[edo].transiciones:
+                Cerr.add(edo)
                 for i in self.estados[edo].transiciones[EPS]:
                     stack.append(i)
                     Cerr.union(self.cEpsilon(i,Cerr))
