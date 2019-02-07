@@ -25,15 +25,24 @@ class Graph:
         self.G.attr(rankdir = 'LR')
         self.estados = {}
         self.alf=set()
+        self.inicial=None
+        self.final=None
         #En caso de que sea con comas
+        if len(alf)==1:
+            self.alf.add(alf)
+            return
         if alf.count(','):
             self.alf= set(alf.split(','))
         else:
             min,max = alf.split('-')
             for i in range(ord(max)+1-ord(min)):
                 self.alf.add(chr(ord(min)+i))
-        self.inicial=None
-        self.final=None
+
+    def print(self):
+        for origen,destino in self.estados.items():
+            print('Origen: ',origen)
+            for sim,dest in destino.transiciones.items():
+                print(sim,dest)
 
     def basico(self, simbolo):
         #Se agregan el estado inicial
