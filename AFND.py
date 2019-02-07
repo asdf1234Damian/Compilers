@@ -11,7 +11,7 @@ class Estado:
         self.transiciones = {}
 
     def addTransicion(self, simbolo, destino):
-        #Checa si el simbolo ya esta en el diccionario antes de hacele append
+        #Checa si el simbolo ya esta en el diccionario antes de hacerle append
         if simbolo in self.transiciones:
             self.transiciones[simbolo].append(destino)
         else:
@@ -27,15 +27,24 @@ class Graph:
         self.G.attr(rankdir = 'LR')
         self.estados = {}
         self.alf=set()
+        self.inicial=None
+        self.final=None
         #En caso de que sea con comas
+        if len(alf)==1:
+            self.alf.add(alf)
+            return
         if alf.count(','):
             self.alf= set(alf.split(','))
         else:
             min,max = alf.split('-')
             for i in range(ord(max)+1-ord(min)):
                 self.alf.add(chr(ord(min)+i))
-        self.inicial=None
-        self.final=None
+
+    def print(self):
+        for origen,destino in self.estados.items():
+            print('Origen: ',origen)
+            for sim,dest in destino.transiciones.items():
+                print(sim,dest)
 
     def basico(self, simbolo):
         #Se agregan el estado inicial
@@ -50,31 +59,54 @@ class Graph:
         Graph.cNode += 2
 
     def plot(self):
+        self.G.clear()
+        self.G.attr(rankdir = 'LR')
         for origin,states in self.estados.items():
             if states.final:
                 self.G.node(str(origin),shape='doublecircle')
             for simbol,destiny in states.transiciones.items():
-                for end in destiny:
+                for end in set(destiny):
                     self.G.edge(str(origin), str(end), label=simbol)
+        self.G.node('S', label=None, shape='point')
+        self.G.edge('S',str(self.inicial))
         self.G.render(filename=self.id,view=True,directory='resources', cleanup=False, format='png')
 
     def getEstados(self):
         return set(self.estados.keys)
 
-    #Regresa los estados alcanzables por transiciones epsilo desde cualquier estado en edos
+    #Regresa los estados alcanzables por transiciones epsilon desde cualquier estado en edos
     def cEpsilon(self, edos, Cerr):
-        for estado in edos:
-            if (not estado in Cerr) and EPS in self.estados[estado].transiciones:
-                for i in self.estados[estado].transiciones[EPS]:
+        stack = []
+        if isinstance(edos,int):
+            stack.append(edos)
+        else:
+            stack = list(edos)
+
+        while len(stack)!=0:
+            edo = stack[0]
+            del stack[0]
+            if (not (edo in Cerr)) and EPS in self.estados[edo].transiciones:
+                Cerr.add(edo)
+                for i in self.estados[edo].transiciones[EPS]:
+                    stack.append(i)
+                    Cerr.union(self.cEpsilon(i,Cerr))
                     Cerr.add(i)
-                    Cerr.union(self.cEpsilon({i},Cerr))
+            # print(edos)
         return Cerr
 
-    def mover_A(self,edos,s):
-        return edos[s]
+    def moverA(self,edos,s):#edos debe ser un set o lista
+        list(edos)
+        for edo in edos:
+            if s in edo.transiciones.key():
+                for i in edo.transiciones[s]:
+                    edos.append(i)
 
-    def ir_A(self,edos,s):
-        return self.cEpsilon(mover_A(edos,s))
+    def irA(self,edos,s):
+        return self.cEpsilon(moverA(edos,s),set({}))
+
+    #def pertenece(this):
+    def pertenece(this):#TODO
+        bool(len(set(this.final).intersection(c)))
 
     def opcional(self):# ε
         # Se crean los nuevos estados iniciales y finales
@@ -89,6 +121,53 @@ class Graph:
         self.estados[self.final].addTransicion(EPS, nFinal)
         self.estados[self.final].final=False
         # Se actualizan los estados iniciales y finales
+        self.inicial = nInicial
+        self.final = nFinal
+
+    def concat(self, f2):
+        #Se copian todos los estados con sus transiciones
+        for key,value in f2.estados.items():
+            self.estados[key] = value
+        #Se copian el alfabeto
+        self.alf.union(f2.alf)
+        #Los concatena
+        self.estados[self.final].addTransicion(EPS,f2.inicial)
+        # Se crean los nuevos estados iniciales y finales
+        nInicial = Graph.cNode
+        nFinal = Graph.cNode+1
+        Graph.cNode+=2
+        self.estados[nInicial] = Estado(False)
+        self.estados[nFinal] = Estado(True)
+        #Cambia los estados finales e iniciales
+        self.estados[f2.final].final=False
+        self.estados[self.final].final=False
+        self.estados[nInicial].addTransicion(EPS,self.inicial)
+        self.estados[f2.final].addTransicion(EPS,nFinal)
+        #se actualizan los estados finales e inciales
+        self.inicial = nInicial
+        self.final = nFinal
+
+    def unir(self,f2):
+        #Se copian todos los estados con sus transiciones
+        for key,value in f2.estados.items():
+            self.estados[key] = value
+        #Se copian el alfabeto
+        self.alf.union(f2.alf)
+        # Se crean los nuevos estados iniciales y finales
+        nInicial = Graph.cNode
+        nFinal = Graph.cNode+1
+        Graph.cNode+=2
+        self.estados[nInicial] = Estado(False)
+        self.estados[nFinal] = Estado(True)
+        #Se unen a los dos automatas con los nuevso estados
+        self.estados[nInicial].addTransicion(EPS,self.inicial)
+        self.estados[nInicial].addTransicion(EPS,f2.inicial)
+        self.estados[self.final].addTransicion(EPS,nFinal)
+        self.estados[f2.final].addTransicion(EPS,nFinal)
+        #Cambia los estados finales e iniciales
+        self.estados[f2.final].final=False
+        self.estados[self.final].final=False
+        #se actualizan los estados finales e inciales
         self.inicial = nInicial
         self.final = nFinal
 
@@ -127,23 +206,27 @@ class Graph:
         
 
 
-#test = Graph('Opcional','a,b,c')
-#test.basico('a')
-#test.opcional()
-#print(test.cEpsilon(test.estados,set()))
-#print(test.alf)
+f1 = Graph('F1','a')
+f1.basico('a')
+f1.opcional()
 
-#test.plot()
+f2 = Graph('F2','b')
+f2.basico('b')
+f2.cerradura_positiva()
 
-# test2 = Graph('CerraduraP','a,b,c')
-# test2.basico('b')
-# test2.cerradura_positiva()
+f3 = Graph('f3', 'c')
+f3.basico('c')
+f2.unir(f3)
 
-# test3 = Graph('CerraduraK','a-f')
-# test3.basico('c')
-# print('alfabeto:',test3.alf)
-# test3.cerradura_kleene()
+f1.concat(f2)
 
-# test.plot()
-# test2.plot()
-# test3.plot()
+f4 = Graph('f4', 'd')
+f4.basico('d')
+f4.cerradura_kleene()
+f4.plot()
+
+f1.concat(f4)
+f1.plot()
+print(f1.cEpsilon(f1.inicial,set()))
+#TODO fix from here
+#

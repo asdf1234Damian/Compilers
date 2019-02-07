@@ -7,10 +7,10 @@ import AFND
 class myButton:
 	def __init__( self, texto, frame ):
 		self.texto = texto
-		self.button = tk.Button( frame, text = texto, fg = "white", bg = "#496ba0", activeforeground = "#f2f4f7", activebackground = "#354154", relief = 'flat', width = 25, height = 2, font = ( "Helvetica", 16 ), command = lambda:self.saluda( texto ) )
+		self.button = tk.Button( frame, text = texto, fg = "white", bg = "#496ba0", activeforeground = "#f2f4f7", activebackground = "#354154", relief = 'flat', width = 25, height = 2, font = ( "Helvetica", 16 ), command = lambda:self.operacion( texto ) )
 		self.button.pack()
 	
-	def saluda( self, texto ):
+	def operacion( self, texto ):
 		def callback():
 			test = AFND.Graph('Opcional','a,b,c')
 			test.basico('a')
@@ -51,14 +51,27 @@ bottomFrame = tk.Frame( root, bg = 'black' )
 bottomFrame.pack( side = 'left', fill = 'both', expand = 1 )
 label = tk.Label( bottomFrame, bg = "#f2f4f7" )
 label.pack( fill = 'both', expand = 1 )
-
-labelF1 = tk.Label( f1, text = 'Elegir operacion', fg = 'white', bg ="#354154" , font = ( "Helvetica", 16 ) )	
-labelF1.pack( fill = 'x' )
+#------------------F1-----------------------------------
+f1.config(bg = "#496ba0")
+label_F1 = tk.Label( f1, text = 'Elegir operacion', fg = 'white', bg ="#354154" , font = ( "Helvetica", 16 ) )	
+label_F1.pack( fill = 'x' )
 button1 = myButton( "Base", f1)
 button2 = myButton( "Opcional", f1)
 button3 = myButton( "Cerradura positiva", f1)
 button4 = myButton( "Cerradura de Kleene", f1)
 
+buttonF1_F2 = tk.Button(f1, text = 'Crear autómata', fg = "white", bg = "#496ba0", activeforeground = "#f2f4f7", activebackground = "#354154", relief = 'flat', width = 25, height = 2, font = ( "Helvetica", 16 ), command = lambda:raise_frame(f2))
+buttonF1_F2.pack()
+#------------------F2-----------------------------------
+f2.config(bg = "#496ba0")
+label_F2 = tk.Label( f2, text = 'Crear autómata básico', fg = 'white', bg ="#354154" , font = ( "Helvetica", 16 ) )	
+label2_F2 = tk.Label( f2, text = 'Inserte su símbolo', fg = 'white', bg ="#354154" , font = ( "Helvetica", 16 ) )	
+text_F2 = tk.Text(f2, width = 25, height = 2, font = ( "Helvetica", 16 ))
+
+label_F2.pack( fill = 'x' )
+label2_F2.pack( fill = 'x' )
+text_F2.pack()
+#--------------------------------------------------------
 
 raise_frame(f1)
 
