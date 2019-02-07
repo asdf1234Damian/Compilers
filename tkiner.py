@@ -1,50 +1,65 @@
-from tkinter import *
+import threading
+import tkinter as tk                # python 3
+from tkinter import font  as tkfont 
 import AFND
 
+
 class myButton:
-	def __init__(self,texto,fila):
+	def __init__( self, texto, frame ):
 		self.texto = texto
-		self.button = Button(topFrame,text=texto, fg="white", bg="#496ba0",activeforeground="#f2f4f7",activebackground="#354154",relief=FLAT,width = 20,font=("Helvetica", 16), command=lambda:self.saluda(texto))
-		self.button.grid(row=fila,sticky=("N", "S", "W","E"))
+		self.button = tk.Button( frame, text = texto, fg = "white", bg = "#496ba0", activeforeground = "#f2f4f7", activebackground = "#354154", relief = 'flat', width = 25, height = 2, font = ( "Helvetica", 16 ), command = lambda:self.saluda( texto ) )
+		self.button.pack()
 	
-	def saluda(self,texto):
-		if texto == "Base":
-			test = AFND.Graph('Base')
+	def saluda( self, texto ):
+		def callback():
+			test = AFND.Graph('Opcional','a,b,c')
 			test.basico('a')
-			test.plot()
-		elif texto == "Opcional":
-			test = AFND.Graph('Opcional')
-			test.basico('b')
 			test.opcional()
-			test.plot()
-		elif texto == "Cerradura positiva":
-			test = AFND.Graph('CerraduraP')
-			test.basico('c')
-			test.cerradura_positiva()
-			test.plot()
-		elif texto == "Cerradura de Kleene":
-			test = AFND.Graph('CerraduraK')
-			test.basico('d')
-			test.cerradura_kleene()
-			test.plot()
-			
+			print(test.cEpsilon(test.estados,set()))
+			print(test.alf)
+			img = tk.PhotoImage(file = "resources\Opcional.png")
+			label.config(image = img)
+			label.image = img # keep a reference!
+			label.pack()
+		t = threading.Thread(target=callback)
+		t.start()
 
-root = Tk()
-root.resizable(width=FALSE, height=FALSE)
-topFrame = Frame(root)
-topFrame.pack(side=LEFT)
-bottomFrame = Frame(root)
-bottomFrame.pack(side=RIGHT)
-
-button1 = myButton("Base",0)
-button2 = myButton("Opcional",1)
-button3 = myButton("Cerradura positiva",2)
-button4 = myButton("Cerradura de Kleene",3)
+def raise_frame(frame):
+    frame.tkraise()
 
 
-label= Label(topFrame,text="°u°",bg="#f2f4f7",height = 30, width = 100).grid(rowspan=4,column=1,row=0,sticky=("N", "S", "W","E"))
 
-topFrame.pack_propagate(0)
+
+root = tk.Tk()
+#root.resizable(width = 'false', height = 'false')
+root.state("zoomed")
+root.title( "AFND" )
+
+
+container = tk.Frame( root, bg = "#496ba0")
+container.pack( side = 'left', fill = 'both' )
+
+f1 = tk.Frame(container)
+f2 = tk.Frame(container)
+f3 = tk.Frame(container)
+f4 = tk.Frame(container)
+
+for frame in (f1, f2, f3, f4):
+    frame.grid(row=0, column=0, sticky='news')
+
+bottomFrame = tk.Frame( root, bg = 'black' )
+bottomFrame.pack( side = 'left', fill = 'both', expand = 1 )
+label = tk.Label( bottomFrame, bg = "#f2f4f7" )
+label.pack( fill = 'both', expand = 1 )
+
+labelF1 = tk.Label( f1, text = 'Elegir operacion', fg = 'white', bg ="#354154" , font = ( "Helvetica", 16 ) )	
+labelF1.pack( fill = 'x' )
+button1 = myButton( "Base", f1)
+button2 = myButton( "Opcional", f1)
+button3 = myButton( "Cerradura positiva", f1)
+button4 = myButton( "Cerradura de Kleene", f1)
+
+
+raise_frame(f1)
 
 root.mainloop()
-

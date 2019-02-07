@@ -127,13 +127,13 @@ class Graph:
         
 
 
-test = Graph('Opcional','a,b,c')
-test.basico('a')
-test.opcional()
-print(test.cEpsilon(test.estados,set()))
-print(test.alf)
+#test = Graph('Opcional','a,b,c')
+#test.basico('a')
+#test.opcional()
+#print(test.cEpsilon(test.estados,set()))
+#print(test.alf)
 
-test.plot()
+#test.plot()
 
 # test2 = Graph('CerraduraP','a,b,c')
 # test2.basico('b')
