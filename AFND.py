@@ -190,26 +190,27 @@ class Graph:
         self.inicial = nInicial
         self.final = nFinal
 
-test = Graph('Opcional','a,b,c')
-test.basico('a')
-test.opcional()
-# print(test.cEpsilon(test.estados,set()))
-# print(test.alf)
+f1 = Graph('F1','a')
+f1.basico('a')
+f1.opcional()
 
-test2 = Graph('CerraduraP','a,b,c')
-test2.basico('b')
-test2.cerradura_positiva()
+f2 = Graph('F2','b')
+f2.basico('b')
+f2.cerradura_positiva()
 
-test.unir(test2)
-# test3 = Graph('CerraduraK','a-f')
-# test3.basico('c')
-# print('alfabeto:',test3.alf)
-# test3.cerradura_kleene()
+f3 = Graph('f3', 'c')
+f3.basico('c')
+f2.unir(f3)
 
-# test.plot()
-# print()
-# for key, value in test.estados.items():
-#     print(key,value.final,value.transiciones)
-print(test.cEpsilon(test.inicial, set()))
-# test2.plot()
-# test3.plot()
+f1.concat(f2)
+
+f4 = Graph('f4', 'd')
+f4.basico('d')
+f4.cerradura_kleene()
+f4.plot()
+
+f1.concat(f4)
+f1.plot()
+
+#TODO fix from here
+#
