@@ -92,8 +92,12 @@ class Graph:
             # print(edos)
         return Cerr
 
-    def moverA(self,edos,s):
-        return set(edos[s])
+    def moverA(self,edos,s):#edos debe ser un set o lista
+        list(edos)
+        for edo in edos:
+            if s in edo.transiciones.key():
+                for i in edo.transiciones[s]:
+                    edos.append(i)
 
     def irA(self,edos,s):
         return self.cEpsilon(moverA(edos,s),set({}))
