@@ -103,6 +103,7 @@ class Graph:
         return self.cEpsilon(moverA(edos,s),set({}))
 
     def pertenece(this):
+    def pertenece(this):#TODO
         bool(len(set(this.final).intersection(c)))
 
     def opcional(self):# ε
@@ -222,6 +223,6 @@ f4.plot()
 
 f1.concat(f4)
 f1.plot()
-
+print(f1.cEpsilon(f1.inicial,set()))
 #TODO fix from here
 #
