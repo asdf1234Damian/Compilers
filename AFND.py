@@ -57,12 +57,16 @@ class Graph:
         Graph.cNode += 2
 
     def plot(self):
+        self.G.clear()
+        self.G.attr(rankdir = 'LR')
         for origin,states in self.estados.items():
             if states.final:
                 self.G.node(str(origin),shape='doublecircle')
             for simbol,destiny in states.transiciones.items():
-                for end in destiny:
+                for end in set(destiny):
                     self.G.edge(str(origin), str(end), label=simbol)
+        self.G.node('S', label=None, shape='point')
+        self.G.edge('S',str(self.inicial))
         self.G.render(filename=self.id,view=True,directory='resources', cleanup=False, format='png')
 
     def getEstados(self):
@@ -93,6 +97,9 @@ class Graph:
 
     def irA(self,edos,s):
         return self.cEpsilon(moverA(edos,s),set({}))
+
+    def pertenece(this):
+        bool(len(set(this.final).intersection(c)))
 
     def opcional(self):# ε
         # Se crean los nuevos estados iniciales y finales
