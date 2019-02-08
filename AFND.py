@@ -130,22 +130,15 @@ class Graph:
             self.estados[key] = value
         #Se copian el alfabeto
         self.alf.union(f2.alf)
-        #Los concatena
-        self.estados[self.final].addTransicion(EPS,f2.inicial)
-        # Se crean los nuevos estados iniciales y finales
-        nInicial = Graph.cNode
-        nFinal = Graph.cNode+1
-        Graph.cNode+=2
-        self.estados[nInicial] = Estado(False)
-        self.estados[nFinal] = Estado(True)
+        #Los concatena y se elimina el estado sobrante de f2
+        self.estados.pop(f2.inicial,None)
+        for key, val in f2.estados[f2.inicial].transiciones.items():
+            for dest in val:
+                self.estados[self.final].addTransicion(key,dest)
         #Cambia los estados finales e iniciales
-        self.estados[f2.final].final=False
         self.estados[self.final].final=False
-        self.estados[nInicial].addTransicion(EPS,self.inicial)
-        self.estados[f2.final].addTransicion(EPS,nFinal)
-        #se actualizan los estados finales e inciales
-        self.inicial = nInicial
-        self.final = nFinal
+        self.final = f2.final
+
 
     def unir(self,f2):
         #Se copian todos los estados con sus transiciones
