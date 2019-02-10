@@ -99,7 +99,19 @@ class Graph:
         for edo in edos:
             if s in edo.transiciones.key():
                 for i in edo.transiciones[s]:
-                    edos.append(i)
+        stack = []
+        result = set()
+        if isinstance(edos,int):
+            stack.append(edos)
+        else:
+            stack = list(edos)
+        for edo in stack:
+            if edo in self.estados.keys():
+                # print(self.estados[edo].transiciones)
+                if s in self.estados[edo].transiciones.keys():
+                    for i in self.estados[edo].transiciones[s]:
+                        result.add(i)
+        return result
 
     def irA(self,edos,s):
         return self.cEpsilon(moverA(edos,s),set({}))
