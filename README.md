@@ -1,15 +1,13 @@
 # Compilers
 ### &nbsp;&nbsp;&nbsp;&nbsp;Tarea 1:
 * Terminar GUI [⏳]
-* Analizar cadena &sigma; [⏳]
-  * Probar funciones moverA e irA [⏳]
-  * Crear funcion perteneceA [⏳]
 * Implementar funcion que reciba n automatas y los una para analisis lexico [⏳]
 * Convertir AFN -> AFD [⏳]
   * Imprimir tabla del nuevo automata para optimizar despues
 * Arreglar grafos
   * Hacer que el plot cree png en un tamaño determinado [⏳]
   * Hacer que borre el archivo dot[⏳]
+* Analizar cadena &sigma; [✔]
 * Agregar GUI [✔]
 * Clases de automata [✔]
 * Agregar GraphViz [✔]
