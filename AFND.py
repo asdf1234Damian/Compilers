@@ -114,7 +114,7 @@ class Graph:
         return result
 
     def irA(self,edos,s):
-        return self.cEpsilon(moverA(edos,s),set({}))
+        return self.cEpsilon(self.moverA(edos,s),set({}))
 
     #def pertenece(this):
     def pertenece(this):#TODO
