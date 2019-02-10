@@ -25,7 +25,7 @@ class Graph:
         self.id = id
         self.G = Digraph()
         self.G.attr(rankdir = 'LR')
-        self.estados = {}
+        self.estados = {} #Enteros
         self.alf=set()
         self.inicial=None
         self.final=None
@@ -91,14 +91,9 @@ class Graph:
                     stack.append(i)
                     Cerr.union(self.cEpsilon(i,Cerr))
                     Cerr.add(i)
-            # print(edos)
         return Cerr
 
     def moverA(self,edos,s):#edos debe ser un set o lista
-        list(edos)
-        for edo in edos:
-            if s in edo.transiciones.key():
-                for i in edo.transiciones[s]:
         stack = []
         result = set()
         if isinstance(edos,int):
@@ -116,9 +111,12 @@ class Graph:
     def irA(self,edos,s):
         return self.cEpsilon(self.moverA(edos,s),set({}))
 
-    #def pertenece(this):
-    def pertenece(this):#TODO
-        bool(len(set(this.final).intersection(c)))
+    def pertenece(this,sigma):
+        edos = {this.inicial}
+        for s in sigma:
+            edos = this.irA(this.cEpsilon(edos, set()),s)
+        return len(edos.intersection(set({this.final})))!=0
+
 
     def opcional(self):# ε
         # Se crean los nuevos estados iniciales y finales
@@ -150,7 +148,6 @@ class Graph:
         #Cambia los estados finales e iniciales
         self.estados[self.final].final=False
         self.final = f2.final
-
 
     def unir(self,f2):
         #Se copian todos los estados con sus transiciones
@@ -208,8 +205,6 @@ class Graph:
         # Se actualizan los estados iniciales y finales
         self.inicial = nInicial
         self.final = nFinal
-        
-
 
 f1 = Graph('F1','a')
 f1.basico('a')
@@ -228,10 +223,14 @@ f1.concat(f2)
 f4 = Graph('f4', 'd')
 f4.basico('d')
 f4.cerradura_kleene()
-f4.plot()
+# f4.plot()
 
 f1.concat(f4)
 f1.plot()
-print(f1.cEpsilon(f1.inicial,set()))
-#TODO fix from here
+# print(f1.cEpsilon(f1.inicial,set()))
+# f1.print()
+# print(f1.moverA(f1.inicial,EPS))
+# print(f1.irA(f1.inicial,EPS))
+print(f1.pertenece(''))
+# TODO fix from here
 #
