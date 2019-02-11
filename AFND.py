@@ -141,7 +141,7 @@ class Graph:
         for key, value in f2.estados.items():
             self.estados[key] = value
         # Se copian el alfabeto
-        self.alf.union(f2.alf)
+        self.alf = self.alf.union(f2.alf)
         # Los concatena y se elimina el estado sobrante de f2
         self.estados.pop(f2.inicial, None)
         for key, val in f2.estados[f2.inicial].transiciones.items():
@@ -156,7 +156,7 @@ class Graph:
         for key, value in f2.estados.items():
             self.estados[key] = value
         # Se copian el alfabeto
-        self.alf.union(f2.alf)
+        self.alf = self.alf.union(f2.alf)
         # Se crean los nuevos estados iniciales y finales
         nInicial = Graph.cNode
         nFinal = Graph.cNode + 1
