@@ -229,7 +229,57 @@ class Graph:
         # Se actualizan los estados iniciales y finales
         self.inicial = nInicial
         self.final = nFinal
-
+    
+    def conversionAFD(self):
+        queue = []
+        aux = []
+        aux2 = []
+        table = [[]]
+        #Se insertan los símbolos del alfabeto en la tabla de estados del AFD
+        table[0].append(self.alf)
+        table[0].append("Token")
+        saux = set()
+        s = self.cEpsilon(self.inicial, set())
+        queue.append(s)
+        while len(queue) != 0:
+            #Se revisa el siguiente elemento de la cola
+            s = queue.pop(0)
+            if not s in aux:
+                aux.append(s)
+            for i in self.alf:
+                #Se realiza irA del conjunto con el caracter específico
+                saux = self.irA(s, i)
+                #Se revisa si el conjunto es vacío o no
+                if len(saux) != 0:
+                    #Se agrega el nuevo conjunto a aux2 
+                    aux2.append(saux)
+                    #Se revisa si el conjunto saux ya existe o no en aux, en caso negativo se agrega
+                    if not saux in aux:
+                        queue.append(saux)
+                #Se agrega -1 
+                else:
+                    aux2.append(-1)
+            #Se compara aux2 con cada conjunto existente en la tabla
+            if not aux2 in table:
+                table.append(aux2.copy())
+            print(aux2)
+            print(self.final)
+            if self.final in s:
+                table[len(table)-1].append(1)
+            else:
+                table[len(table)-1].append(-1)
+            #Se limpia aux2
+            aux2.clear()
+        for i in range(len(table)-1):
+            for k in range(len(self.alf)):
+                for j in range(len(aux)):
+                    if table[i+1][k] == -1:
+                        break
+                    if table[i+1][k] == aux[j]:
+                        table[i+1][k] = j 
+                        break
+        print(table)
+        return table
 
 f1 = Graph('F1', 'a')
 f1.basico('a')
