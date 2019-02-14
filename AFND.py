@@ -172,8 +172,6 @@ class Graph:
 
             finales.append(a.final)
             self.finale=finales
-        self.plot()
-        # print(self.estados[nInicial].transiciones)
 
     def unir(self, f2):
         # Se copian todos los estados con sus transiciones
