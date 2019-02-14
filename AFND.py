@@ -151,6 +151,30 @@ class Graph:
         self.estados[self.final].final = False
         self.final = f2.final
 
+    def unirM(self, *automatas):
+        finales = []
+        #Crea el nuevo estado inicial
+        nInicial = Graph.cNode
+        Graph.cNode += 1
+        self.estados[nInicial] = Estado(False)
+        self.estados[nInicial].addTransicion(EPS,self.inicial)
+        self.inicial = nInicial
+        #Copia transiciones
+        for a in automatas:
+            #Compia los simbolos de todos los automatas
+            self.alf.union(a.alf)
+            #Une el nuevo inicial a todos los otros iniciales
+            self.estados[nInicial].addTransicion(EPS,a.inicial)
+            #Copia los estados y transicione
+            self.estados[nInicial]
+            for id, edo in a.estados.items():
+                self.estados[id] = edo
+
+            finales.append(a.final)
+            self.finale=finales
+        self.plot()
+        # print(self.estados[nInicial].transiciones)
+
     def unir(self, f2):
         # Se copian todos los estados con sus transiciones
         for key, value in f2.estados.items():
