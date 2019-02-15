@@ -26,8 +26,14 @@ def raise_frame(frame):
 
 def valores(simbolo):
 	value = [listbox.get(i) for i in listbox.curselection()]
-	valor = value[0]
-	self.simbolo = simbolo
+	if value:
+		valor = value[0]
+		sim = simbolo.get()
+		print(sim + " " + valor)
+		labelM_F1.config( text = "  ")
+	else:
+		labelM_F1.config( text = "Seleccione un autómata")
+
 
 #------------------Crear ventana
 root = Tk()
@@ -49,7 +55,7 @@ for frame in (menu, f1, f2, f3, f4):
     frame.grid(row=0, column=0, sticky='news')
 
 #----------Imagen
-filename = 'resources\Opcional.png'  
+filename = 'resources\Portada.jpg'  
 
 bottomFrame = Frame( root, bg = 'black' )
 bottomFrame.pack( side = 'left', fill = 'both', expand = 1 )
@@ -77,6 +83,7 @@ buttonF3.button.config( command = lambda:raise_frame(f3) )
 f1.config(bg = "#496ba0")
 label_F1 = Label( f1, text = 'Crear autómata básico', fg = 'white', bg ="#354154" , font = ( "Helvetica", 16 ) )	
 label2_F1 = Label( f1, text = 'Inserte su símbolo', fg = 'white', bg ="#354154" , font = ( "Helvetica", 16 ) )	
+labelM_F1 = Label( f1, text = " ", fg = "red", bg = "#496ba0", font = ( "Helvetica", 16 ))
 
 label_F1.pack( fill = 'x' )
 
@@ -92,10 +99,12 @@ simbol = Entry(f1, font = ( "Helvetica", 16 ) )
 simbol.pack()
 
 buttonLB = myButton( "Seleccionar", f1)
-buttonLB.button.config( command = lambda:valores() )
+buttonLB.button.config( command = lambda:valores(simbol) )
 
 buttonF1M = myButton( "Volver al menú", f1 )
 buttonF1M.button.config( command = lambda:raise_frame(menu) )
+
+labelM_F1.pack()
 
 #------------------F1-----------------------------------
 f2.config(bg = "#496ba0")
