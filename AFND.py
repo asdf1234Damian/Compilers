@@ -278,7 +278,9 @@ class Graph:
                     if table[i+1][k] == aux[j]:
                         table[i+1][k] = j 
                         break
-        print(table)
+         with open("AFD_Table.txt", "w") as arch:
+            for i in table:
+                arch.writelines([str(i), "\n"])
         return table
 
 f1 = Graph('F1', 'a')
