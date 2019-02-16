@@ -47,6 +47,8 @@ def valores(simbolo):
 
 
 #------------------Crear ventana
+            filename = 'resources/' + valor + '.png'
+            Image.ImageWidow(bottomFrame, path=filename)
 root = Tk()
 w, h = root.winfo_screenwidth(), root.winfo_screenheight()
 root.geometry("%dx%d+0+0" % (w, h))
