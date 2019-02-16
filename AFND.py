@@ -71,8 +71,8 @@ class Graph:
                     self.G.edge(str(origin), str(end), label=simbol)
         self.G.node('S', label=None, shape='point')
         self.G.edge('S', str(self.inicial))
-        self.G.render(filename=self.id, view=True,
-                      directory='resources', cleanup=False, format='png')
+        self.G.render(filename=self.id, view=False,
+                      directory='images', cleanup=True, format='png')
 
     def getEstados(self):
         return set(self.estados.keys)
