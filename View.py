@@ -65,55 +65,76 @@ def cambiar_Imagen(id):
         err_lbl_VerGrafo.config(text = 'No existe un autómata con esa ID')
 root = Tk()
 w, h = root.winfo_screenwidth(), root.winfo_screenheight()
-root.geometry("%dx%d+0+0" % (w, h))
-root.title( "AFND" )
+root.geometry("%dx%d+%d+0" % (w/2, h, w/2))
+root.title("AFND")
+# -------------------------------------------------------------Menú de opciones
+container = Frame(root, bg="#496ba0")
+container.pack(side='left', fill='both')
 
-#-----menú de opciones
-container = Frame( root, bg = "#496ba0")
-container.pack( side = 'left', fill = 'both' )
+menuPrincipal   = Frame(container)
+menuCrearBasico = Frame(container)
+menuOperacion    = Frame(container)
+menuVerGrafo    = Frame(container)
 
-menu = Frame(container)
-f1 = Frame(container)
-f2 = Frame(container)
-f3 = Frame(container)
-f4 = Frame(container)
-
-for frame in (menu, f1, f2, f3, f4):
+for frame in (menuPrincipal, menuCrearBasico, menuOperacion, menuVerGrafo):
     frame.grid(row=0, column=0, sticky='news')
 
-#----------Imagen
-filename = 'resources\Portada.jpg'  
+# -----------------------------------------------------------------------Imagen
+filename = 'resources/Portada.jpg'
+bottomFrame = Frame(root, bg='black')
+bottomFrame.pack(side='left', fill='both', expand=1)
+Image.ImageWidow(bottomFrame, path=filename)
 
-bottomFrame = Frame( root, bg = 'black' )
-bottomFrame.pack( side = 'left', fill = 'both', expand = 1 )
-app = Image.ImageWidow(bottomFrame, path=filename)
 
+# ---------------------------------------------------------------Menu Principal
+menuPrincipal.config(bg="#496ba0")
+lbl_ElegirOperacionP = Label(menuPrincipal, text='Elegir operacion', fg='white',
+                            bg="#354154", font=("Helvetica", 16))
+lbl_ElegirOperacionP.pack(fill='x')
+
+bttn_CrearAutómata = myButton("Crear Autómata", menuPrincipal)
+bttn_CrearAutómata.button.config(command=lambda:raise_frame(menuCrearBasico))
+
+bttn_ElegirOperacion = myButton("Elegir operacion", menuPrincipal)
+bttn_ElegirOperacion.button.config(command=lambda: raise_frame(menuOperacion))
+
+bttn_VerGrafo = myButton("Ver Otro Grafo", menuPrincipal)
+bttn_VerGrafo.button.config(command=lambda:raise_frame(menuVerGrafo))
 
 #------------------Menu---------------------------------
 menu.config(bg = "#496ba0")
 label_M = Label( menu, text = 'Elegir operacion', fg = 'white', bg ="#354154" , font = ( "Helvetica", 16 ) )
 label_M.pack( fill = 'x' )
+# ------------------------------------------------------------Menu Crear Basico
+menuCrearBasico.config(bg="#496ba0")
+lbl_CrearBasico = Label(menuCrearBasico, text='Crear autómata básico',
+                        fg='white', bg="#354154", font=("Helvetica", 16))
+lbl_CrearBasico.pack(fill='x')
 
-buttonF1 = myButton( "Crear Autómata", menu )
-buttonF1.button.config( command = lambda:raise_frame(f1) )
+lbl_InsertSimb = Label(menuCrearBasico, text='Inserte su símbolo',
+                        fg='white', bg="#354154", font=("Helvetica", 16))
+lbl_InsertSimb.pack(fill='x')
 
-buttonF2 = myButton( "Elegir operacion", menu )
-buttonF2.button.config( command = lambda:raise_frame(f2) )
+inSimbol = Entry(menuCrearBasico, font=("Helvetica", 16), width=4)
+inSimbol.pack()
 
-buttonF3 = myButton( "Volver al menú", menu )
-buttonF3.button.config( command = lambda:raise_frame(f3) )
+lstbox_Crear = Listbox(menuCrearBasico, width=25, height=4, font=("Helvetica", 16))
+lstbox_Crear.pack()
 
+for item in ["F1", "F2", "F3", "F4"]:
+    lstbox_Crear.insert(END, item)
+lstbox_Crear.select_set(1)
 
-#------------------F2-----------------------------------
-f1.config(bg = "#496ba0")
-label_F1 = Label( f1, text = 'Crear autómata básico', fg = 'white', bg ="#354154" , font = ( "Helvetica", 16 ) )	
-label2_F1 = Label( f1, text = 'Inserte su símbolo', fg = 'white', bg ="#354154" , font = ( "Helvetica", 16 ) )	
-labelM_F1 = Label( f1, text = " ", fg = "red", bg = "#496ba0", font = ( "Helvetica", 16 ))
+bttn_CrearBasico = myButton("Seleccionar", menuCrearBasico)
+bttn_CrearBasico.button.config(command=lambda: basico(lstbox_Crear.get(ACTIVE),inSimbol.get()))
+#TODO cambiar funcion valores
 
-label2_F1.pack( fill = 'x' )
+bttn_back_CrearBasico = myButton("Volver al menú", menuCrearBasico)
+bttn_back_CrearBasico.button.config(command=lambda: raise_frame(menuPrincipal))
 
-simbol = Entry(f1, font = ( "Helvetica", 16 ), width = 1)
-simbol.pack()
+err_lbl_CrearBasico = Label(menuCrearBasico, text=" ", fg="red", bg="#496ba0",
+font=("Helvetica", 16))
+err_lbl_CrearBasico.pack()
 
 label_F1.pack( fill = 'x' )
 
