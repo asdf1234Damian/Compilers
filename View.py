@@ -53,6 +53,16 @@ def valores(simbolo):
             filename = 'resources/' + valor + '.png'
             filename = 'images/' + valor + '.png'
             Image.ImageWidow(bottomFrame, path=filename)
+#Funcion para cambiar la imagen mostrada
+def cambiar_Imagen(id):
+    global currAutomat
+    if id in automats.keys():
+        automats[id].plot()
+        Image.ImageWidow(bottomFrame, path='images/'+id+'.png')
+        err_lbl_VerGrafo.config(text = '')
+        currAutomat = id
+    else:
+        err_lbl_VerGrafo.config(text = 'No existe un autómata con esa ID')
 root = Tk()
 w, h = root.winfo_screenwidth(), root.winfo_screenheight()
 root.geometry("%dx%d+0+0" % (w, h))
@@ -119,24 +129,29 @@ buttonLB.button.config( command = lambda:valores(simbol) )
 
 buttonF1M = myButton( "Volver al menú", f1 )
 buttonF1M.button.config( command = lambda:raise_frame(menu) )
+# ---------------Ver Otro Grafo--------------------------
+menuVerGrafo.config(bg="#496ba0")
+label_VerGrafo = Label(menuVerGrafo, text='Elega un grafo', fg='white',
+                 bg="#354154", font=("Helvetica", 16))
+label_VerGrafo.pack(fill='x')
 
-labelM_F1.pack()
+lstboxVG = Listbox(menuVerGrafo, width=25, height=4, font=("Helvetica", 16))
+lstboxVG.pack()
 
-#------------------F1-----------------------------------
-f2.config(bg = "#496ba0")
-label_F2 = Label( f2, text = 'Elegir operacion', fg = 'white', bg ="#354154" , font = ( "Helvetica", 16 ) )	
-label_F2.pack( fill = 'x' )
-buttonO = myButton( "Opcional", f2)
-buttonCP = myButton( "Cerradura positiva", f2)
-buttonCK = myButton( "Cerradura de Kleene", f2)
+for item in ["F1", "F2", "F3", "F4"]:
+    lstboxVG.insert(END, item)
+lstboxVG.select_set(0)
 
-buttonO.button.config(command = lambda:myButton.operacion( buttonO.texto, "a" ))
-buttonCP.button.config(command = lambda:myButton.operacion( buttonCP.texto, "a" ))
-buttonCK.button.config(command = lambda:myButton.operacion( buttonCK.texto, "a" ))
+buttonVer = myButton("Ver", menuVerGrafo)
+buttonVer.button.config(command=lambda:cambiar_Imagen(lstboxVG.get(ACTIVE)))
 
-buttonF2M = myButton( "Volver al menú", f2 )
-buttonF2M.button.config( command = lambda:raise_frame(menu) )
+bttn_back_VerGrafo = myButton("Volver al menú", menuVerGrafo)
+bttn_back_VerGrafo.button.config(command=lambda:raise_frame(menuPrincipal))
 
-#--------------------------------------------------------
-raise_frame(menu)
+err_lbl_VerGrafo = Label(menuVerGrafo, text=" ", fg="red", bg="#496ba0",
+font=("Helvetica", 16))
+err_lbl_VerGrafo.pack()
+
+# --------------------------------------------------------
+raise_frame(menuPrincipal)
 root.mainloop()
