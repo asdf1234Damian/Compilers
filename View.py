@@ -1,9 +1,12 @@
 import threading
-from tkinter import *               # python 3
-#from tkinter import font  as tkfont 
+from tkinter import *# python 3
 import AFND
 import Image
-#Crea botones iguales
+
+# ----------------------------------------------Guarda el autómata seleccionado
+automats= {}
+currAutomat = None
+
 class myButton:
 	def __init__( self, texto, frame ):
 		self.texto = texto
