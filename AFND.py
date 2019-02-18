@@ -273,32 +273,38 @@ class Graph:
         return table
 
     def printConversion(self):
-        #Inicializacion
-        print(self.final)
-        if isinstance(self.final,int):
-            final = {self.final}
-        else:
-            final = self.final
-        S = []
-        S.append(self.cEpsilon({self.inicial}, set()))
+        """Importante-------------------------------
+        Los estados en realidad son conjuntos de 
+        estados del automat original. """
+        #Inicializa la tabla y el indice para recorrerla
+        S = [self.cEpsilon({self.inicial}, set())]
         currS = 0
+        #Imprime el alfabeto primero 
         print(','.join(self.alf))
+        #Mientras no haya llegado al ultimo estado
         while currS != len(S):
+            #Guarda el nuevo estado
             si = S[currS]
-            if si.intersection(final):
+            #Se empieza imprimiendo si es o no final
+            if si.intersection(self.final):
                 print('T',end=' ')
             else:
                 print('N',end=' ')
+            #Se imprime el nombre del nuevo estado
             print('S'+str(currS), end=' ')
+            #Sj es el resultado de irA de si con
+            #cada simbolo del alfabeto
             for simb in self.alf:
                 sj = self.irA(si,simb)
+                #Se guarda sj en caso de que no este y despues se 
+                #imprime el indice respectivo
                 if len(sj):
                     if not sj in S:
                         S.append(sj)
                     print(S.index(sj), end=' ')
-                else:
+                else:#Si no, si no tiene transicion a sj
                     print('-', end=' ')
-            print(si)
+            print('')
             currS += 1  
         
 f1 = Graph('F1', 'a')
