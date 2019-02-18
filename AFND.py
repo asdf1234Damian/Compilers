@@ -34,13 +34,8 @@ class Graph:
         # En caso de que sea con comas
         if len(alf) == 1:
             self.alf.add(alf)
-            return
-        if alf.count(','):
-            self.alf = set(alf.split(','))
         else:
-            min, max = alf.split('-')
-            for i in range(ord(max) + 1 - ord(min)):
-                self.alf.add(chr(ord(min) + i))
+            self.alf=alf
 
     def print(self):
         for origen, destino in self.estados.items():
@@ -80,19 +75,15 @@ class Graph:
     # Regresa los estados alcanzables por transiciones epsilon desde cualquier estado en edos
     def cEpsilon(self, edos, Cerr):
         stack = []
-        if isinstance(edos, int):
-            stack.append(edos)
-        else:
             stack = list(edos)
-
         while len(stack) != 0:
             edo = stack[0]
             del stack[0]
-            if (not (edo in Cerr)) and EPS in self.estados[edo].transiciones:
                 Cerr.add(edo)
+            if EPS in self.estados[edo].transiciones:
                 for i in self.estados[edo].transiciones[EPS]:
                     stack.append(i)
-                    Cerr.union(self.cEpsilon(i, Cerr))
+                    Cerr = Cerr.union(self.cEpsilon({i}, Cerr))
                     Cerr.add(i)
         return Cerr
 
@@ -105,7 +96,6 @@ class Graph:
             stack = list(edos)
         for edo in stack:
             if edo in self.estados.keys():
-                # print(self.estados[edo].transiciones)
                 if s in self.estados[edo].transiciones.keys():
                     for i in self.estados[edo].transiciones[s]:
                         result.add(i)
@@ -114,11 +104,11 @@ class Graph:
     def irA(self, edos, s):
         return self.cEpsilon(self.moverA(edos, s), set({}))
 
-    def pertenece(this, sigma):
-        edos = {this.inicial}
+    def pertenece(self, sigma):
+        edos = {self.inicial}
         for s in sigma:
-            edos = this.irA(this.cEpsilon(edos, set()), s)
-        return len(edos.intersection(set({this.final}))) != 0
+            edos = self.irA(self.cEpsilon(edos, set()), s)
+        return len(edos.intersection(set({self.final}))) != 0
 
     def opcional(self):  # ε
         # Se crean los nuevos estados iniciales y finales
@@ -152,7 +142,7 @@ class Graph:
         self.final = f2.final
 
     def unirM(self, *automatas):
-        finales = []
+        finales = [self.final]
         #Crea el nuevo estado inicial
         nInicial = Graph.cNode
         Graph.cNode += 1
@@ -162,16 +152,15 @@ class Graph:
         #Copia transiciones
         for a in automatas:
             #Compia los simbolos de todos los automatas
-            self.alf.union(a.alf)
+            self.alf = self.alf.union(a.alf)
             #Une el nuevo inicial a todos los otros iniciales
             self.estados[nInicial].addTransicion(EPS,a.inicial)
             #Copia los estados y transicione
             self.estados[nInicial]
             for id, edo in a.estados.items():
                 self.estados[id] = edo
-
             finales.append(a.final)
-            self.finale=finales
+            self.final=finales
 
     def unir(self, f2):
         # Se copian todos los estados con sus transiciones
