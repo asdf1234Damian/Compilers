@@ -75,7 +75,7 @@ class Graph:
     # Regresa los estados alcanzables por transiciones epsilon desde cualquier estado en edos
     def cEpsilon(self, edos, Cerr):
         stack = []
-            stack = list(edos)
+        stack = list(edos)
         while len(stack) != 0:
             edo = stack[0]
             del stack[0]
