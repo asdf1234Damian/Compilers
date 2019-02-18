@@ -272,6 +272,35 @@ class Graph:
                 arch.writelines([str(i), "\n"])
         return table
 
+    def printConversion(self):
+        #Inicializacion
+        print(self.final)
+        if isinstance(self.final,int):
+            final = {self.final}
+        else:
+            final = self.final
+        S = []
+        S.append(self.cEpsilon({self.inicial}, set()))
+        currS = 0
+        print(','.join(self.alf))
+        while currS != len(S):
+            si = S[currS]
+            if si.intersection(final):
+                print('T',end=' ')
+            else:
+                print('N',end=' ')
+            print('S'+str(currS), end=' ')
+            for simb in self.alf:
+                sj = self.irA(si,simb)
+                if len(sj):
+                    if not sj in S:
+                        S.append(sj)
+                    print(S.index(sj), end=' ')
+                else:
+                    print('-', end=' ')
+            print(si)
+            currS += 1  
+        
 f1 = Graph('F1', 'a')
 f1.basico('a')
 f1.opcional()
