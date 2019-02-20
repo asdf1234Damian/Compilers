@@ -101,7 +101,7 @@ class Graph:
         while len(stack) != 0:
             edo = stack[0]
             del stack[0]
-                Cerr.add(edo)
+            Cerr.add(edo)
             if EPS in self.estados[edo].transiciones:
                 for i in self.estados[edo].transiciones[EPS]:
                     stack.append(i)
@@ -243,36 +243,36 @@ class Graph:
     
     def conversion_A_Archivo(self, path):
         with open(path, "w") as file:
-        #Inicializa la tabla y el indice para recorrerla
-        S = [self.cEpsilon({self.inicial}, set())]
-        currS = 0
-        #Imprime el alfabeto primero 
+            #Inicializa la tabla y el indice para recorrerla
+            S = [self.cEpsilon({self.inicial}, set())]
+            currS = 0
+            #Imprime el alfabeto primero 
             file.writelines(','.join(self.alf)+'\n')
-        #Mientras no haya llegado al ultimo estado
-        while currS != len(S):
-            #Guarda el nuevo estado
-            si = S[currS]
-            #Se empieza imprimiendo si es o no final
-            if si.intersection(self.final):
+            #Mientras no haya llegado al ultimo estado
+            while currS != len(S):
+                #Guarda el nuevo estado
+                si = S[currS]
+                #Se empieza imprimiendo si es o no final
+                if si.intersection(self.final):
                     file.write('T ')
-            else:
+                else:
                     file.write('N ')
-            #Se imprime el nombre del nuevo estado
+                #Se imprime el nombre del nuevo estado
                 file.write('S'+str(currS)+' ')
-            #Sj es el resultado de irA de si con
-            #cada simbolo del alfabeto
-            for simb in self.alf:
-                sj = self.irA(si,simb)
-                #Se guarda sj en caso de que no este y despues se 
-                #imprime el indice respectivo
-                if len(sj):
-                    if not sj in S:
-                        S.append(sj)
+                #Sj es el resultado de irA de si con
+                #cada simbolo del alfabeto
+                for simb in self.alf:
+                    sj = self.irA(si,simb)
+                    #Se guarda sj en caso de que no este y despues se 
+                    #imprime el indice respectivo
+                    if len(sj):
+                        if not sj in S:
+                            S.append(sj)
                         file.write(str(S.index(sj))+' ')
-                else:#Si no, si no tiene transicion a sj
+                    else:#Si no, si no tiene transicion a sj
                         file.writelines('- ')
                 file.writelines('\n')
-            currS += 1  
+                currS += 1  
         
 f1 = Graph('F1', 'a')
 f1.basico('a')
@@ -284,21 +284,25 @@ f2.cerradura_positiva()
 
 f3 = Graph('f3', 'c')
 f3.basico('c')
-f2.unir(f3)
+# f2.unir(f3)
 
-f1.concat(f2)
+# f1.concat(f2)
 
 f4 = Graph('f4', 'd')
 f4.basico('d')
 f4.cerradura_kleene()
 # f4.plot()
 
-f1.concat(f4)
+f1.unirM(f2,f3,f4)
+f1.conversion_A_Archivo('Test.txt')
 f1.plot()
+afd = Graph('afd',{})
+afd.crearDeTablas('Test.txt')
+afd.plot()
 # print(f1.cEpsilon(f1.inicial,set()))
 # f1.print()
 # print(f1.moverA(f1.inicial,EPS))
 # print(f1.irA(f1.inicial,EPS))
-print(f1.pertenece(''))
+# print(f1.pertenece(''))
 # TODO fix from here
-#
+#Arreglar la funcion pertenece 
