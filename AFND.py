@@ -43,6 +43,28 @@ class Graph:
             for sim, dest in destino.transiciones.items():
                 print(sim, dest)
 
+    def crearDeTablas(self, path):
+        #La primer linea del archivo es el alfabeto
+        f = open(path, "r").readlines()
+        self. alf = f[0].replace('\n','').split(',')
+        # El estado inicial esta en la linea 2 en la segunda posicion
+        self.inicial = f[1].replace('\n', '').split()[1]
+        #las lineas de 1 en adelante son los estados y transicones
+        for linea in f[1:]:
+            linea = linea.replace('\n','').split()
+            #El primer elemento de la linea es el tipo ((T)erminal/(N)o terminal)
+            #Se compara a 'T' para convertirlo a booleano
+            terminal = linea[0] == 'T'
+            # El segundo es el nombre del estado o nodo
+            nodeName = linea[1] 
+            #Crea el estado
+            self.estados[nodeName] = Estado(terminal)
+            for i in range(len(self.alf)):
+                if linea[i+2] != '-':
+                    simb = self.alf[i]
+                    fin = 'S'+linea[i+2]
+                    self.estados[nodeName].addTransicion(simb,fin)
+
     def basico(self, simbolo):
         # Se agregan el estado inicial
         self.inicial = Graph.cNode
