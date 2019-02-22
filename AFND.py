@@ -173,25 +173,26 @@ class Automata:
         self.final = f2.final
 
     def unirM(self, *automatas):
+        self.exp = ''
         finales = [self.final]
         #Crea el nuevo estado inicial
         nInicial = Automata.nxtNode
         Automata.nxtNode += 1
         self.estados[nInicial] = Estado(False)
-        self.estados[nInicial].addTransicion(EPS,self.inicial)
+        self.estados[nInicial].addEpsTrans(self.inicial)
         self.inicial = nInicial
         #Copia transiciones
         for a in automatas:
+            self.exp += a.exp
             #Compia los simbolos de todos los automatas
             self.alf = self.alf.union(a.alf)
             #Une el nuevo inicial a todos los otros iniciales
-            self.estados[nInicial].addTransicion(EPS,a.inicial)
+            self.estados[nInicial].addEpsTrans(a.inicial)
             #Copia los estados y transicione
             self.estados[nInicial]
-            for id, edo in a.estados.items():
-                self.estados[id] = edo
+            self.estados.update(a.estados)
             finales.append(a.final)
-            self.final=finales
+        self.final=finales
 
     def unir(self, f2):
         # Se actualiza la expresion
