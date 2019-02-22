@@ -1,4 +1,5 @@
 import matplotlib.pyplot as plt
+import glob
 from graphviz import Digraph
 import os
 os.environ["PATH"] += os.pathsep + 'C:/Program Files (x86)/Graphviz2.38/bin/'
