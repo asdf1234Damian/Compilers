@@ -5,6 +5,10 @@ os.environ["PATH"] += os.pathsep + 'C:/Program Files (x86)/Graphviz2.38/bin/'
 
 EPS = 'ε'
 
+def delImages():
+    files = glob.glob('images/*')
+    for f in files:
+        os.remove(f)
 
 class Estado:
     def __init__(self, esFinal):
