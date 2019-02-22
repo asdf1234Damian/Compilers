@@ -10,21 +10,25 @@ def delImages():
     for f in files:
         os.remove(f)
 
+class Transicion: 
+    def __init__(self, simbolos, destinos):
+        self.simbolos = simbolos
+        self.destinos = [destinos]
+    
 class Estado:
     def __init__(self, esFinal):
         self.final = esFinal
         self.transiciones = {}
 
-    def addTransicion(self, simbolo, destino):
-        # Checa si el simbolo ya esta en el diccionario antes de hacerle append
-        if simbolo in self.transiciones:
-            self.transiciones[simbolo].append(destino)
+    def addTransicion(self,exp,simb,dest):
+        if exp in self.transiciones.keys():
+            self.transiciones[exp].destinos.append(dest)
         else:
-            self.transiciones[simbolo] = [destino]
+            self.transiciones[exp] = Transicion(simb,dest)
 
+    def addEpsTrans(self,dest):
+        self.addTransicion(EPS,{EPS},dest)
 
-class Graph:
-    cNode = 0
 class Automata:
     nxtNode = 0
     # El alfabeto puede venir dividido por comas o en un rango separado por un guion, sin espacios en ambos casos.
@@ -58,11 +62,13 @@ class Automata:
     def print(self):
         for origen, destino in self.estados.items():
             print('Origen: ', origen)
-            for sim, dest in destino.transiciones.items():
-                print(sim, dest)
+            for exp, trns in destino.transiciones.items():
+                print('\t', exp, ':= {', ','.join(
+                    trns.simbolos), '} ->', trns.destinos, sep='')
 
     def crearDeTablas(self, path):
         #La primer linea del archivo es el alfabeto
+        self.exp=path[:-4]
         f = open(path, "r").readlines()
         self. alf = f[0].replace('\n','').split(',')
         # El estado inicial esta en la linea 2 en la segunda posicion
@@ -81,25 +87,21 @@ class Automata:
                 if linea[i+2] != '-':
                     simb = self.alf[i]
                     fin = 'S'+linea[i+2]
-                    self.estados[nodeName].addTransicion(simb,fin)
-
+                    self.estados[nodeName].addTransicion(simb,simb,fin)
 
     def plot(self):
         self.G.clear()
         self.G.attr(rankdir='LR')
-        for origin, states in self.estados.items():
-            if states.final:
+        for origin,dest in self.estados.items():
+            if self.estados[origin].final:
                 self.G.node(str(origin), shape='doublecircle')
-            for simbol, destiny in states.transiciones.items():
-                for end in set(destiny):
-                    self.G.edge(str(origin), str(end), label=simbol)
+            for exp, trns in dest.transiciones.items():
+                for dest in trns.destinos:
+                    self.G.edge(str(origin), str(dest), label=exp)
         self.G.node('S', label=None, shape='point')
         self.G.edge('S', str(self.inicial))
-        self.G.render(filename=self.id, view=False,
+        self.G.render(filename=self.exp, view=False,
                       directory='images', cleanup=True, format='png')
-
-    def getEstados(self):
-        return set(self.estados.keys)
 
     # Regresa los estados alcanzables por transiciones epsilon desde cualquier estado en edos
     def cEpsilon(self, edos, Cerr):
@@ -109,25 +111,22 @@ class Automata:
             edo = stack[0]
             del stack[0]
             Cerr.add(edo)
-            if EPS in self.estados[edo].transiciones:
-                for i in self.estados[edo].transiciones[EPS]:
-                    stack.append(i)
-                    Cerr = Cerr.union(self.cEpsilon({i}, Cerr))
-                    Cerr.add(i)
+            for t in self.estados[edo].transiciones.values():
+                if EPS in t.simbolos:
+                    stack+=t.destinos
+                    Cerr = Cerr.union(self.cEpsilon(set(t.destinos), Cerr))
+                    Cerr = Cerr.union(set(t.destinos))
         return Cerr
 
     def moverA(self, edos, s):  # edos debe ser un set o lista
         stack = []
         result = set()
-        if isinstance(edos, int):
-            stack.append(edos)
-        else:
-            stack = list(edos)
+        stack = list(edos)
         for edo in stack:
             if edo in self.estados.keys():
-                if s in self.estados[edo].transiciones.keys():
-                    for i in self.estados[edo].transiciones[s]:
-                        result.add(i)
+                for tr in self.estados[edo].transiciones.values():
+                    if s in tr.simbolos:
+                        result = result.union(set(tr.destinos))
         return result
 
     def irA(self, edos, s):
@@ -137,35 +136,37 @@ class Automata:
         edos = {self.inicial}
         for s in sigma:
             edos = self.irA(self.cEpsilon(edos, set()), s)
-        return len(edos.intersection(set({self.final}))) != 0
+            if (len(edos.intersection(set({self.final}))) == 0):
+                return False
+        return True
 
     def opcional(self):  # ε
         # Se crean los nuevos estados iniciales y finales
-        nInicial = Graph.cNode
-        nFinal = Graph.cNode + 1
-        Graph.cNode += 2
+        self.exp ='('+self.exp+')' '+eps'
+        nInicial = Automata.nxtNode
+        nFinal = Automata.nxtNode + 1
+        Automata.nxtNode += 2
         self.estados[nInicial] = Estado(False)
         self.estados[nFinal] = Estado(True)
         # El nuevo inicial apunta al inicial original y al nuevo final
-        self.estados[nInicial].addTransicion(EPS, self.inicial)
-        self.estados[nInicial].addTransicion(EPS, nFinal)
-        self.estados[self.final].addTransicion(EPS, nFinal)
+        self.estados[nInicial].addEpsTrans(self.inicial)
+        self.estados[nInicial].addEpsTrans(nFinal)
+        self.estados[self.final].addEpsTrans(nFinal)
         self.estados[self.final].final = False
         # Se actualizan los estados iniciales y finales
         self.inicial = nInicial
         self.final = nFinal
 
     def concat(self, f2):
+        self.exp = '('+self.exp+')'+f2.exp
         # Se copian todos los estados con sus transiciones
-        for key, value in f2.estados.items():
-            self.estados[key] = value
+        self.estados.update(f2.estados)
         # Se copian el alfabeto
         self.alf = self.alf.union(f2.alf)
         # Los concatena y se elimina el estado sobrante de f2
         self.estados.pop(f2.inicial, None)
-        for key, val in f2.estados[f2.inicial].transiciones.items():
-            for dest in val:
-                self.estados[self.final].addTransicion(key, dest)
+        self.estados[self.final].transiciones.update(
+            f2.estados[f2.inicial].transiciones)
         # Cambia los estados finales e iniciales
         self.estados[self.final].final = False
         self.final = f2.final
@@ -173,8 +174,8 @@ class Automata:
     def unirM(self, *automatas):
         finales = [self.final]
         #Crea el nuevo estado inicial
-        nInicial = Graph.cNode
-        Graph.cNode += 1
+        nInicial = Automata.nxtNode
+        Automata.nxtNode += 1
         self.estados[nInicial] = Estado(False)
         self.estados[nInicial].addTransicion(EPS,self.inicial)
         self.inicial = nInicial
@@ -192,22 +193,23 @@ class Automata:
             self.final=finales
 
     def unir(self, f2):
+        # Se actualiza la expresion
+        self.exp = '('+self.exp+')'+'+'+f2.exp
         # Se copian todos los estados con sus transiciones
-        for key, value in f2.estados.items():
-            self.estados[key] = value
+        self.estados.update(f2.estados)
         # Se copian el alfabeto
         self.alf = self.alf.union(f2.alf)
         # Se crean los nuevos estados iniciales y finales
-        nInicial = Graph.cNode
-        nFinal = Graph.cNode + 1
-        Graph.cNode += 2
+        nInicial = Automata.nxtNode
+        nFinal = Automata.nxtNode + 1
+        Automata.nxtNode += 2
         self.estados[nInicial] = Estado(False)
         self.estados[nFinal] = Estado(True)
         # Se unen a los dos automatas con los nuevso estados
-        self.estados[nInicial].addTransicion(EPS, self.inicial)
-        self.estados[nInicial].addTransicion(EPS, f2.inicial)
-        self.estados[self.final].addTransicion(EPS, nFinal)
-        self.estados[f2.final].addTransicion(EPS, nFinal)
+        self.estados[nInicial].addEpsTrans(self.inicial)
+        self.estados[nInicial].addEpsTrans(f2.inicial)
+        self.estados[self.final].addEpsTrans(nFinal)
+        self.estados[f2.final].addEpsTrans(nFinal)
         # Cambia los estados finales e iniciales
         self.estados[f2.final].final = False
         self.estados[self.final].final = False
@@ -217,38 +219,42 @@ class Automata:
 
     def cerradura_positiva(self):
         # Se crean los nuevos estados iniciales y finales
-        nInicial = Graph.cNode
-        nFinal = Graph.cNode + 1
-        Graph.cNode += 2
+        self.exp+='^+'
+        nInicial = Automata.nxtNode
+        nFinal = Automata.nxtNode + 1
+        Automata.nxtNode += 2
         self.estados[nInicial] = Estado(False)
         self.estados[nFinal] = Estado(True)
         # El nuevo inicial apunta al inicial original y el final original apunta al inicial original
-        self.estados[nInicial].addTransicion(EPS, self.inicial)
-        self.estados[self.final].addTransicion(EPS, self.inicial)
-        self.estados[self.final].addTransicion(EPS, nFinal)
+        self.estados[nInicial].addEpsTrans(self.inicial)
+        self.estados[self.final].addEpsTrans(self.inicial)
+        self.estados[self.final].addEpsTrans(nFinal)
         self.estados[self.final].final = False
         # Se actualizan los estados iniciales y finales
         self.inicial = nInicial
         self.final = nFinal
 
     def cerradura_kleene(self):
+        self.exp += '^k'
         # Se crean los nuevos estados iniciales y finales
-        nInicial = Graph.cNode
-        nFinal = Graph.cNode + 1
-        Graph.cNode += 2
+        nInicial = Automata.nxtNode
+        nFinal = Automata.nxtNode + 1
+        Automata.nxtNode += 2
         self.estados[nInicial] = Estado(False)
         self.estados[nFinal] = Estado(True)
         # El nuevo inicial apunta al inicial original y al nuevo final, y el final original apunta al inicial original
-        self.estados[nInicial].addTransicion(EPS, self.inicial)
-        self.estados[nInicial].addTransicion(EPS, nFinal)
-        self.estados[self.final].addTransicion(EPS, self.inicial)
-        self.estados[self.final].addTransicion(EPS, nFinal)
+        self.estados[nInicial].addEpsTrans(self.inicial)
+        self.estados[nInicial].addEpsTrans(nFinal)
+        self.estados[self.final].addEpsTrans(self.inicial)
+        self.estados[self.final].addEpsTrans(nFinal)
         self.estados[self.final].final = False
         # Se actualizan los estados iniciales y finales
         self.inicial = nInicial
         self.final = nFinal
     
     def conversion_A_Archivo(self, path):
+        if isinstance(self.final,int):
+            self.final = {self.final}
         with open(path, "w") as file:
             #Inicializa la tabla y el indice para recorrerla
             S = [self.cEpsilon({self.inicial}, set())]
@@ -278,7 +284,7 @@ class Automata:
                         file.write(str(S.index(sj))+' ')
                     else:#Si no, si no tiene transicion a sj
                         file.writelines('- ')
-                file.writelines('\n')
+                file.writelines(str((currS+1)*10)+'\n')
                 currS += 1  
         
 f1 = Graph('F1', 'a')
