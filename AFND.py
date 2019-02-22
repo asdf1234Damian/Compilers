@@ -25,21 +25,35 @@ class Estado:
 
 class Graph:
     cNode = 0
+class Automata:
+    nxtNode = 0
     # El alfabeto puede venir dividido por comas o en un rango separado por un guion, sin espacios en ambos casos.
-
-    def __init__(self, id, alf):
-        self.id = id
+    def __init__(self, exp):
+        self.exp  = exp
         self.G = Digraph()
         self.G.attr(rankdir='LR')
         self.estados = {}  # Enteros
         self.alf = set()
-        self.inicial = None
-        self.final = None
-        # En caso de que sea con comas
-        if len(alf) == 1:
-            self.alf.add(alf)
+        if len(exp)==0:
+            self.inicial = None
+            self.final = None
+            return
+        self.inicial = Automata.nxtNode
+        self.final = Automata.nxtNode+1
+        self.estados[self.inicial] = Estado(False)
+        self.estados[self.final] = Estado(True)
+        Automata.nxtNode += 2
+        if len(exp) == 1 :
+            self.alf = {exp}
         else:
-            self.alf=alf
+            if exp.count('-'):
+                inicio, fin = [ord(x) for x in exp.split('-')]
+                for simb in range(inicio,fin+1):
+                    self.alf.add(chr(simb))
+            else:
+                self.alf = set(exp.split(','))
+        self.estados[self.inicial].addTransicion(exp,self.alf,self.final)
+
 
     def print(self):
         for origen, destino in self.estados.items():
@@ -69,17 +83,6 @@ class Graph:
                     fin = 'S'+linea[i+2]
                     self.estados[nodeName].addTransicion(simb,fin)
 
-    def basico(self, simbolo):
-        # Se agregan el estado inicial
-        self.inicial = Graph.cNode
-        self.final = Graph.cNode + 1
-        # Se crean los estados
-        self.estados[self.inicial] = Estado(False)
-        self.estados[self.final] = Estado(True)
-        # Se crea la transicion entre inical y final
-        self.estados[self.inicial].addTransicion(simbolo, self.final)
-        # Se actualiza el counter de los nodos
-        Graph.cNode += 2
 
     def plot(self):
         self.G.clear()
