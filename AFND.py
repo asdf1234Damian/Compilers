@@ -36,7 +36,6 @@ class Automata:
     def __init__(self, exp):
         self.exp  = exp
         self.G = Digraph()
-        self.G.attr(rankdir='LR')
         self.estados = {}  # Enteros
         self.alf = set()
         if len(exp)==0:
@@ -69,7 +68,7 @@ class Automata:
 
     def crearDeTablas(self, path):
         #La primer linea del archivo es el alfabeto
-        self.exp=path[:-4]
+        # self.exp=path[:-4]
         f = open(path, "r").readlines()
         self. alf = f[0].replace('\n','').split(',')
         # El estado inicial esta en la linea 2 en la segunda posicion
@@ -92,17 +91,18 @@ class Automata:
 
     def plot(self):
         self.G.clear()
-        self.G.attr(rankdir='LR')
+        self.G.attr(ratio='fill', size='3.8,2.77',
+                    dpi='300', rank='same', rankdir='LR')
+        self.G.edge('S', str(self.inicial))
         for origin,dest in self.estados.items():
             if self.estados[origin].final:
                 self.G.node(str(origin), shape='doublecircle')
             for exp, trns in dest.transiciones.items():
                 for dest in trns.destinos:
                     self.G.edge(str(origin), str(dest), label=exp)
-        self.G.node('S', label=None, shape='point')
-        self.G.edge('S', str(self.inicial))
+        self.G.node('S', label=None, shape='point', )
         self.G.render(filename=self.exp, view=False,
-                      directory='images', cleanup=True, format='png')
+                      directory='images', cleanup=False, format='png')
 
     # Regresa los estados alcanzables por transiciones epsilon desde cualquier estado en edos
     def cEpsilon(self, edos, Cerr):
@@ -115,8 +115,8 @@ class Automata:
             for t in self.estados[edo].transiciones.values():
                 if EPS in t.simbolos:
                     stack+=t.destinos
-                    Cerr = Cerr.union(self.cEpsilon(set(t.destinos), Cerr))
-                    Cerr = Cerr.union(set(t.destinos))
+                    Cerr = Cerr.union(self.cEpsilon(set(stack), Cerr))
+                    Cerr = Cerr.union(set(stack))
         return Cerr
 
     def moverA(self, edos, s):  # edos debe ser un set o lista
@@ -172,24 +172,23 @@ class Automata:
         self.estados[self.final].final = False
         self.final = f2.final
 
-    def unirM(self, *automatas):
+    def unirM(self, automatas):
         finales = [self.final]
         #Crea el nuevo estado inicial
         nInicial = Automata.nxtNode
         Automata.nxtNode += 1
         self.estados[nInicial] = Estado(False)
-        self.estados[nInicial].addTransicion(EPS,self.inicial)
+        self.estados[nInicial].addEpsTrans(self.inicial)
         self.inicial = nInicial
         #Copia transiciones
         for a in automatas:
             #Compia los simbolos de todos los automatas
             self.alf = self.alf.union(a.alf)
             #Une el nuevo inicial a todos los otros iniciales
-            self.estados[nInicial].addTransicion(EPS,a.inicial)
+            self.estados[nInicial].addEpsTrans(a.inicial)
             #Copia los estados y transicione
             self.estados[nInicial]
-            for id, edo in a.estados.items():
-                self.estados[id] = edo
+            self.estados.update(a.estados)
             finales.append(a.final)
             self.final=finales
 
@@ -220,7 +219,7 @@ class Automata:
 
     def cerradura_positiva(self):
         # Se crean los nuevos estados iniciales y finales
-        self.exp+='^+'
+        self.exp='('+self.exp+')^+'
         nInicial = Automata.nxtNode
         nFinal = Automata.nxtNode + 1
         Automata.nxtNode += 2
@@ -252,7 +251,7 @@ class Automata:
         # Se actualizan los estados iniciales y finales
         self.inicial = nInicial
         self.final = nFinal
-    
+
     def conversion_A_Archivo(self, path):
         if isinstance(self.final,int):
             self.final = {self.final}
@@ -286,37 +285,6 @@ class Automata:
                     else:#Si no, si no tiene transicion a sj
                         file.writelines('- ')
                 file.writelines(str((currS+1)*10)+'\n')
-                currS += 1  
-        
-f1 = Graph('F1', 'a')
-f1.basico('a')
-f1.opcional()
-
-f2 = Graph('F2', 'b')
-f2.basico('b')
-f2.cerradura_positiva()
-
-f3 = Graph('f3', 'c')
-f3.basico('c')
-# f2.unir(f3)
-
-# f1.concat(f2)
-
-f4 = Graph('f4', 'd')
-f4.basico('d')
-f4.cerradura_kleene()
-# f4.plot()
-
-f1.unirM(f2,f3,f4)
-f1.conversion_A_Archivo('Test.txt')
-f1.plot()
-afd = Graph('afd',{})
-afd.crearDeTablas('Test.txt')
-afd.plot()
-# print(f1.cEpsilon(f1.inicial,set()))
-# f1.print()
-# print(f1.moverA(f1.inicial,EPS))
-# print(f1.irA(f1.inicial,EPS))
-# print(f1.pertenece(''))
-# TODO fix from here
-#Arreglar la funcion pertenece 
+                currS += 1
+        self = Automata('')
+        self.crearDeTablas(path)
