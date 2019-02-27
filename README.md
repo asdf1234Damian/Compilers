@@ -2,7 +2,9 @@
 ### &nbsp;&nbsp;&nbsp;&nbsp;Tarea 1:
 
 * Re hace GUI? [⏳]
-* err_lbl_Operacion.config(text='Primero cree un automata') recursion infinita [⏳]
+* Agregar boton para unir varios [⏳]
+* Agregar boton para generar tabla [⏳]
+* Arreglar cEpsilon recursion infinita [✔]
 * Subir la imagen de portada [✔]
 * Agregar funcione para unir todos o algunos grafos [✔]
 * Agregar funcione para validar una cadena [✔]
