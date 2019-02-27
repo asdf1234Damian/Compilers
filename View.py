@@ -1,5 +1,5 @@
 import threading
-from tkinter import *# python 3
+from tkinter import Tk,Frame,Button,Label,Entry,Listbox,END,ACTIVE
 import AFND
 import Image
 
@@ -27,15 +27,16 @@ def raise_frame(frame):
 def cambiar_Imagen(id):
     global currAutomat
     if id in automats.keys():
-        automats[id].plot()
+        automats[id].plot(id)
         Image.ImageWidow(bottomFrame, path='images/'+id+'.png')
         err_lbl_VerGrafo.config(text = '')
+        lbl_Sel.config(text=id)
         currAutomat = id
     else:
-        err_lbl_VerGrafo.config(text = 'No existe un autómata con esa ID')
-
+        err_lbl_VerGrafo.config(text = 'No existe autómata con esa ID')
 
 # Al crear un nuevo autómata, recibe el símbolo del área de texto del formulario
+<<<<<<< HEAD
 def basico(id,simbolo):
     if len(simbolo)>10:
         err_lbl_CrearBasico.config(text = 'Ingrese un símbolo válido')
@@ -45,9 +46,85 @@ def basico(id,simbolo):
         else:
             automats[id] = AFND.Automata(simbolo)
             #automats[id].basico(simbolo)
+=======
+def basico(id,exp):
+    if (len(exp)):
+        if id in automats.keys():
+            err_lbl_CrearBasico.config(text = 'Ya existe un autómata')
+        else:
+            automats[id] = AFND.Automata(exp)
+>>>>>>> d48bda5922550e435756fcf6b6ab418ba7804565
             cambiar_Imagen(id)
+    else:
+        err_lbl_CrearBasico.config(text = 'Ingrese un símbolo válido')
 
-def Operaciones(operacion, f2 = None):
+def opcional():
+    global  currAutomat
+    if currAutomat:
+        automats[currAutomat].opcional()
+        cambiar_Imagen(currAutomat)
+    else:
+        err_lbl_CrearBasico.config(text='Primero cree un automata')
+
+
+def unirM(seleccion):
+    global currAutomat
+    if len(seleccion)>1:
+        keys = ['F'+str(i+1) for i in list(seleccion)]
+        seleccion = set()
+        if  not currAutomat in keys:
+            currAutomat = keys[0]
+        for k in keys:
+            if k != currAutomat and k in automats.keys():
+                seleccion.add(automats[k])
+        if len(seleccion):
+            automats[currAutomat].unirM(seleccion)
+            cambiar_Imagen(currAutomat)
+        else:
+            err_lbl_Operacion.config(text='Seleccion invalida')
+    else:
+        err_lbl_Operacion.config(text='Seleccion al menos 2 automatas')
+
+def cerrPos():
+    global currAutomat
+    if currAutomat:
+        automats[currAutomat].cerradura_positiva()
+        cambiar_Imagen(currAutomat)
+    else:
+        err_lbl_Operacion.config(text='Primero cree un automata')
+
+def cerrKle():
+    global currAutomat
+    if currAutomat:
+        automats[currAutomat].cerradura_kleene()
+        cambiar_Imagen(currAutomat)
+    else:
+        err_lbl_Operacion.config(text='Primero cree un automata')
+
+def Pertenece(sigma):
+    global currAutomat
+    if not len(sigma):
+        sigma=AFND.EPS
+    if currAutomat:
+        if automats[currAutomat].pertenece(sigma):
+            lbl_Pertenece.config(text='Cadena valida')
+        else:
+            lbl_Pertenece.config(text='Cadena NO valida')
+        err_lbl_Operacion.config(text='')
+    else:
+        err_lbl_Operacion.config(text='Primero cree un automata')
+
+def Union(f2):
+    global currAutomat
+    if f2 and currAutomat:
+        automats[currAutomat].unir(automats[f2])
+        cambiar_Imagen(currAutomat)
+        del automats[f2]
+    else:
+        err_lbl_Operacion.config(text='')
+
+def Operaciones(operacion, f2 = None, sigma=''):
+    global currAutomat
     if f2:
         if f2 in automats.keys():
             if currAutomat == f2:
@@ -66,43 +143,37 @@ def Operaciones(operacion, f2 = None):
         else:
             err_lbl_Operacion.config(text='No existe ese autómata')
     else:
-        if currAutomat:
-            if operacion == 'Opcional':
-                automats[currAutomat].opcional()
-            elif operacion == 'CerrPos':
-                automats[currAutomat].cerradura_positiva()
-            elif operacion == 'CerrKle':
-                automats[currAutomat].cerradura_kleene()
-            else:
-                print('Error no existe operacion', operacion)
-            cambiar_Imagen(currAutomat)
-            err_lbl_Operacion.config(text = '')
-        else:
             err_lbl_Operacion.config(text = 'No existe ese autómata')
 
 # ----------------------------------------------------------------Crear ventana
 root = Tk()
 w, h = root.winfo_screenwidth(), root.winfo_screenheight()
+<<<<<<< HEAD
 root.geometry("%dx%d+0+0" % (w, h))
+=======
+root.attributes('-fullscreen', True)
+>>>>>>> d48bda5922550e435756fcf6b6ab418ba7804565
 root.title("AFND")
 # -------------------------------------------------------------Menú de opciones
-container = Frame(root, bg="#496ba0")
+container = Frame(root, bg="#496ba0",height='20')
 container.pack(side='left', fill='both')
+lbl_Sel = Label(root,text='', fg='white',
+                bg="#354154", font=("Helvetica", 16))
+lbl_Sel.pack(fill='x')
 
 menuPrincipal   = Frame(container)
 menuCrearBasico = Frame(container)
-menuOperacion    = Frame(container)
+menuOperacion   = Frame(container)
 menuVerGrafo    = Frame(container)
 
 for frame in (menuPrincipal, menuCrearBasico, menuOperacion, menuVerGrafo):
     frame.grid(row=0, column=0, sticky='news')
 
 # -----------------------------------------------------------------------Imagen
-filename = 'resources/Portada.jpg'
+filename = 'resources/Portada.png'
 bottomFrame = Frame(root, bg='black')
 bottomFrame.pack(side='left', fill='both', expand=1)
 Image.ImageWidow(bottomFrame, path=filename)
-
 
 # ---------------------------------------------------------------Menu Principal
 menuPrincipal.config(bg="#496ba0")
@@ -129,8 +200,8 @@ lbl_InsertSimb = Label(menuCrearBasico, text='Inserte su símbolo',
                         fg='white', bg="#354154", font=("Helvetica", 16))
 lbl_InsertSimb.pack(fill='x')
 
-inSimbol = Entry(menuCrearBasico, font=("Helvetica", 16), width=4)
-inSimbol.pack()
+inExp = Entry(menuCrearBasico, font=("Helvetica", 16), width=4)
+inExp.pack()
 
 lstbox_Crear = Listbox(menuCrearBasico, width=25, height=4, font=("Helvetica", 16))
 lstbox_Crear.pack()
@@ -140,8 +211,7 @@ for item in ["F1", "F2", "F3", "F4"]:
 lstbox_Crear.select_set(1)
 
 bttn_CrearBasico = myButton("Seleccionar", menuCrearBasico)
-bttn_CrearBasico.button.config(command=lambda: basico(lstbox_Crear.get(ACTIVE),inSimbol.get()))
-#TODO cambiar funcion valores
+bttn_CrearBasico.button.config(command=lambda: basico(lstbox_Crear.get(ACTIVE),inExp.get()))
 
 bttn_back_CrearBasico = myButton("Volver al menú", menuCrearBasico)
 bttn_back_CrearBasico.button.config(command=lambda: raise_frame(menuPrincipal))
@@ -160,20 +230,30 @@ lbl_Op_Unarias = Label(menuOperacion, text='Operaciones Unarias', fg='white',
 lbl_Op_Unarias.pack(fill='x')
 
 bttn_Opcional = myButton("Opcional", menuOperacion)
-bttn_Opcional.button.config(command=lambda:Operaciones('Opcional'))
+bttn_Opcional.button.config(command=lambda:opcional())
 
 bttn_Cerr_Pos = myButton("Cerradura Positiva", menuOperacion)
-bttn_Cerr_Pos.button.config(command=lambda:Operaciones('CerrPos'))
+bttn_Cerr_Pos.button.config(command=lambda:cerrPos())
 
 bttn_Cerr_Pos = myButton("Cerradura de Kleene", menuOperacion)
-bttn_Cerr_Pos.button.config(command=lambda:Operaciones('CerrKle'))
+bttn_Cerr_Pos.button.config(command=lambda:cerrKle())
+
+in_Sigma = Entry(menuOperacion, font=("Helvetica", 16), width=4)
+in_Sigma.pack()
+
+lbl_Pertenece = Label(menuOperacion, text='', fg='white',
+                        bg="#354154", font=("Helvetica", 16))
+lbl_Pertenece.pack(fill='x')
+
+bttn_Cerr_Pos = myButton("Pertenece", menuOperacion)
+bttn_Cerr_Pos.button.config(command=lambda: Pertenece(sigma=in_Sigma.get()))
 
 lbl_Op_Binarias = Label(menuOperacion, text='Operaciones Binarias', fg='white',
                  bg="#354154", font=("Helvetica", 16))
-lbl_Op_Binarias.pack(fill='x')
+lbl_Op_Binarias.pack(fill='x', pady=(50,0) )
 
-lstbox_Binarias = Listbox(menuOperacion, width=25, height=4, font=("Helvetica", 16))
-lstbox_Binarias.pack()
+lstbox_Binarias = Listbox(menuOperacion, height=4, font=("Helvetica", 16), selectmode='multiple')
+lstbox_Binarias.pack(fill='x')
 
 for item in ["F1", "F2", "F3", "F4"]:
     lstbox_Binarias.insert(END, item)
@@ -184,6 +264,9 @@ bttn_Union.button.config(command=lambda:Operaciones('Union',lstbox_Binarias.get(
 
 bttn_Concat = myButton("Concatenar", menuOperacion)
 bttn_Concat.button.config(command=lambda:Operaciones('Concat',lstbox_Binarias.get(ACTIVE)))
+
+bttn_UnirM = myButton("Unir selecciones", menuOperacion)
+bttn_UnirM.button.config(command=lambda: unirM(lstbox_Binarias.curselection()))
 
 bttn_back_Operacion = myButton("Volver al menú", menuOperacion)
 bttn_back_Operacion.button.config(command=lambda: raise_frame(menuPrincipal))
@@ -217,3 +300,4 @@ err_lbl_VerGrafo.pack()
 # --------------------------------------------------------
 raise_frame(menuPrincipal)
 root.mainloop()
+AFND.delImages()

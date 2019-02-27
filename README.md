@@ -1,12 +1,14 @@
 # Compilers
 ### &nbsp;&nbsp;&nbsp;&nbsp;Tarea 1:
 
-* Terminar GUI [⏳]
-  * Agregar funcione para unir todos o algunos grafos
-  * Agregar funcione para validar una cadena
-* Arreglar grafos[⏳]
-  * Hacer que el plot cree png en un tamaño determinado
-* Subir la imagen de portada [⏳]
+* Re hace GUI? [⏳]
+* Agregar boton para unir varios [⏳]
+* Agregar boton para generar tabla [⏳]
+* Arreglar cEpsilon recursion infinita [✔]
+* Subir la imagen de portada [✔]
+* Agregar funcione para unir todos o algunos grafos [✔]
+* Agregar funcione para validar una cadena [✔]
+* Hacer que el plot cree png en un tamaño determinado[✔]
 * Convertir AFN -> AFD [✔]
 * Imprimir en un txt la tabla del nuevo automata para optimizar despues [✔]
 * Crear funcion para convertir el archivo txt en una instancia del AFD [✔]
