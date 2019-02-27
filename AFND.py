@@ -289,29 +289,29 @@ class Automata:
                 file.writelines(str((currS+1)*10)+'\n')
                 currS += 1  
         
-f1 = Graph('F1', 'a')
-f1.basico('a')
+f1 = Automata('a')
+#f1.basico('a')
 f1.opcional()
 
-f2 = Graph('F2', 'b')
-f2.basico('b')
+f2 = Automata('b')
+#f2.basico('b')
 f2.cerradura_positiva()
 
-f3 = Graph('f3', 'c')
-f3.basico('c')
+f3 = Automata('c')
+#f3.basico('c')
 # f2.unir(f3)
 
 # f1.concat(f2)
 
-f4 = Graph('f4', 'd')
-f4.basico('d')
+f4 = Automata( 'd')
+#f4.basico('d')
 f4.cerradura_kleene()
 # f4.plot()
 
 f1.unirM(f2,f3,f4)
 f1.conversion_A_Archivo('Test.txt')
 f1.plot()
-afd = Graph('afd',{})
+afd = Automata('afd')
 afd.crearDeTablas('Test.txt')
 afd.plot()
 # print(f1.cEpsilon(f1.inicial,set()))

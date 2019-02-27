@@ -19,6 +19,9 @@ class myButton:
 # Coloca el frame seleccionado hasta el frente
 def raise_frame(frame):
     frame.tkraise()
+    err_lbl_Operacion.config(text = "")
+    err_lbl_CrearBasico.config(text = "")
+    err_lbl_VerGrafo.config(text = "")
 
 #Funcion para cambiar la imagen mostrada
 def cambiar_Imagen(id):
@@ -34,14 +37,14 @@ def cambiar_Imagen(id):
 
 # Al crear un nuevo autómata, recibe el símbolo del área de texto del formulario
 def basico(id,simbolo):
-    if len(simbolo)>1:
+    if len(simbolo)>10:
         err_lbl_CrearBasico.config(text = 'Ingrese un símbolo válido')
     else:
         if id in automats.keys():
             err_lbl_CrearBasico.config(text = 'Ya existe un autómata')
         else:
-            automats[id] = AFND.Graph(id,simbolo)
-            automats[id].basico(simbolo)
+            automats[id] = AFND.Automata(simbolo)
+            #automats[id].basico(simbolo)
             cambiar_Imagen(id)
 
 def Operaciones(operacion, f2 = None):
@@ -80,7 +83,7 @@ def Operaciones(operacion, f2 = None):
 # ----------------------------------------------------------------Crear ventana
 root = Tk()
 w, h = root.winfo_screenwidth(), root.winfo_screenheight()
-root.geometry("%dx%d+%d+0" % (w/2, h, w/2))
+root.geometry("%dx%d+0+0" % (w, h))
 root.title("AFND")
 # -------------------------------------------------------------Menú de opciones
 container = Frame(root, bg="#496ba0")
@@ -190,7 +193,7 @@ font=("Helvetica", 16))
 err_lbl_Operacion.pack()
 # ---------------Ver Otro Grafo--------------------------
 menuVerGrafo.config(bg="#496ba0")
-label_VerGrafo = Label(menuVerGrafo, text='Elega un grafo', fg='white',
+label_VerGrafo = Label(menuVerGrafo, text='Eliga un grafo', fg='white',
                  bg="#354154", font=("Helvetica", 16))
 label_VerGrafo.pack(fill='x')
 

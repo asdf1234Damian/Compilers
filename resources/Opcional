@@ -1,0 +1,8 @@
+digraph {
+	rankdir=LR
+	0 -> 1 [label=a]
+	1 -> 3 [label="ε"]
+	2 -> 0 [label="ε"]
+	2 -> 3 [label="ε"]
+	3 [shape=doublecircle]
+}
