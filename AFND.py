@@ -89,8 +89,9 @@ class Automata:
                     fin = 'S'+linea[i+2]
                     self.estados[nodeName].addTransicion(simb,simb,fin)
 
-    def plot(self):
+    def plot(self,id):
         self.G.clear()
+        #Esto se cambia para cambiar el tamaño de la imagen 
         self.G.attr(ratio='fill', size='3.8,2.77',
                     dpi='300', rank='same', rankdir='LR')
         self.G.edge('S', str(self.inicial))
@@ -101,8 +102,8 @@ class Automata:
                 for dest in trns.destinos:
                     self.G.edge(str(origin), str(dest), label=exp)
         self.G.node('S', label=None, shape='point', )
-        self.G.render(filename=self.exp, view=False,
-                      directory='images', cleanup=False, format='png')
+        self.G.render(filename=id, view=False,
+                      directory='images', cleanup=True, format='png')
 
     # Regresa los estados alcanzables por transiciones epsilon desde cualquier estado en edos
     def cEpsilon(self,edos):

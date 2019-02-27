@@ -24,11 +24,10 @@ def raise_frame(frame):
 def cambiar_Imagen(id):
     global currAutomat
     if id in automats.keys():
-        automats[id].plot()
-        exp = automats[id].exp
-        Image.ImageWidow(bottomFrame, path='images/'+exp+'.png')
+        automats[id].plot(id)
+        Image.ImageWidow(bottomFrame, path='images/'+id+'.png')
         err_lbl_VerGrafo.config(text = '')
-        lbl_Sel.config(text=exp)
+        lbl_Sel.config(text=id)
         currAutomat = id
     else:
         err_lbl_VerGrafo.config(text = 'No existe autómata con esa ID')
@@ -89,6 +88,8 @@ def cerrKle():
 
 def Pertenece(sigma):
     global currAutomat
+    if not len(sigma):
+        sigma=AFND.EPS
     if currAutomat:
         if automats[currAutomat].pertenece(sigma):
             lbl_Pertenece.config(text='Cadena valida')
@@ -102,8 +103,8 @@ def Union(f2):
     global currAutomat
     if f2 and currAutomat:
         automats[currAutomat].unir(automats[f2])
+        cambiar_Imagen(currAutomat)
         del automats[f2]
-        cambiar_Imagen()
     else:
         err_lbl_Operacion.config(text='')
 
@@ -150,7 +151,7 @@ for frame in (menuPrincipal, menuCrearBasico, menuOperacion, menuVerGrafo):
     frame.grid(row=0, column=0, sticky='news')
 
 # -----------------------------------------------------------------------Imagen
-filename = 'resources/Portada.jpg'
+filename = 'resources/Portada.png'
 bottomFrame = Frame(root, bg='black')
 bottomFrame.pack(side='left', fill='both', expand=1)
 Image.ImageWidow(bottomFrame, path=filename)
