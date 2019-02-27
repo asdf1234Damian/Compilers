@@ -105,19 +105,21 @@ class Automata:
                       directory='images', cleanup=False, format='png')
 
     # Regresa los estados alcanzables por transiciones epsilon desde cualquier estado en edos
-    def cEpsilon(self, edos, Cerr):
-        stack = []
-        stack = list(edos)
-        while len(stack) != 0:
-            edo = stack[0]
-            del stack[0]
-            Cerr.add(edo)
-            for t in self.estados[edo].transiciones.values():
-                if EPS in t.simbolos:
-                    stack+=t.destinos
-                    Cerr = Cerr.union(self.cEpsilon(set(stack), Cerr))
-                    Cerr = Cerr.union(set(stack))
-        return Cerr
+    def cEpsilon(self,edos):
+        res = []
+        i = 0 
+        while i != len(edos):
+            edo = self.estados[edos[i]]
+            if EPS in edo.transiciones.keys():
+                for d in edo.transiciones[EPS].destinos:
+                    if not d in edos:
+                        edos.append(d)
+                        res.append(d)
+            res.append(edos[i])
+            i+=1
+        return res
+
+
 
     def moverA(self, edos, s):  # edos debe ser un set o lista
         stack = []
@@ -128,18 +130,20 @@ class Automata:
                 for tr in self.estados[edo].transiciones.values():
                     if s in tr.simbolos:
                         result = result.union(set(tr.destinos))
-        return result
+        return list(result)
 
     def irA(self, edos, s):
-        return self.cEpsilon(self.moverA(edos, s), set({}))
+        return self.cEpsilon(self.moverA(edos, s))
 
     def pertenece(self, sigma):
-        edos = {self.inicial}
+        edos = [self.inicial]
         for s in sigma:
-            edos = self.irA(self.cEpsilon(edos, set()), s)
-            if (len(edos.intersection(set({self.final}))) == 0):
+            edos = self.irA(self.cEpsilon(edos), s)
+            if (len(edos)==0):
                 return False
+        if self.final in edos:
         return True
+        return False
 
     def opcional(self):  # ε
         # Se crean los nuevos estados iniciales y finales
@@ -259,7 +263,7 @@ class Automata:
             self.final = {self.final}
         with open(path, "w") as file:
             #Inicializa la tabla y el indice para recorrerla
-            S = [self.cEpsilon({self.inicial}, set())]
+            S = [self.cEpsilon([self.inicial])]
             currS = 0
             #Imprime el alfabeto primero 
             file.writelines(','.join(self.alf)+'\n')
@@ -268,7 +272,7 @@ class Automata:
                 #Guarda el nuevo estado
                 si = S[currS]
                 #Se empieza imprimiendo si es o no final
-                if si.intersection(self.final):
+                if set(si).intersection(self.final):
                     file.write('T ')
                 else:
                     file.write('N ')
@@ -290,3 +294,4 @@ class Automata:
                 currS += 1
         self = Automata('')
         self.crearDeTablas(path)
+
