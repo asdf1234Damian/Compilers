@@ -36,24 +36,13 @@ def cambiar_Imagen(id):
         err_lbl_VerGrafo.config(text = 'No existe autómata con esa ID')
 
 # Al crear un nuevo autómata, recibe el símbolo del área de texto del formulario
-<<<<<<< HEAD
-def basico(id,simbolo):
-    if len(simbolo)>10:
-        err_lbl_CrearBasico.config(text = 'Ingrese un símbolo válido')
-    else:
-        if id in automats.keys():
-            err_lbl_CrearBasico.config(text = 'Ya existe un autómata')
-        else:
-            automats[id] = AFND.Automata(simbolo)
-            #automats[id].basico(simbolo)
-=======
+
 def basico(id,exp):
     if (len(exp)):
         if id in automats.keys():
             err_lbl_CrearBasico.config(text = 'Ya existe un autómata')
         else:
             automats[id] = AFND.Automata(exp)
->>>>>>> d48bda5922550e435756fcf6b6ab418ba7804565
             cambiar_Imagen(id)
     else:
         err_lbl_CrearBasico.config(text = 'Ingrese un símbolo válido')
@@ -148,11 +137,7 @@ def Operaciones(operacion, f2 = None, sigma=''):
 # ----------------------------------------------------------------Crear ventana
 root = Tk()
 w, h = root.winfo_screenwidth(), root.winfo_screenheight()
-<<<<<<< HEAD
-root.geometry("%dx%d+0+0" % (w, h))
-=======
 root.attributes('-fullscreen', True)
->>>>>>> d48bda5922550e435756fcf6b6ab418ba7804565
 root.title("AFND")
 # -------------------------------------------------------------Menú de opciones
 container = Frame(root, bg="#496ba0",height='20')

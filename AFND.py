@@ -143,7 +143,7 @@ class Automata:
             if (len(edos)==0):
                 return False
         if self.final in edos:
-        return True
+            return True
         return False
 
     def opcional(self):  # ε
