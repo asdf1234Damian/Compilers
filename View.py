@@ -70,7 +70,15 @@ def unirM(seleccion):
             automats[currAutomat].unirM(seleccion)
             cambiar_Imagen(currAutomat)
         else:
-            err_lbl_Operacion.config(text='Seleccion invalida')
+             mainAutomata = keys[0]
+             keys.remove(keys[0])
+        automatasAUnir = []
+        for k in keys:
+            if k in automats.keys():
+                automatasAUnir.append(automats[k])
+        automats[mainAutomata].unirM(automatasAUnir)
+        currAutomat = mainAutomata
+        cambiar_Imagen(currAutomat)
     else:
         err_lbl_Operacion.config(text='Seleccion al menos 2 automatas')
 
@@ -103,6 +111,7 @@ def Pertenece(sigma):
     else:
         err_lbl_Operacion.config(text='Primero cree un automata')
 
+
 def CrearTabla(sigma):
 	global currAutomat
 	if currAutomat:
@@ -111,6 +120,16 @@ def CrearTabla(sigma):
 		#automats[currAutomat].crearDeTablas(currAutomat+'.txt')
 	else:
 		err_lbl_Operacion.config(text = "Primero cree un automata")
+    
+def Union(f2):
+    global currAutomat
+    if f2 and currAutomat:
+        automats[currAutomat].unir(automats[f2])
+        cambiar_Imagen(currAutomat)
+        del automats[f2]
+    else:
+        err_lbl_Operacion.config(text='')
+
 
 def Operaciones(operacion, f2 = None, sigma=''):
     global currAutomat
@@ -132,7 +151,7 @@ def Operaciones(operacion, f2 = None, sigma=''):
         else:
             err_lbl_Operacion.config(text='No existe ese autómata')
     else:
-            err_lbl_Operacion.config(text = 'No existe ese autómata')
+        err_lbl_Operacion.config(text = 'No existe ese autómata')
 
 # ----------------------------------------------------------------Crear ventana
 root = Tk()
@@ -291,5 +310,8 @@ err_lbl_VerGrafo.pack()
 
 # --------------------------------------------------------
 raise_frame(menuPrincipal)
+basico('F1', 'a')
+basico('F2', 'b')
+basico('F3', 'c')
 root.mainloop()
 AFND.delImages()
