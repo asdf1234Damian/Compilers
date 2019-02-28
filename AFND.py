@@ -285,11 +285,11 @@ class Automata:
                             S.append(sj)
                         file.write(str(S.index(sj))+' ')
                     else:#Si no, si no tiene transicion a sj
-                        file.writelines('- ')
+                        file.writelines('-1 ')
                 if set(si).intersection(self.final):
                     file.writelines(str((currS+1)*10)+'\n')
                 else:
-                    file.write('-1')
+                    file.write('-1\n')
                 currS += 1
         self = Automata('')
         self.crearDeTablas(path)
