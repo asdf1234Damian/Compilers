@@ -272,11 +272,6 @@ class Automata:
             while currS != len(S):
                 #Guarda el nuevo estado
                 si = S[currS]
-                #Se empieza imprimiendo si es o no final
-                if set(si).intersection(self.final):
-                    file.write('T ')
-                else:
-                    file.write('N ')
                 #Se imprime el nombre del nuevo estado
                 file.write('S'+str(currS)+' ')
                 #Sj es el resultado de irA de si con
@@ -291,7 +286,10 @@ class Automata:
                         file.write(str(S.index(sj))+' ')
                     else:#Si no, si no tiene transicion a sj
                         file.writelines('- ')
-                file.writelines(str((currS+1)*10)+'\n')
+                if set(si).intersection(self.final):
+                    file.writelines(str((currS+1)*10)+'\n')
+                else:
+                    file.write('-1')
                 currS += 1
         self = Automata('')
         self.crearDeTablas(path)
