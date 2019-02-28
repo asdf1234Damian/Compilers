@@ -102,6 +102,12 @@ class Lexic:
 		for alf in self.tabla[0]:
 			#Si el caracter se encuentra en el alfabeto
 			if c == alf:"""
+
+	def getLexema(self):
+		lex = ''
+		for i in range(self.iniLex, self.indAct - 1):
+			lex += self.txt[i]
+		return lex
 	
 
 t = readAFD("tab.txt")			
