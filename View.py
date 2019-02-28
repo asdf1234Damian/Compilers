@@ -55,9 +55,9 @@ def opcional():
     else:
         err_lbl_CrearBasico.config(text='Primero cree un automata')
 
-
 def unirM(seleccion):
     global currAutomat
+    seleccion = set()
     if len(seleccion)>1:
         keys = ['F'+str(i+1) for i in list(seleccion)]
         seleccion = []

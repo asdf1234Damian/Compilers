@@ -188,7 +188,7 @@ class Automata:
         self.inicial = nInicial
         #Copia transiciones
         for a in automatas:
-            self.exp += automatas.exp
+            self.exp += a.exp
             #Compia los simbolos de todos los automatas
             self.alf = self.alf.union(a.alf)
             #Une el nuevo inicial a todos los otros iniciales
