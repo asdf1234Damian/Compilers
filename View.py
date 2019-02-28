@@ -103,14 +103,14 @@ def Pertenece(sigma):
     else:
         err_lbl_Operacion.config(text='Primero cree un automata')
 
-def Union(f2):
-    global currAutomat
-    if f2 and currAutomat:
-        automats[currAutomat].unir(automats[f2])
-        cambiar_Imagen(currAutomat)
-        del automats[f2]
-    else:
-        err_lbl_Operacion.config(text='')
+def CrearTabla(sigma):
+	global currAutomat
+	if currAutomat:
+		path = str(currAutomat)+'.txt';
+		automats[currAutomat].conversion_A_Archivo(path)
+		#automats[currAutomat].crearDeTablas(currAutomat+'.txt')
+	else:
+		err_lbl_Operacion.config(text = "Primero cree un automata")
 
 def Operaciones(operacion, f2 = None, sigma=''):
     global currAutomat
@@ -147,6 +147,7 @@ menuPrincipal   = Frame(container)
 menuCrearBasico = Frame(container)
 menuOperacion   = Frame(container)
 menuVerGrafo    = Frame(container)
+menuCrearTabla   = Frame(container)
 
 for frame in (menuPrincipal, menuCrearBasico, menuOperacion, menuVerGrafo):
     frame.grid(row=0, column=0, sticky='news')
@@ -224,19 +225,9 @@ bttn_Cerr_Pos.button.config(command=lambda:cerrPos())
 bttn_Cerr_Pos = myButton("Cerradura de Kleene", menuOperacion)
 bttn_Cerr_Pos.button.config(command=lambda:cerrKle())
 
-lbl_Pertenece = Label(menuOperacion, text='Buscar símbolo', fg='white',
-                        bg="#354154", font=("Helvetica", 16))
-lbl_Pertenece.pack(fill='x')
-
-in_Sigma = Entry(menuOperacion, font=("Helvetica", 16), width=4)
-in_Sigma.pack()
-
-bttn_Cerr_Pos = myButton("Pertenece", menuOperacion)
-bttn_Cerr_Pos.button.config(command=lambda: Pertenece(sigma=in_Sigma.get()))
-
 lbl_Op_Binarias = Label(menuOperacion, text='Operaciones Binarias', fg='white',
                  bg="#354154", font=("Helvetica", 16))
-lbl_Op_Binarias.pack(fill='x', pady=(10,0) )
+lbl_Op_Binarias.pack(fill='x')
 
 lstbox_Binarias = Listbox(menuOperacion, height=4, font=("Helvetica", 16), selectmode='multiple')
 lstbox_Binarias.pack(fill='x')
@@ -253,6 +244,19 @@ bttn_Concat.button.config(command=lambda:Operaciones('Concat',lstbox_Binarias.ge
 
 bttn_UnirM = myButton("Unir selecciones", menuOperacion)
 bttn_UnirM.button.config(command=lambda: unirM(lstbox_Binarias.curselection()))
+
+lbl_Pertenece = Label(menuOperacion, text='Analiza una cadena', fg='white',
+                        bg="#354154", font=("Helvetica", 16))
+lbl_Pertenece.pack(fill='x')
+
+in_Sigma = Entry(menuOperacion, font=("Helvetica", 16), width=4)
+in_Sigma.pack(fill = "x")
+
+bttn_Cerr_Pos = myButton("Pertenece", menuOperacion)
+bttn_Cerr_Pos.button.config(command=lambda: Pertenece(sigma=in_Sigma.get()))
+
+bttn_CrearTabla = myButton("Crear tabla AFD", menuOperacion)
+bttn_CrearTabla.button.config(command=lambda: CrearTabla(sigma = in_Sigma.get()))
 
 bttn_back_Operacion = myButton("Volver al menú", menuOperacion)
 bttn_back_Operacion.button.config(command=lambda: raise_frame(menuPrincipal), bg = "#39547f" )
@@ -282,6 +286,8 @@ bttn_back_VerGrafo.button.config(command=lambda:raise_frame(menuPrincipal), bg =
 err_lbl_VerGrafo = Label(menuVerGrafo, text=" ", fg="red", bg="#496ba0",
 font=("Helvetica", 16))
 err_lbl_VerGrafo.pack()
+
+
 
 # --------------------------------------------------------
 raise_frame(menuPrincipal)
