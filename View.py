@@ -48,7 +48,7 @@ def basico(id,exp):
         err_lbl_CrearBasico.config(text = 'Ingrese un símbolo válido')
 
 def opcional():
-    global  currAutomat
+    global currAutomat
     if currAutomat:
         automats[currAutomat].opcional()
         cambiar_Imagen(currAutomat)
@@ -57,10 +57,10 @@ def opcional():
 
 def unirM(seleccion):
     global currAutomat
-    seleccion = set()
     if len(seleccion)>1:
         keys = ['F'+str(i+1) for i in list(seleccion)]
-        seleccion = []
+        #seleccion = []
+        seleccion = set()
         if  not currAutomat in keys:
             currAutomat = keys[0]
         for k in keys:
