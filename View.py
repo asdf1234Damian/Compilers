@@ -12,7 +12,7 @@ class myButton:
     def __init__(self, texto, frame):
         self.texto = texto
         self.button = Button(frame, text=texto, fg="white", bg="#496ba0",
-        activeforeground="#f2f4f7", activebackground="#354154", relief='flat', width=25, height=2,
+        activeforeground="#f2f4f7", activebackground="#354154", relief='flat', width=25, height=1,
         font=("Helvetica", 16))
         self.button.pack()
 
@@ -30,7 +30,7 @@ def cambiar_Imagen(id):
         automats[id].plot(id)
         Image.ImageWidow(bottomFrame, path='images/'+id+'.png')
         err_lbl_VerGrafo.config(text = '')
-        lbl_Sel.config(text=id)
+        #lbl_Sel.config(text=id)
         currAutomat = id
     else:
         err_lbl_VerGrafo.config(text = 'No existe autómata con esa ID')
@@ -60,12 +60,12 @@ def unirM(seleccion):
     global currAutomat
     if len(seleccion)>1:
         keys = ['F'+str(i+1) for i in list(seleccion)]
-        seleccion = set()
+        seleccion = []
         if  not currAutomat in keys:
             currAutomat = keys[0]
         for k in keys:
             if k != currAutomat and k in automats.keys():
-                seleccion.add(automats[k])
+                seleccion[k] = automats[k]
         if len(seleccion):
             automats[currAutomat].unirM(seleccion)
             cambiar_Imagen(currAutomat)
@@ -137,14 +137,11 @@ def Operaciones(operacion, f2 = None, sigma=''):
 # ----------------------------------------------------------------Crear ventana
 root = Tk()
 w, h = root.winfo_screenwidth(), root.winfo_screenheight()
-root.attributes('-fullscreen', True)
+root.geometry("%dx%d+0+0" % (w, h))
 root.title("AFND")
 # -------------------------------------------------------------Menú de opciones
 container = Frame(root, bg="#496ba0",height='20')
 container.pack(side='left', fill='both')
-lbl_Sel = Label(root,text='', fg='white',
-                bg="#354154", font=("Helvetica", 16))
-lbl_Sel.pack(fill='x')
 
 menuPrincipal   = Frame(container)
 menuCrearBasico = Frame(container)
@@ -162,7 +159,7 @@ Image.ImageWidow(bottomFrame, path=filename)
 
 # ---------------------------------------------------------------Menu Principal
 menuPrincipal.config(bg="#496ba0")
-lbl_ElegirOperacionP = Label(menuPrincipal, text='Elegir operacion', fg='white',
+lbl_ElegirOperacionP = Label(menuPrincipal, text='Seleccionar opción', fg='white',
                             bg="#354154", font=("Helvetica", 16))
 lbl_ElegirOperacionP.pack(fill='x')
 
@@ -183,13 +180,17 @@ lbl_CrearBasico.pack(fill='x')
 
 lbl_InsertSimb = Label(menuCrearBasico, text='Inserte su símbolo',
                         fg='white', bg="#354154", font=("Helvetica", 16))
-lbl_InsertSimb.pack(fill='x')
+lbl_InsertSimb.pack(fill='x', pady = ( 10, 10 ))
 
 inExp = Entry(menuCrearBasico, font=("Helvetica", 16), width=4)
-inExp.pack()
+inExp.pack(pady = (0, 10))
+
+lbl_SelAut = Label(menuCrearBasico, text='Seleccione una opción',
+                        fg='white', bg="#354154", font=("Helvetica", 16))
+lbl_SelAut.pack(fill = "x", pady = (0, 10))
 
 lstbox_Crear = Listbox(menuCrearBasico, width=25, height=4, font=("Helvetica", 16))
-lstbox_Crear.pack()
+lstbox_Crear.pack(pady = (0,10))
 
 for item in ["F1", "F2", "F3", "F4"]:
     lstbox_Crear.insert(END, item)
@@ -199,7 +200,7 @@ bttn_CrearBasico = myButton("Seleccionar", menuCrearBasico)
 bttn_CrearBasico.button.config(command=lambda: basico(lstbox_Crear.get(ACTIVE),inExp.get()))
 
 bttn_back_CrearBasico = myButton("Volver al menú", menuCrearBasico)
-bttn_back_CrearBasico.button.config(command=lambda: raise_frame(menuPrincipal))
+bttn_back_CrearBasico.button.config(command=lambda: raise_frame(menuPrincipal), bg = "#39547f")
 
 err_lbl_CrearBasico = Label(menuCrearBasico, text=" ", fg="red", bg="#496ba0",
 font=("Helvetica", 16))
@@ -212,7 +213,7 @@ lbl_ElegirOperacionO = Label(menuOperacion, text='Elegir operacion', fg='white',
 lbl_ElegirOperacionO.pack(fill='x')
 lbl_Op_Unarias = Label(menuOperacion, text='Operaciones Unarias', fg='white',
                  bg="#354154", font=("Helvetica", 16))
-lbl_Op_Unarias.pack(fill='x')
+lbl_Op_Unarias.pack(fill='x', pady=(10,0))
 
 bttn_Opcional = myButton("Opcional", menuOperacion)
 bttn_Opcional.button.config(command=lambda:opcional())
@@ -223,19 +224,19 @@ bttn_Cerr_Pos.button.config(command=lambda:cerrPos())
 bttn_Cerr_Pos = myButton("Cerradura de Kleene", menuOperacion)
 bttn_Cerr_Pos.button.config(command=lambda:cerrKle())
 
-in_Sigma = Entry(menuOperacion, font=("Helvetica", 16), width=4)
-in_Sigma.pack()
-
-lbl_Pertenece = Label(menuOperacion, text='', fg='white',
+lbl_Pertenece = Label(menuOperacion, text='Buscar símbolo', fg='white',
                         bg="#354154", font=("Helvetica", 16))
 lbl_Pertenece.pack(fill='x')
+
+in_Sigma = Entry(menuOperacion, font=("Helvetica", 16), width=4)
+in_Sigma.pack()
 
 bttn_Cerr_Pos = myButton("Pertenece", menuOperacion)
 bttn_Cerr_Pos.button.config(command=lambda: Pertenece(sigma=in_Sigma.get()))
 
 lbl_Op_Binarias = Label(menuOperacion, text='Operaciones Binarias', fg='white',
                  bg="#354154", font=("Helvetica", 16))
-lbl_Op_Binarias.pack(fill='x', pady=(50,0) )
+lbl_Op_Binarias.pack(fill='x', pady=(10,0) )
 
 lstbox_Binarias = Listbox(menuOperacion, height=4, font=("Helvetica", 16), selectmode='multiple')
 lstbox_Binarias.pack(fill='x')
@@ -254,7 +255,7 @@ bttn_UnirM = myButton("Unir selecciones", menuOperacion)
 bttn_UnirM.button.config(command=lambda: unirM(lstbox_Binarias.curselection()))
 
 bttn_back_Operacion = myButton("Volver al menú", menuOperacion)
-bttn_back_Operacion.button.config(command=lambda: raise_frame(menuPrincipal))
+bttn_back_Operacion.button.config(command=lambda: raise_frame(menuPrincipal), bg = "#39547f" )
 
 err_lbl_Operacion = Label(menuOperacion, text=" ", fg="red", bg="#496ba0",
 font=("Helvetica", 16))
@@ -276,7 +277,7 @@ buttonVer = myButton("Ver", menuVerGrafo)
 buttonVer.button.config(command=lambda:cambiar_Imagen(lstboxVG.get(ACTIVE)))
 
 bttn_back_VerGrafo = myButton("Volver al menú", menuVerGrafo)
-bttn_back_VerGrafo.button.config(command=lambda:raise_frame(menuPrincipal))
+bttn_back_VerGrafo.button.config(command=lambda:raise_frame(menuPrincipal), bg = "#39547f")
 
 err_lbl_VerGrafo = Label(menuVerGrafo, text=" ", fg="red", bg="#496ba0",
 font=("Helvetica", 16))
