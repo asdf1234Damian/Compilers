@@ -142,8 +142,17 @@ class Automata:
             edos = self.irA(self.cEpsilon(edos), s)
             if (len(edos)==0):
                 return False
+<<<<<<< Updated upstream
         if self.final in edos:
             return True
+=======
+        if isinstance(self.final,int):
+            if self.final in edos:
+                return True
+        else: 
+            if len(set(self.final).intersection(edos)):
+                return True
+>>>>>>> Stashed changes
         return False
 
     def opcional(self):  # ε
@@ -177,7 +186,7 @@ class Automata:
         self.estados[self.final].final = False
         self.final = f2.final
 
-    def unirM(self, *automatas):
+    def unirM(self,  automatas):
         self.exp = ''
         finales = [self.final]
         #Crea el nuevo estado inicial
@@ -197,7 +206,7 @@ class Automata:
             self.estados[nInicial]
             self.estados.update(a.estados)
             finales.append(a.final)
-            self.final=finales
+        self.final=finales
 
     def unir(self, f2):
         # Se actualiza la expresion
