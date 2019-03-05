@@ -79,3 +79,6 @@ class Lexic:
 	def returnToken(self):
 		self.indAct = self.iniLex
 		self.estadoAct = 0
+		
+	def getLexema(self):
+		return self.txt[self.indAct - 1]
