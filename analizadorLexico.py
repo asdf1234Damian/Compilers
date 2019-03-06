@@ -1,40 +1,29 @@
-def readText(path):
-	txt = []
-	with open(path, "r") as file:
-		for line in file:
-			for l in line:
-				txt.append(l)
-	return txt
-
 class Lexic:
-	def __init__(self, tab_path, txt):
-		self.tabla = []
-		self.readAFD(tab_path)
-		self.txt = txt
-		self.iniLex = 0
-		self.indAct = 0
-		self.finLex = 0
-		self.estadoAct = 0
-
-	def readAFD(self, path):
-		tab = []
-		aux = []
-		cont = 0
-		flag = 0
-		with open(path, "r") as file:
+	def __init__(self, tab_path, txt_path):
+		#Inicializacion
+		#Estas variables NO dependen de los argumentos del constructor
+		self.indAct = 0 #Indice Actual
+		self.iniLex = 0 #Inicio del lexema
+		self.finLex = 0 #Fin del lexema
+		self.estadoAct = 0 #Estado Actual
+		# Se recuperan la tabla y el alfabeto del archivo tab_path
+		self.tab = []
+		self.alf = []
 			#Se obtienen todas la lineas del archivo
+		with open(tab_path, "r") as file:
+			#Se convierte en un arreglo de lineas en vez de un archivo
+			file = file.readlines()
+			#La primer linea es el alfabeto separado por espacios
+			self.alph = file[0].split()
+			#A partir de la segunda linea ([1:]) son las transiciones
+			for line in file[1:]:
+				# Se separa por espacios y se omite el primer elemento y se guarda en el auxiliar
+				self.tab.append(line.split()[1:])
+		# Se recupera el texto del archivo txt
+		self.txt = []
+		with open(txt_path, "r") as file:
 			for line in file:
-				#Se obtiene cada caracter de cada linea
-				if len(tab) != 0:
-					aux = line.split()
-					aux[0] = aux[0].replace('S', '')
-				else:
-					aux = line.split(',')
-					aux[-1] = aux[-1].replace("\n", '')
-				#Se agrega la lista a la tabla
-				tab.append(aux.copy())
-				aux.clear()
-		self.tabla = tab
+				self.txt += (list(line))	
 
 	def getToken(self):
 		aux = 0

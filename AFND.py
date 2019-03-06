@@ -271,7 +271,7 @@ class Automata:
             S = [self.cEpsilon([self.inicial])]
             currS = 0
             #Imprime el alfabeto primero 
-            file.writelines(','.join(self.alf)+'\n')
+            file.writelines(' '.join(self.alf)+'\n')
             #Mientras no haya llegado al ultimo estado
             while currS != len(S):
                 #Guarda el nuevo estado
@@ -289,11 +289,11 @@ class Automata:
                             S.append(sj)
                         file.write(str(S.index(sj))+' ')
                     else:#Si no, si no tiene transicion a sj
-                        file.writelines('-1 ')
+                        file.writelines('- ')
                 if set(si).intersection(self.final):
                     file.writelines(str((currS+1)*10)+'\n')
                 else:
-                    file.write('-1\n')
+                    file.write('-\n')
                 currS += 1
         self = Automata('')
         self.crearDeTablas(path)
