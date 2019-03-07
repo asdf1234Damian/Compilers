@@ -51,13 +51,13 @@ class Automata:
             for linea in f[1:]:
                 linea = linea.split()
                 #El ultimo elemento de la linea es el token; numero entero positivo, si es un -, entonces no es final y no le corresponde un token
-                terminal = linea[-1] != '-'
+                terminal = linea[-1] != '-1'
                 # El segundo es el nombre del estado o nodo
                 nodeName = linea[0]
                 #Crea el estado
                 self.estados[nodeName] = Estado(terminal)
                 for i in range(len(self.alf)):
-                    if linea[i+1] != '-':
+                    if linea[i+1] != '-1':
                         simb = self.alf[i]
                         fin = 'S'+linea[i+1]
                         self.estados[nodeName].addTransicion(simb, simb, fin)
@@ -290,11 +290,11 @@ class Automata:
                             S.append(sj)
                         file.write(str(S.index(sj))+' ')
                     else:#Si no, si no tiene transicion a sj
-                        file.writelines('- ')
+                        file.writelines('-1 ')
                 if set(si).intersection(self.final):
                     file.writelines(str((currS+1)*10)+'\n')
                 else:
-                    file.write('-\n')
+                    file.write('-1\n')
                 currS += 1
         self = Automata('')
         self.crearDeTablas(path)
