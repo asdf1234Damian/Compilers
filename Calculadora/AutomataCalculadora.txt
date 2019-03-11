@@ -1,0 +1,57 @@
+#Calculadora
+f1 = Automata('+')
+f2 = Automata('-')
+f3 = Automata('*')
+f4 = Automata('/')
+f5 = Automata('^')
+f6 = Automata('(')
+f7 = Automata(')')
+
+#Numero
+f8 = Automata("0-9")
+f8.cerradura_positiva()
+f10 = Automata('.')
+f10.concat(f8)
+f10.opcional()
+f9 = Automata("0-9")
+f9.concat(f10)
+
+#Expresiones matematicas
+#Seno
+f11 = Automata('s')
+f12 = Automata('i')
+f13 = Automata('n')
+f11.concat(f12)
+f11.concat(f13)
+#Coseno
+f14 = Automata('c')
+f15 = Automata('o')
+f16 = Automata('s')
+f14.concat(f15)
+f14.concat(f16)
+#Tangente
+f17 = Automata('t')
+f18 = Automata('a')
+f19 = Automata('n')
+f17.concat(f18)
+f17.concat(f19)
+#Logaritmo natural
+f20 = Automata('l')
+f21 = Automata('n')
+f20.concat(f21)
+#Logaritmo
+f22 = Automata('l')
+f23 = Automata('o')
+f24 = Automata('g')
+f22.concat(f23)
+f22.concat(f24)
+#Exponencial
+f25 = Automata('e')
+f26 = Automata('x')
+f27 = Automata('p')
+f25.concat(f26)
+f25.concat(f27)
+
+#Automata final
+f1.unirM(f2, f3, f4, f5, f6, f7, f9, f11, f14, f17, f20, f22, f25)
+f1.conversion_A_Archivo("tab.txt")
