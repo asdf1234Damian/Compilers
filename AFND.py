@@ -31,65 +31,67 @@ class Estado:
         self.addTransicion(EPS,{EPS},dest)
 
 class Automata:
+    #Variable estatica de la clase para que los nodos sigan una secuencia
     nxtNode = 0
-    # El alfabeto puede venir dividido por comas o en un rango separado por un guion, sin espacios en ambos casos.
-    def __init__(self, exp):
+    #Si existe un path, se crea basado en el archivo 
+    def __init__(self, exp,path=None):
+        #Inicializacion de variables
         self.exp  = exp
         self.G = Digraph()
         self.estados = {}  # Enteros
         self.alf = set()
-        if len(exp)==0:
-            self.inicial = None
-            self.final = None
+        #Caso, crear de archivo
+        if path:
+            #La primer linea del archivo es el alfabeto
+            f = open(path, "r").readlines()
+            self. alf = f[0].split()
+            # El estado inicial esta en la linea 2 en la segunda posicion
+            self.inicial = f[1].split()[0]
+            #las lineas de 1 en adelante son los estados y transicones
+            for linea in f[1:]:
+                linea = linea.split()
+                #El ultimo elemento de la linea es el token; numero entero positivo, si es un -, entonces no es final y no le corresponde un token
+                terminal = linea[-1] != '-1'
+                # El segundo es el nombre del estado o nodo
+                nodeName = linea[0]
+                #Crea el estado
+                self.estados[nodeName] = Estado(terminal)
+                for i in range(len(self.alf)):
+                    if linea[i+1] != '-1':
+                        simb = self.alf[i]
+                        fin = 'S'+linea[i+1]
+                        self.estados[nodeName].addTransicion(simb, simb, fin)
             return
+        #Creado desde la expresion
         self.inicial = Automata.nxtNode
         self.final = Automata.nxtNode+1
         self.estados[self.inicial] = Estado(False)
         self.estados[self.final] = Estado(True)
         Automata.nxtNode += 2
+        #Caso basico
         if len(exp) == 1 :
             self.alf = {exp}
         else:
+            #Rangos
             if exp.count('-'):
                 inicio, fin = [ord(x) for x in exp.split('-')]
                 for simb in range(inicio,fin+1):
                     self.alf.add(chr(simb))
+            #Separado por comas
             else:
                 self.alf = set(exp.split(','))
         self.estados[self.inicial].addTransicion(exp,self.alf,self.final)
 
-
+    #Funcion para imprimir los estados y transiciones del automata
     def print(self):
         for origen, destino in self.estados.items():
             print('Origen: ', origen)
             for exp, trns in destino.transiciones.items():
                 print('\t', exp, ':= {', ','.join(
                     trns.simbolos), '} ->', trns.destinos, sep='')
-
-    def crearDeTablas(self, path):
-        #La primer linea del archivo es el alfabeto
-        # self.exp=path[:-4]
-        f = open(path, "r").readlines()
-        self. alf = f[0].replace('\n','').split(',')
-        # El estado inicial esta en la linea 2 en la segunda posicion
-        self.inicial = f[1].replace('\n', '').split()[1]
-        #las lineas de 1 en adelante son los estados y transicones
-        for linea in f[1:]:
-            linea = linea.replace('\n','').split()
-            #El primer elemento de la linea es el tipo ((T)erminal/(N)o terminal)
-            #Se compara a 'T' para convertirlo a booleano
-            terminal = linea[0] == 'T'
-            # El segundo es el nombre del estado o nodo
-            nodeName = linea[1] 
-            #Crea el estado
-            self.estados[nodeName] = Estado(terminal)
-            for i in range(len(self.alf)):
-                if linea[i+2] != '-':
-                    simb = self.alf[i]
-                    fin = 'S'+linea[i+2]
-                    self.estados[nodeName].addTransicion(simb,simb,fin)
-
-    def plot(self,id):
+    
+    #Funcion para crear la imagen dado el nombre del archivo. Se guarda en images
+    def plot(self,path):
         self.G.clear()
         #Esto se cambia para cambiar el tamaño de la imagen 
         self.G.attr(ratio='fill', size='3.8,2.77',
@@ -102,7 +104,7 @@ class Automata:
                 for dest in trns.destinos:
                     self.G.edge(str(origin), str(dest), label=exp)
         self.G.node('S', label=None, shape='point', )
-        self.G.render(filename=id, view=False,
+        self.G.render(filename=path, view=False,
                       directory='images', cleanup=True, format='png')
 
     # Regresa los estados alcanzables por transiciones epsilon desde cualquier estado en edos
@@ -119,8 +121,6 @@ class Automata:
             res.append(edos[i])
             i+=1
         return res
-
-
 
     def moverA(self, edos, s):  # edos debe ser un set o lista
         stack = []
@@ -264,6 +264,7 @@ class Automata:
         self.final = nFinal
 
     def conversion_A_Archivo(self, path):
+        #Checa si solo hay un estado final
         if isinstance(self.final,int):
             self.final = {self.final}
         with open(path, "w") as file:
@@ -271,7 +272,7 @@ class Automata:
             S = [self.cEpsilon([self.inicial])]
             currS = 0
             #Imprime el alfabeto primero 
-            file.writelines(','.join(self.alf)+'\n')
+            file.writelines(' '.join(self.alf)+'\n')
             #Mientras no haya llegado al ultimo estado
             while currS != len(S):
                 #Guarda el nuevo estado

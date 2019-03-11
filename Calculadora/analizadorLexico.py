@@ -2,8 +2,8 @@ class Lexic:
 	def __init__(self, tab_path, txt_path):
 		#Inicializacion
 		#Estas variables NO dependen de los argumentos del constructor
-		self.indAct = 0  # Indice Actual
-		self.iniLex = 0  # Inicio del lexema
+		self.indAct = 0 #Indice Actual
+		self.iniLex = 0 #Inicio del lexema
 		# Se recuperan la tabla y el alfabeto del archivo tab_path
 		self.tab = []
 		self.alf = []
@@ -58,6 +58,6 @@ class Lexic:
 
 	def returnToken(self):
 		self.indAct = self.iniLex
-
+		
 	def getLexema(self):
 		return self.txt[self.indAct - 1]
