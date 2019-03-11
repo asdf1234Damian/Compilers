@@ -1,5 +1,6 @@
 import matplotlib.pyplot as plt
 import glob
+import string
 from graphviz import Digraph
 import os
 os.environ["PATH"] += os.pathsep + 'C:/Program Files (x86)/Graphviz2.38/bin/'
@@ -76,7 +77,8 @@ class Automata:
             if exp.count('-'):
                 inicio, fin = [ord(x) for x in exp.split('-')]
                 for simb in range(inicio,fin+1):
-                    self.alf.add(chr(simb))
+                    if simb in range(inicio,fin+1)
+                        self.alf.add(chr(simb))
             #Separado por comas
             else:
                 self.alf = set(exp.split(','))
@@ -296,5 +298,5 @@ class Automata:
                 else:
                     file.write('-1\n')
                 currS += 1
-        self = Automata('')
-        self.crearDeTablas(path)
+        #self = Automata('')
+        #self.crearDeTablas(path)
