@@ -142,17 +142,12 @@ class Automata:
             edos = self.irA(self.cEpsilon(edos), s)
             if (len(edos)==0):
                 return False
-<<<<<<< Updated upstream
-        if self.final in edos:
-            return True
-=======
         if isinstance(self.final,int):
             if self.final in edos:
                 return True
         else: 
             if len(set(self.final).intersection(edos)):
                 return True
->>>>>>> Stashed changes
         return False
 
     def opcional(self):  # ε
