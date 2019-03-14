@@ -36,7 +36,7 @@ class Gramatica:
 	def first(self, izq):
 		#res será el resultado 
 		res = []
-		#En orig se guardan todos los no terminales de izq
+		#En orig se guardan todos los elementos de izq
 		orig = []
 		for noTer in izq.split():
 			orig.append(noTer)
