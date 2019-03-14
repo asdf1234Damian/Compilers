@@ -1,0 +1,10 @@
+E -> T Ep
+Ep -> + T Ep 
+Ep -> - T Ep 
+Ep -> eps 
+T -> F Tp
+Tp -> * F Tp 
+Tp -> / F Tp 
+Tp -> eps 
+F -> ( E )
+F -> num
