@@ -6,7 +6,7 @@ class Gramatica:
 		self.raiz = None
 		#Crea el diccionario de reglas segun el archivo
 		with open(path, "r") as file:
-			file = file.readlines()	
+			file = file.readlines()
 			# El estado inciial es el primer elemento en la primer linea
 			self.raiz = file[0].split()[0]
 			#Set con todos los simbolos en la gramatica, terminales y no terminales
@@ -25,6 +25,8 @@ class Gramatica:
 				else:
 					self.reglas[izq] = [der]
 			self.terminales = simbolos - self.noTerminales
+			if not 'eps' in self.terminales:
+				self.terminales.add('eps')
 			# print('Raiz', self.raiz)
 			# print('Terminales',self.terminales)
 			# print('No Terminales', self.noTerminales)
@@ -33,62 +35,27 @@ class Gramatica:
 			# 	for i in self.reglas[r]:
 			# 		print(r,'->' ,''.join(i))
 
-	def first(self, izq):
-		#res será el resultado 
-		res = []
-		#En orig se guardan todos los elementos de izq
-		orig = []
-		for noTer in izq.split():
-			orig.append(noTer)
-		
-		#Si es terminal diferente de epsilon, regresa el elemento
-		if orig[0] in self.terminales and orig[0] != 'eps':
-			res.append(orig[0])
-			return res
-		
-		#Si es epsilon
-		elif orig[0] == 'eps':
-			#Si solamente es epsilon, se regresa 
-			if len(orig) < 2:
-				res.append(orig[0])
-				return res
-			#Si tiene algún no terminal a la derecha se regresa el first del no terminal y epsilon
-			else:
-				f = self.first(orig[1])
-				for sim in f:
-					res.append(sim)
-				res.append('eps')
-				return res
+	def first(self, simb):
+        # res será el resultado
+        res = []
+        # Se limpia la entrada
+        if isinstance(simb, str):
+            simb = list(set(simb.split()))
+        if 'eps' in simb:
+            res.append('eps')
+            simb.remove('eps')
+        # Mientras simb tenga un elementos (despues de borrar eps)
+        if len(simb):
+            # Si encuentra un terminal, regresa el resultado
+            if simb[0] in self.terminales:
+                res.append(simb[0])
+                return res
+            # Si no, busca las reglas donde el simbolo esta en la izq
+            for der in self.reglas[simb[0]]:
+                res += self.first(der + simb[1:])
+        return list(set(res))
 
-		#En caso de que sea un no terminal
-		else:
-			#Cadena auxiliar que se mandara como argumento a first() 
-			cad_aux = ''
-			#Ladoe derechos de las reglas de produccion del primer no terminal 
-			der = self.reglas[orig[0]]
-			for reg in der:
-				#Se pasan a cadena las reglas del lado derecho
-				for i in reg:	
-					cad_aux += i
-					cad_aux +=' '
-				j = 1
-				#Se concatenan a cad_aux los no terminales que queden en orig
-				while j < len(orig):
-					cad_aux += orig[j]
-					cad_aux += ' '
-					j += 1
-				#Se obtiene el first de la cadena
-				f = self.first(cad_aux)
-				#Si f consta de mas elementos que 1
-				if len(f) > 1:
-					for sim in f:
-						res.append(sim)
-				else:
-					res.append(f[0])
-				cad_aux = ''
-			#Se eliminan simbolos iguales con set y se mandan en una lista
-			return list(set(res))
-			
+
 
 	def follow(self, noTerminal):
 		#if 
