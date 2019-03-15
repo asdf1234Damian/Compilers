@@ -24,36 +24,30 @@ class Gramatica:
 					self.reglas[izq].append(der)
 				else:
 					self.reglas[izq] = [der]
+			#Se calcula terminales
 			self.terminales = simbolos - self.noTerminales
 			if not 'eps' in self.terminales:
 				self.terminales.add('eps')
-			# print('Raiz', self.raiz)
-			# print('Terminales',self.terminales)
-			# print('No Terminales', self.noTerminales)
-			# print('Reglas')
-			# for r in self.reglas.keys():
-			# 	for i in self.reglas[r]:
-			# 		print(r,'->' ,''.join(i))
 
 	def first(self, simb):
-        # res será el resultado
-        res = []
+		# res será el resultado
+		res = []
         # Se limpia la entrada
-        if isinstance(simb, str):
-            simb = list(set(simb.split()))
-        if 'eps' in simb:
-            res.append('eps')
-            simb.remove('eps')
-        # Mientras simb tenga un elementos (despues de borrar eps)
-        if len(simb):
+		if isinstance(simb, str):
+			simb = list(set(simb.split()))
+		if 'eps' in simb:
+			res.append('eps')
+			simb.remove('eps')
+		# Mientras simb tenga un elementos (despues de borrar eps)
+		if len(simb):
             # Si encuentra un terminal, regresa el resultado
-            if simb[0] in self.terminales:
-                res.append(simb[0])
-                return res
+			if simb[0] in self.terminales:
+				res.append(simb[0])
+				return res
             # Si no, busca las reglas donde el simbolo esta en la izq
-            for der in self.reglas[simb[0]]:
-                res += self.first(der + simb[1:])
-        return list(set(res))
+			for der in self.reglas[simb[0]]:
+				res += self.first(der + simb[1:])
+		return list(set(res))
 
 
 
