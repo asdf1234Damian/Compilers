@@ -1,3 +1,12 @@
+import itertools
+EPS = 'ε'
+
+#Funcion para eliminar repeticiones sin usar set
+def delRep(l):
+	l = list(l)
+	l.sort()
+	return list(l for l,_ in itertools.groupby(l))
+
 class Gramatica:
 	def __init__(self, path):
 		self.reglas = {}
@@ -26,67 +35,66 @@ class Gramatica:
 					self.reglas[izq] = [der]
 			#Se calcula terminales
 			self.terminales = simbolos - self.noTerminales
-			if not 'eps' in self.terminales:
-				self.terminales.add('eps')
+			if not EPS in self.terminales:
+				self.terminales.add(EPS)
+			self.terminales = delRep(self.terminales)
+			self.noTerminales = delRep(self.noTerminales)
+
+
+	def print(self):
+		# print('Raiz:', self.raiz)
+		# print('Vt:', self.terminales)
+		# print('Vn:', self.noTerminales)
+		print(''.rjust(50,'-'))
+		for izq,derArr in self.reglas.items():
+			for der in derArr:
+				print(izq, der )
+		print(''.rjust(50,'-'))
 
 	def first(self, simb):
 		# res será el resultado
 		res = []
         # Se limpia la entrada
 		if isinstance(simb, str):
-			simb = list(set(simb.split()))
-		if 'eps' in simb:
-			res.append('eps')
-			simb.remove('eps')
+			simb = list(simb.split())
+		if EPS in simb:
+			res.append(EPS)
+			simb.remove(EPS)
 		# Mientras simb tenga un elementos (despues de borrar eps)
 		if len(simb):
             # Si encuentra un terminal, regresa el resultado
 			if simb[0] in self.terminales:
 				res.append(simb[0])
-				return res
+				return delRep(res)
             # Si no, busca las reglas donde el simbolo esta en la izq
 			for der in self.reglas[simb[0]]:
 				res += self.first(der + simb[1:])
-		return list(set(res))
+		return delRep(res)
 
 
-
-	def follow(self, noTerminal):
-		#if 
-		follow = set()
-		aux = set()
-		stackFollows = []
-		if noTerminal == self.raiz:
-			follow.add('ε')
-		else:
-			for izq, der in self.reglas.items():
-				for reg in der:
-					if noTerminal in reg:
-						aux.add(izq)
-			#print(aux)
-			"""for noTer in aux:
-				for reg in self.reglas[noTer]:
-					print(reg)
-					i = 0
-					while i<len(reg):
-						if reg[i] == noTerminal:
-							print(reg[i])
-							if reg[i+1] != '\0':
-								print(reg[i+1])
-								follow.add(self.first(reg[i+1]))
-								print(follow)
-								if 'ε' in self.first(reg[i+1]):
-									stackFollows.add(noTer)
-									if stackFollows[-1] != stackFollows[-2]: 
-										self.follow(noTer)
-									else:
-										stackFollows.pop()
-							else:
-								stackFollows.add(noTer)
-								if stackFollows[-1] != stackFollows[-2]: 
-									self.follow(noTer)
-						i += 1
-			print(follow)"""
+	# alpha - > gamma A beta
+	def follow(self, A, stack =[]):
+		fllwA = []
+		if A in stack:
+			stack=[]
+			return delRep(fllwA)
+		stack.append(A)
+		if A == self.raiz:
+			fllwA.append('$')
+		for alpha, derArr in self.reglas.items():
+			for der in derArr:
+				if A in der:
+					i = der.index(A)
+					beta=der[i+1:]
+					if len(beta):
+						frstB = self.first(beta)
+						fllwA += frstB
+						if EPS in frstB:
+							fllwA += self.follow(alpha,stack)
+					else:
+						fllwA += self.follow(alpha,stack)
+		stack=[]
+		return delRep(fllwA)
 
 
 
