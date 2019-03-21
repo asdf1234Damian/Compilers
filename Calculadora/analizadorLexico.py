@@ -24,13 +24,14 @@ class Lexic:
 				self.txt += (list(line))
 
 	def getToken(self):
+		finLex = 0
 		estadoAct = 0
 		estadoSig = 0
 		token = -1
 		existTrans = True
 		#Se indica el inicio del lexema con la posición actual de la cadena a analizar
 		self.iniLex = self.indAct
-		while token == -1 or existTrans:
+		while (token == -1 and finLex == 0) or (token != -1 and finLex != 0):
 			#Cuando se llegue al final de la cadena
 			if self.indAct >= len(self.txt):
 				return token
@@ -43,21 +44,30 @@ class Lexic:
 				#Se obtiene el estado al que se pasará
 				estadoSig = int(self.tab[estadoAct][indice])
 				#Se obtiene el token correspondiente al estado
-				token = int(self.tab[estadoSig][-1])
-				if estadoSig == -1 or token != -1:
-					existTrans = False
-				#Se cambia el valor del estado en que nos encontramos
 				if estadoSig != -1:
+					token = int(self.tab[estadoSig][-1])
+					#Se indica que no es el fin del lexema
+					finLex = 0
+					#Se cambia el valor del estado en que nos encontramos
 					estadoAct = estadoSig
+				else:
+					token = -1
+				#Se indica el fin del lexema
+				if token != -1:
+					finLex = token
 			#Si el caracter que sigue no se encuentra en la tabla
 			else:
 				existTrans = False
 			#Se incrementa el índice del caracter a analizar en la cadena
 			self.indAct += 1
-		return token
+		self.indAct -= 1
+		return finLex
 
 	def returnToken(self):
 		self.indAct = self.iniLex
 		
 	def getLexema(self):
-		return self.txt[self.indAct - 1]
+		lexema = ""
+		for i in range (self.iniLex, self.indAct):
+			lexema += self.txt[i]
+		return lexema
