@@ -16,7 +16,7 @@ class Gramatica:
 		#Crea el diccionario de reglas segun el archivo
 		with open(path, "r") as file:
 			file = file.readlines()
-			# El estado inciial es el primer elemento en la primer linea
+			# El estado incial es el primer elemento en la primer linea
 			self.raiz = file[0].split()[0]
 			#Set con todos los simbolos en la gramatica, terminales y no terminales
 			simbolos = set()
@@ -101,5 +101,5 @@ class Gramatica:
 
 
 g  = Gramatica('testFiles/Gramatica.txt')
-print(g.first('Ep Tp'))
-g.follow('T')
+print(g.first('E'))
+print(g.follow('F'))

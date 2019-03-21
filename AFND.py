@@ -77,7 +77,7 @@ class Automata:
             if exp.count('-'):
                 inicio, fin = [ord(x) for x in exp.split('-')]
                 for simb in range(inicio,fin+1):
-                    if simb in range(inicio,fin+1)
+                    if simb in range(inicio,fin+1):
                         self.alf.add(chr(simb))
             #Separado por comas
             else:
