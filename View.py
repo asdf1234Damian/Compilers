@@ -310,8 +310,13 @@ err_lbl_VerGrafo.pack()
 
 # --------------------------------------------------------
 raise_frame(menuPrincipal)
-basico('F1', 'a')
-basico('F2', 'b')
-basico('F3', 'c')
+"""basico('F1', 'D')
+cerrPos()
+basico('F2', 'D')
+cerrPos()
+basico('F3', '.')
+automats['F3'].concat(automats['F2'])
+opcional()
+automats['F3'].concat(automats['F2'])"""
 root.mainloop()
-AFND.delImages()
+#AFND.delImages()
