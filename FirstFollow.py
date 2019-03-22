@@ -130,8 +130,39 @@ class Gramatica:
 				for s in f:
 					self.tabla[izq][s] = (der[:]+[','+str(i)])
 
+	def analyze(self, cad):
+		cad =cad+'$'
+		stack = ['$', self.raiz]
+		print('-'*85)
+		print('|','Analisis lexico'.center(81),'|')
+		print('-'*85)
+		while len(stack) and len(cad):
+			print((' '.join(stack)).ljust(30),end='| ')
+			print((' '.join(cad)).ljust(50),'|')
+			sp = stack.pop()
+			simb  = cad [0]
+			if sp == EPS:
+				pass
+			elif (sp in self.terminales):
+				if simb == sp:
+					if simb == '$':
+						return True
+					cad = cad[1:]
+				else:
+					return False
+			else:
+				if not simb in self.terminales:
+					return False
+				contTabla  = self.tabla[sp][simb][:-1]
+				if(len(contTabla)):
+					stack += contTabla[::-1]
+				else:
+					return False
+		return False
+
+
 
 
 g  = Gramatica('testFiles/Gramatica.txt')
-print(g.first('Ep Tp'))
-g.follow('T')
+g.print()
+print(g.analyze('n+n*(n-n)'))

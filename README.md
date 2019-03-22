@@ -1,5 +1,5 @@
 # Compilers
 ## Pemndientes:
 
-* Tabla de analisis lexico
+* Gramatica de gramaticas ()
 * Rehacer GUI con clases
