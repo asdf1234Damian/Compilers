@@ -9,6 +9,7 @@ def delRep(l):
 
 class Gramatica:
 	def __init__(self, path):
+		self.tabla = {}
 		self.reglas = {}
 		self.terminales = set()
 		self.noTerminales = set()
@@ -33,25 +34,41 @@ class Gramatica:
 					self.reglas[izq].append(der)
 				else:
 					self.reglas[izq] = [der]
+
 			#Se calcula terminales
 			self.terminales = simbolos - self.noTerminales
 			if not EPS in self.terminales:
 				self.terminales.add(EPS)
+			self.terminales.add('$')
 			self.terminales = delRep(self.terminales)
 			self.noTerminales = delRep(self.noTerminales)
+			self.genTabla()
 
 
 	def print(self):
-		# print('Raiz:', self.raiz)
-		# print('Vt:', self.terminales)
-		# print('Vn:', self.noTerminales)
+		print('Raiz:', self.raiz)
+		print('Vt:', self.terminales)
+		print('Vn:', self.noTerminales)
 		print(''.rjust(50,'-'))
 		for izq,derArr in self.reglas.items():
 			for der in derArr:
 				print(izq, der )
 		print(''.rjust(50,'-'))
+		terminales = self.terminales[:]
+		terminales.remove(EPS)
+		terminales.append('$')
+		print(''.center(6),'|',end = '')
+		for t in terminales:
+			print(t.center(6),'|',end = '')
+		print()
+		for x in self.noTerminales:
+			print('-'*8*(len(terminales)+1))
+			print(x.center(6),'|',end = '')
+			for y in terminales:
+				print((''.join(self.tabla[x][y][:-1])).center(6),'|',end = '')
+			print()
 
-	def first(self, simb):
+	def first(self, simb,getDer):
 		# res será el resultado
 		res = []
         # Se limpia la entrada
@@ -68,15 +85,16 @@ class Gramatica:
 				return delRep(res)
             # Si no, busca las reglas donde el simbolo esta en la izq
 			for der in self.reglas[simb[0]]:
-				res += self.first(der + simb[1:])
-		return delRep(res)
+				f = self.first(der+simb[1:],False)
+				res+=f
+		return res
 
 
 	# alpha - > gamma A beta
+	# Hay que mandar a llamar con una lista vacia en stack
 	def follow(self, A, stack =[]):
 		fllwA = []
 		if A in stack:
-			stack=[]
 			return delRep(fllwA)
 		stack.append(A)
 		if A == self.raiz:
@@ -87,16 +105,30 @@ class Gramatica:
 					i = der.index(A)
 					beta=der[i+1:]
 					if len(beta):
-						frstB = self.first(beta)
+						frstB = self.first(beta,False)
 						fllwA += frstB
 						if EPS in frstB:
-							fllwA += self.follow(alpha,stack)
+							fllwA += self.follow(alpha,stack[:])
 					else:
-						fllwA += self.follow(alpha,stack)
-		stack=[]
+						fllwA += self.follow(alpha,stack[:])
 		return delRep(fllwA)
 
 
+	def genTabla(self):
+		terminales = self.terminales[:]
+		terminales.remove(EPS)
+		terminales.append('$')
+		self.tabla = {n : {t : [] for t in terminales} for n in self.noTerminales}
+		i = 0
+		for izq, derArr in self.reglas.items():
+			for der in derArr:
+				i+=1
+				if EPS in der:
+					f = self.follow(izq)
+				else:
+					f = self.first(der[:],True)
+				for s in f:
+					self.tabla[izq][s] = (der[:]+[','+str(i)])
 
 
 
