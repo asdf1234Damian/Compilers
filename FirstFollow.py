@@ -164,10 +164,7 @@ class Gramatica:
 
 
 g  = Gramatica('testFiles/Gramatica.txt')
-<<<<<<< HEAD
-print(g.first('E'))
-print(g.follow('F'))
-=======
+
 g.print()
 print(g.analyze('n+n*(n-n)'))
->>>>>>> 9632ce8578b9966b72df466b30498785df36d0ed
+

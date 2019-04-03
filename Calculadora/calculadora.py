@@ -1,4 +1,4 @@
-import analizadorLexico
+from  .analizadorLexico import Lexic
 import math
 
 #NOTA: Las operaciones son realizadas en radianes
@@ -19,9 +19,11 @@ ln	190
 log	250
 exp 270
 """
+#Alvaro estuvo aqui
+#Hola Lolita
 
 #Objeto lex de la clase Lexic
-lex = analizadorLexico.Lexic("tab.txt", "p.txt")
+lex = Lexic("..\\tab.txt", "..\\p.txt")
 #Arreglo donde se guardara la evaluacion de la expresion
 v = []
 infija = []
