@@ -1,10 +1,11 @@
 class Lexic:
-	def __init__(self, tab_path, txt_path):
+	def __init__(self, tab_path):
 		#Inicializacion
 		#Estas variables NO dependen de los argumentos del constructor
 		self.indAct = 0 #Indice Actual
 		self.iniLex = 0 #Inicio del lexema
 		# Se recuperan la tabla y el alfabeto del archivo tab_path
+		self.txt = ''
 		self.tab = []
 		self.alf = []
 		#Se obtienen todas la lineas del archivo
@@ -17,11 +18,9 @@ class Lexic:
 			for line in file[1:]:
 				# Se separa por espacios y se omite el primer elemento y se guarda en el auxiliar
 				self.tab.append(line.split()[1:])
-		# Se recupera el texto del archivo txt
-		self.txt = []
-		with open(txt_path, "r") as file:
-			for line in file:
-				self.txt += (list(line))
+
+	def changeTxt(self,text):
+		self.txt = text
 
 	def getToken(self):
 		finLex = 0
@@ -65,7 +64,7 @@ class Lexic:
 
 	def returnToken(self):
 		self.indAct = self.iniLex
-		
+
 	def getLexema(self):
 		lexema = ""
 		for i in range (self.iniLex, self.indAct):

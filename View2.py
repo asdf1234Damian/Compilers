@@ -8,7 +8,7 @@ automats= {}
 cantidades = list()
 currAutomat = None
 optionLists = list()
-global frame
+global fram
 class Operaciones:
 	def basico(id,exp,frame):
 		if (len(exp)):
@@ -135,7 +135,7 @@ class OptionList(Listbox):
 			optionLists[num].delete(0,END)
 			if num == 0:
 				optionLists[num].desplegar(0)
-			else: 
+			else:
 				optionLists[num].desplegar(1)
 
 class Automata(Frame):
@@ -207,7 +207,7 @@ class Automata(Frame):
 		btnConcat.pack(fill = "x")
 		btnUnirSel.pack(fill = "x")
 		lbOper.pack(fill = "x")
-	
+
 class Analizar(Frame):
 	def __init__(self, master):
 		ttk.Frame.__init__(self, master)
@@ -226,7 +226,7 @@ class Analizar(Frame):
 
 		#-------Entry
 		txtCadena = Entry(frameMenu  )
-		
+
 		#-----------Buttons
 		btnSelecAut = Button(frameMenu, text = "Ver condiciones")
 		btnAnalizar = Button(frameMenu, text = "Analizar")
@@ -248,7 +248,7 @@ class Analizar(Frame):
 class Calculadora(Frame):
 	def __init__(self, master):
 		master.grid_rowconfigure(0, weight=1)
-		master.grid_columnconfigure(0, weight=1) 
+		master.grid_columnconfigure(0, weight=1)
 		master.option_add("*font", "Helvetica 28")
 		Frame.__init__(self, master)
 		self.config(bg = "white")
@@ -269,18 +269,18 @@ class Calculadora(Frame):
 
 		s = ttk.Style()
 		s.configure("TButton", anchor = "center", background = "#496ba0", foreground = "white", font = ("Helvetica", 28), border = "classic")
-		s.map("TButton", 
+		s.map("TButton",
 				foreground = [("disabled", "white"),
 							("pressed", "#f2f4f7")],
 				background = [("disabled", "#496ba0"),
 							("pressed", "#354154")])
 		sEqual = ttk.Style()
-		sEqual.configure("Equal.TButton",  anchor = "center", background = "red", foreground = "white", font = ("Helvetica", 28), border = "classic") 
+		sEqual.configure("Equal.TButton",  anchor = "center", background = "red", foreground = "white", font = ("Helvetica", 28), border = "classic")
 		sEqual.map("Equal.TButton",
 			foreground = [("selected", "#ffffff")],
 			background = [("pressed", "gray")])
 		#sEqual.theme_use("Equal.TButton")
-		"""sEqual.map("TButton", 
+		"""sEqual.map("TButton",
 				foreground = [("disabled", "white"),
 							("pressed", "#f2f4f7")],
 				background = [("disabled", "#496ba0"),
@@ -301,7 +301,7 @@ class Calculadora(Frame):
 		btnLn = ttk.Button(self, text = "ln", command = lambda:Calculadora.escribe(txtCadena, "ln("))
 		btnLog = ttk.Button(self, text = "log", command = lambda:Calculadora.escribe(txtCadena, "log("))
 		btnE = ttk.Button(self, text = "exp", command = lambda:Calculadora.escribe(txtCadena, "exp("))
-		
+
 		#------Números-----
 		btnCero = ttk.Button(self, text = "0", command = lambda:Calculadora.escribe(txtCadena, "0"))
 		btnUno = ttk.Button(self, text = "1", command = lambda:Calculadora.escribe(txtCadena, "1"))
@@ -325,7 +325,7 @@ class Calculadora(Frame):
 		btnBorraTodo = ttk.Button(self, text = "C", command = lambda:Calculadora.borraTodo(txtCadena))
 
 		txtCadena.grid(row = 0, column = 0, columnspan = 7, sticky = "e")
-		
+
 		btnSen.grid(row = 1, column = 0, sticky = "nsew")
 		btnLn.grid(row= 1, column = 1, sticky = "nsew")
 		btnSiete.grid(row = 1, column = 2, sticky = "nsew")
@@ -333,7 +333,7 @@ class Calculadora(Frame):
 		btnNueve.grid(row = 1, column = 4, sticky = "nsew")
 		btnMas.grid(row = 1, column = 5, sticky = "nsew")
 		btnMenos.grid(row = 1, column = 6, sticky = "nsew")
-		
+
 
 		btnCos.grid(row = 2, column = 0, sticky = "nsew")
 		btnLog.grid(row = 2, column = 1, sticky = "nsew")
@@ -342,7 +342,7 @@ class Calculadora(Frame):
 		btnSeis.grid(row = 2, column = 4, sticky = "nsew")
 		btnMult.grid(row = 2, column = 5, sticky = "nsew")
 		btnDiv.grid(row = 2, column = 6, sticky = "nsew")
-		
+
 
 		btnTan.grid(row = 3, column = 0, sticky = "nsew")
 		btnExpo.grid(row = 3, column = 1, sticky = "nsew")
@@ -380,7 +380,7 @@ class Calculadora(Frame):
 		f = open(file, "w+")
 		"""for i in range (len(cantidades)):
 			f.write(cantidades[i])"""
-		del cantidades[:]	
+		del cantidades[:]
 		res = ":B no funciona"
 		label.config(text = res)
 		#f.truncate(0)
