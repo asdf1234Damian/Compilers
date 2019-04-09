@@ -1,5 +1,5 @@
 from tkinter import Tk,Frame,Button,Label,Entry,Listbox,END,ACTIVE, Menu, ttk, messagebox
-from Calculadora import calculadora
+from Calculadora.calculadora import Calculadora as calculator
 import AFND
 import Image
 import os.path
@@ -8,7 +8,7 @@ automats= {}
 cantidades = list()
 currAutomat = None
 optionLists = list()
-global fram
+global frame
 class Operaciones:
 	def basico(id,exp,frame):
 		if (len(exp)):
@@ -376,12 +376,9 @@ class Calculadora(Frame):
 			label.config(text = "0")
 
 	def resultado(label):
-		file = os.path.join("Calculadora", "p.txt")
-		f = open(file, "w+")
-		"""for i in range (len(cantidades)):
-			f.write(cantidades[i])"""
+		calc = calculator()
+		res = calc.evaluate(''.join(cantidades))
 		del cantidades[:]
-		res = ":B no funciona"
 		label.config(text = res)
 		#f.truncate(0)
 
