@@ -295,9 +295,9 @@ class Calculadora(Frame):
 		btnDiv = ttk.Button(self, text = "/", command = lambda:Calculadora.escribe(txtCadena, "/"))
 		btnExpo = ttk.Button(self, text = "^", command = lambda:Calculadora.escribe(txtCadena, "^"))
 
-		btnSen = ttk.Button(self, text = "sen", command = lambda:Calculadora.escribe(txtCadena, "sen("))
+		btnSen = ttk.Button(self, text = "sin", command = lambda:Calculadora.escribe(txtCadena, "sin("))
 		btnCos = ttk.Button(self, text = "cos", command = lambda:Calculadora.escribe(txtCadena, "cos("))
-		btnTan = ttk.Button(self, text = "tan", command = lambda:Calculadora.escribe(txtCadena, "tan"))
+		btnTan = ttk.Button(self, text = "tan", command = lambda:Calculadora.escribe(txtCadena, "tan("))
 		btnLn = ttk.Button(self, text = "ln", command = lambda:Calculadora.escribe(txtCadena, "ln("))
 		btnLog = ttk.Button(self, text = "log", command = lambda:Calculadora.escribe(txtCadena, "log("))
 		btnE = ttk.Button(self, text = "exp", command = lambda:Calculadora.escribe(txtCadena, "exp("))

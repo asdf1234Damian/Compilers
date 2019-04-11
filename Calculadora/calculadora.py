@@ -176,10 +176,10 @@ class Calculadora:
 			return False
 		#log(E)
 		elif tok == 250:
-			tok = lex.getToken()
+			tok = lexer.getToken()
 			if tok == 80:
 				if E(v):
-					tok = lex.getToken()
+					tok = lexer.getToken()
 					self.infija.append(")")
 					if tok == 40:
 						v[-1] = math.log(v[-1])
