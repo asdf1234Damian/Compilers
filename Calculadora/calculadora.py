@@ -167,6 +167,7 @@ class Calculadora:
 		elif tok == 190:
 			tok = self.lexer.getToken()
 			if tok == 80:
+				#self.infija.append("ln(")
 				if self.E(v):
 					tok = self.lexer.getToken()
 					self.infija.append(")")
@@ -176,10 +177,11 @@ class Calculadora:
 			return False
 		#log(E)
 		elif tok == 250:
-			tok = lexer.getToken()
+			tok = self.lexer.getToken()
 			if tok == 80:
+				#self.infija.append("log(")
 				if E(v):
-					tok = lexer.getToken()
+					tok = self.lexer.getToken()
 					self.infija.append(")")
 					if tok == 40:
 						v[-1] = math.log(v[-1])
