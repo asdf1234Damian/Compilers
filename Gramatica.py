@@ -42,7 +42,7 @@ class Gramatica:
 			self.terminales.add('$')
 			self.terminales = delRep(self.terminales)
 			self.noTerminales = delRep(self.noTerminales)
-			self.genTabla()
+			# self.genTablaLL1()
 
 
 	def print(self):
@@ -114,7 +114,7 @@ class Gramatica:
 		return delRep(fllwA)
 
 
-	def genTabla(self):
+	def genTablaLL1(self):
 		terminales = self.terminales[:]
 		terminales.remove(EPS)
 		terminales.append('$')
@@ -130,7 +130,7 @@ class Gramatica:
 				for s in f:
 					self.tabla[izq][s] = (der[:]+[','+str(i)])
 
-	def analyze(self, cad):
+	def analyzeLL1(self, cad):
 		cad =cad+'$'
 		stack = ['$', self.raiz]
 		print('-'*85)
@@ -160,11 +160,101 @@ class Gramatica:
 					return False
 		return False
 
+	# Extiende la gramatica si es necesario
+	def extendGram(self):
+		#Si la raiz tiene mas de una regla
+		if len(self.reglas[self.raiz])>1:
+			#Busca un simbolo disponible
+			for i in range (ord('A'), ord('Z')+1):
+				if not chr(i) in self.reglas.keys():
+					#Crea la nueva raiz
+					nRaiz= chr(i)
+					#Crea una transicion de la nueva raiz a la vieja raiz
+					self.reglas[nRaiz] = [[self.raiz]]
+					#Cambia la raiz por la nueva raiz
+					self.raiz = nRaiz
+					#Regresa true porque pues por que no?
+					return True
 
 
+	def genTablaLR0(self):
+		#Extiende la gramatica si es necesario
+		self.extendGram()
+		#Left side
+		ls = self.raiz
+		#Right side
+		rs = self.reglas[ls][0]
+		# Lista de todas las s
+		s = []
+		#Se inicializa S0 con la cerradura de la raiz
+		s.append(self.cerraduraLR0(ls,rs,0,set()))
+		i = 0
+		while i != len(s):
+			simbols = set()
+			print('Analisis de S'+str(i))
+			for item in s[i]:
+				pos = item[2]
+				rs  =item[1]
+				if pos < len(rs) and not rs[pos] in simbols :
+					simbols.add(rs[pos])
+					sj = self.IrA(s[i],rs[pos])
+					print('(S'+str(i)+',\''+rs[pos],end='\')=')
+					if len(sj)>0 and not sj in s:
+						s.append(sj)
+						print('S'+str(len(s)-1)+':',sj)
+					elif not len(sj):
+						print(sj)
+					else:
+						print('(S'+str(s.index(sj)),end=')\n')
+			i+=1
 
-g  = Gramatica('testFiles/Gramatica.txt')
+	def IrA(self,sj,simb):
+		# resultado
+		res = []
+		# Busca en el conjunto las reglas a las que se les puede aplicar moverA
+		for i in sj:
+			mov= None
+			# right side of the rule
+			rs = i[1]
+			# position of item
+			pos = i[2]
+			if pos >= len(rs):
+				# print('debug',i,rs, pos)
+				pass
+			elif simb == rs[pos]:
+				mov = self.moverA(i)
+				res += self.cerraduraLR0(mov[0],mov[1],mov[2],set())
+		return res
 
-g.print()
-print(g.analyze('n+n*(n-n)'))
+	def moverA(self,rule):
+		#Porque las tuplas son inmutables
+		pos = rule[2]+1
+		return (rule[0],rule[1],pos)
 
+	def cerraduraLR0(self,ls,rs,tokePos,stack):
+		c = [(ls,rs,tokePos)]
+		# Mi bloque de prints para cuando se cicla infinitamente :3
+		# print(ls,'->',end=' ')
+		# for i in range(len(rs)):
+		# 	if i==tokePos:
+		# 		print('•',end='')
+		# 	print(rs[i],end='')
+		# input()
+		if tokePos >= len(rs):
+			return c
+		if not rs[tokePos] in self.reglas.keys():
+			return c
+		if not rs[tokePos] in stack:
+			stack.add(rs[tokePos])
+			for r in self.reglas[rs[tokePos]]:
+				cerr = self.cerraduraLR0(rs[tokePos],r,0,stack)
+				c += cerr
+		return c
+
+g  = Gramatica('testFiles/gramaticaRecursiva.txt')
+g.extendGram()
+g.genTablaLR0()
+
+# g.cerraduraLR0('E',['E','-','T'], 0)
+# g.print()
+# print(g.analyze('n+n*(n-n)'))
