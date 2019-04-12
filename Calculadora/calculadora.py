@@ -180,12 +180,13 @@ class Calculadora:
 			tok = self.lexer.getToken()
 			if tok == 80:
 				#self.infija.append("log(")
-				if E(v):
+				if self.E(v):
 					tok = self.lexer.getToken()
 					self.infija.append(")")
 					if tok == 40:
 						v[-1] = math.log(v[-1])
 						return True
+			return False
 		#exp(E)
 		elif tok == 270:
 			tok = self.lexer.getToken()
