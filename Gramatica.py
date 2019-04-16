@@ -8,12 +8,13 @@ def delRep(l):
 	return list(l for l,_ in itertools.groupby(l))
 
 class Gramatica:
-	def __init__(self, path):
+	def __init__(self, path,type):
 		self.tabla = {}
 		self.reglas = {}
 		self.terminales = set()
 		self.noTerminales = set()
 		self.raiz = None
+		self.tipo = type
 		#Crea el diccionario de reglas segun el archivo
 		with open(path, "r") as file:
 			file = file.readlines()
@@ -39,34 +40,58 @@ class Gramatica:
 			self.terminales = simbolos - self.noTerminales
 			if not EPS in self.terminales:
 				self.terminales.add(EPS)
-			self.terminales.add('$')
+			# self.terminales.add('$')
 			self.terminales = delRep(self.terminales)
 			self.noTerminales = delRep(self.noTerminales)
-			# self.genTablaLL1()
-
+		if self.tipo == 'LL1':
+			self.genTablaLL1()
+		if self.tipo == 'LR0':
+			self.genTablaLR0()
 
 	def print(self):
 		print('Raiz:', self.raiz)
 		print('Vt:', self.terminales)
 		print('Vn:', self.noTerminales)
 		print(''.rjust(50,'-'))
+		i=0
 		for izq,derArr in self.reglas.items():
 			for der in derArr:
-				print(izq, der )
-		print(''.rjust(50,'-'))
-		terminales = self.terminales[:]
-		terminales.remove(EPS)
-		terminales.append('$')
-		print(''.center(6),'|',end = '')
-		for t in terminales:
-			print(t.center(6),'|',end = '')
-		print()
-		for x in self.noTerminales:
-			print('-'*8*(len(terminales)+1))
-			print(x.center(6),'|',end = '')
-			for y in terminales:
-				print((''.join(self.tabla[x][y][:-1])).center(6),'|',end = '')
+				print(str(i)+')',izq,'->', der)
+				i+=1
+		if self.tipo == 'LL1':
+			print(''.rjust(50,'-'))
+			terminales = self.terminales[:]
+			terminales.remove(EPS)
+			terminales.append('$')
+			print(''.center(6),'|',end = '')
+			for t in terminales:
+				print(t.center(6),'|',end = '')
 			print()
+			for x in self.noTerminales:
+				print('-'*8*(len(terminales)+1))
+				print(x.center(6),'|',end = '')
+				for y in terminales:
+					print((''.join(self.tabla[x][y][:-1])).center(6),'|',end = '')
+				print()
+		if self.tipo == 'LR0':
+			print(''.rjust(50,'-'))
+			simbolos = self.terminales[:]
+			simbolos.remove(EPS)
+			simbolos.append('$')
+			simbolos += self.noTerminales[:]
+			print(''.center(6),'|',end = '')
+			for s in simbolos:
+				print(s.center(6),'|',end = '')
+			print()
+			for i in range(len(self.tabla.keys())):
+				print(str(i).center(6),'|',end = '')
+				for s in simbolos:
+					if s in self.tabla[i].keys():
+						print((''.join(map(str,self.tabla[i][s]))).center(6),'|',end = '')
+					else:
+						print(''.center(6),'|',end = '')
+				print()
+
 
 	def first(self, simb,getDer):
 		# res será el resultado
@@ -176,6 +201,15 @@ class Gramatica:
 					#Regresa true porque pues por que no?
 					return True
 
+	def getRuleIndex(self,ls,rs):
+		k = 0
+		for l,rlst in self.reglas.items():
+			for r in rlst:
+				if ls == l and rs==r:
+					return k
+				k+=1
+
+
 
 	def genTablaLR0(self):
 		#Extiende la gramatica si es necesario
@@ -207,6 +241,27 @@ class Gramatica:
 					else:
 						print('(S'+str(s.index(sj)),end=')\n')
 			i+=1
+		print('Construccion de la talba'.center(50,'-'))
+		j = 0
+		for sj in s:
+			self.tabla[j] = {}
+			for i in sj:
+				ls, rs, pos = i
+				# En caso de punto final
+				if pos == len(rs):
+					simbs = self.follow(ls,[])
+					index= self.getRuleIndex(ls, rs)
+					for s in simbs:
+						self.tabla[j][s] = ('R',index)
+				else:
+					if rs[pos] in self.noTerminales:
+						index= self.getRuleIndex(ls, rs)
+						self.tabla[j][rs[pos]] = [index]
+					else:
+						self.tabla[j][rs[pos]] = ('D',index)
+			j+=1
+
+
 
 	def IrA(self,sj,simb):
 		# resultado
@@ -251,10 +306,10 @@ class Gramatica:
 				c += cerr
 		return c
 
-g  = Gramatica('testFiles/gramaticaRecursiva.txt')
+g  = Gramatica('testFiles/gramaticaRecursiva.txt','LR0')
 g.extendGram()
 g.genTablaLR0()
 
 # g.cerraduraLR0('E',['E','-','T'], 0)
-# g.print()
+g.print()
 # print(g.analyze('n+n*(n-n)'))
