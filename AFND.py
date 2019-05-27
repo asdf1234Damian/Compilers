@@ -34,9 +34,10 @@ class Estado:
 class Automata:
     #Variable estatica de la clase para que los nodos sigan una secuencia
     nxtNode = 0
-    #Si existe un path, se crea basado en el archivo 
-    def __init__(self, exp,path=None):
+    #Si existe un path, se crea basado en el archivo
+    def __init__(self, exp,title='Automata',path=None):
         #Inicializacion de variables
+        self.title = title
         self.exp  = exp
         self.G = Digraph()
         self.estados = {}  # Enteros
@@ -91,13 +92,13 @@ class Automata:
             for exp, trns in destino.transiciones.items():
                 print('\t', exp, ':= {', ','.join(
                     trns.simbolos), '} ->', trns.destinos, sep='')
-    
+
     #Funcion para crear la imagen dado el nombre del archivo. Se guarda en images
-    def plot(self,path):
+    def plot(self,path,title):
         self.G.clear()
-        #Esto se cambia para cambiar el tamaño de la imagen 
+        #Esto se cambia para cambiar el tamaño de la imagen
         self.G.attr(ratio='fill', size='3.8,2.77',
-                    dpi='300', rank='same', rankdir='LR')
+                    dpi='300', rank='same', rankdir='LR',labelloc='t',label=title)
         self.G.edge('S', str(self.inicial))
         for origin,dest in self.estados.items():
             if self.estados[origin].final:

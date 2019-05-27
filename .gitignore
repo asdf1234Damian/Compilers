@@ -4,4 +4,5 @@ test.txt
 .vscode/
 images/
 __pycache__/
+__pycache__/*
 __pycache__
