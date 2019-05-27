@@ -26,33 +26,20 @@ class Operaciones:
 		else:
 			messagebox.showinfo("Error de entrada", "Seleccie un autómata")
 
-	def unirM(seleccion, frame):
+	def unirM(keys, frame):
 		global currAutomat
-		if len(seleccion)>1:
-			keys = ['F'+str(i+1) for i in list(seleccion)]
-			#seleccion = []
-			seleccion = set()
-			if  not currAutomat in keys:
-				currAutomat = keys[0]
-			for k in keys:
-				if k != currAutomat and k in automats.keys():
-					seleccion[k] = automats[k]
-			if len(seleccion):
-				automats[currAutomat].unirM(seleccion,frame)
-				Operaciones.cambiar_Imagen(currAutomat, frame)
-			else:
-				mainAutomata = keys[0]
-				keys.remove(keys[0])
-			automatasAUnir = []
-			for k in keys:
-				if k in automats.keys():
-					automatasAUnir.append(automats[k])
-					automats[mainAutomata].unirM(automatasAUnir,frame)
-					currAutomat = mainAutomata
-					Operaciones.cambiar_Imagen(currAutomat, frame)
-			OptionList.actualizar()
+		keys = ['F'+str(k+1) for k in keys]
+		if currAutomat:
+			if len(keys):
+				seleccion=set()
+				for k in keys:
+					seleccion.add(automats[k])
+				automats[currAutomat].unirM(seleccion)
+				Operaciones.cambiar_Imagen(currAutomat,frame)
+				OptionList.actualizar()
 		else:
-			messagebox.showinfo("Error de entrada", "Seleccione al menos 2 autómatas")
+			messagebox.showinfo("Error de entrada", "Se necesita al menos un autómata creado")
+
 
 	def cerrPos(frame):
 		global currAutomat
