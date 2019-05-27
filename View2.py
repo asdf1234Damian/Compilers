@@ -129,11 +129,8 @@ class Automata(Frame):
 		frameImagen = Frame(self)
 		frameMenu.pack(side = "left", fill = "both")
 		frameImagen.pack(side = "left", fill = "both", expand = True)
-
 		lblSimbolos = Label(frameImagen, text = currAutomat)
-		frameImagen.pack(fill = "x")
-
-
+		# frameImagen.pack(fill = "x")
 		oper = Operaciones()
 		#------------Labels----------#
 		lblCrear = Label(frameMenu, text = "Crear", width = 30) #bg
@@ -350,7 +347,7 @@ class Calculadora(Frame):
 
 	def escribe(label, texto):
 		cantidades.append(texto)
-		label.config(text = cantidades)
+		label.config(text = ''.join(cantidades))
 
 	def borraTodo(label):
 		del cantidades[:]
