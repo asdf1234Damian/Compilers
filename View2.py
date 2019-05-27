@@ -12,9 +12,9 @@ global frame
 class Operaciones:
 	def basico(id,exp,frame):
 		if (len(exp)):
-			automats[id] = AFND.Automata(exp)
-			Operaciones.cambiar_Imagen(id,frame)
-			OptionList.actualizar()
+				automats[id] = AFND.Automata(exp)
+				Operaciones.cambiar_Imagen(id,frame)
+				OptionList.actualizar()
 		else:
 			messagebox.showinfo("Error de entrada", "Ingrese un símbolo válido")
 
@@ -24,13 +24,13 @@ class Operaciones:
 			automats[currAutomat].opcional()
 			Operaciones.cambiar_Imagen(currAutomat, frame)
 		else:
-			messagebox.showinfo("Error de entrada", "Ingrese un símbolo válido")
+			messagebox.showinfo("Error de entrada", "Seleccie un autómata")
 
 	def unirM(seleccion, frame):
 		global currAutomat
 		if len(seleccion)>1:
 			keys = ['F'+str(i+1) for i in list(seleccion)]
-	        #seleccion = []
+			#seleccion = []
 			seleccion = set()
 			if  not currAutomat in keys:
 				currAutomat = keys[0]
@@ -38,7 +38,7 @@ class Operaciones:
 				if k != currAutomat and k in automats.keys():
 					seleccion[k] = automats[k]
 			if len(seleccion):
-				automats[currAutomat].unirM(seleccion)
+				automats[currAutomat].unirM(seleccion,frame)
 				Operaciones.cambiar_Imagen(currAutomat, frame)
 			else:
 				mainAutomata = keys[0]
@@ -47,7 +47,7 @@ class Operaciones:
 			for k in keys:
 				if k in automats.keys():
 					automatasAUnir.append(automats[k])
-					automats[mainAutomata].unirM(automatasAUnir)
+					automats[mainAutomata].unirM(automatasAUnir,frame)
 					currAutomat = mainAutomata
 					Operaciones.cambiar_Imagen(currAutomat, frame)
 			OptionList.actualizar()
@@ -75,9 +75,8 @@ class Operaciones:
 		if id in automats.keys():
 			automats[id].plot(id)
 			Image.ImageWidow(frame, path='images/'+id+'.png')
-			#err_lbl_VerGrafo.config(text = '')
-			#lbl_Sel.config(text=id)
 			currAutomat = id
+			OptionList.actualizar()
 		else:
 			messagebox.showinfo("Error de entrada", "Seleccione un autómata")
 
@@ -118,7 +117,7 @@ class OptionList(Listbox):
 		Listbox.__init__(self, master)
 
 	def desplegar(self,num):
-		for item in ["F1", "F2", "F3", "F4", "F5"]:
+		for item in automats:
 			if num == 0: #No ha sido creado
 				if item not in automats.keys():
 					self.insert(END, item)
@@ -133,10 +132,7 @@ class OptionList(Listbox):
 	def actualizar():
 		for num in range((len(optionLists))):
 			optionLists[num].delete(0,END)
-			if num == 0:
-				optionLists[num].desplegar(0)
-			else:
-				optionLists[num].desplegar(1)
+			optionLists[num].desplegar(1)
 
 class Automata(Frame):
 	def __init__(self,master):
@@ -146,6 +142,11 @@ class Automata(Frame):
 		frameImagen = Frame(self)
 		frameMenu.pack(side = "left", fill = "both")
 		frameImagen.pack(side = "left", fill = "both", expand = True)
+
+		lblSimbolos = Label(frameImagen, text = currAutomat)
+		frameImagen.pack(fill = "x")
+
+
 		oper = Operaciones()
 		#------------Labels----------#
 		lblCrear = Label(frameMenu, text = "Crear", width = 30) #bg
@@ -159,21 +160,19 @@ class Automata(Frame):
 		txtSimbolos = Entry(frameMenu, width = 4)
 
 		#----------Option List------#
-		lbCrearAut = OptionList(frameMenu)
-		lbCrearAut.desplegar(0)
 		lbCambiar = OptionList(frameMenu)
 		lbCambiar.desplegar(1)
 		lbOper = OptionList(frameMenu)
 		lbOper.desplegar(1)
-		optionLists.append(lbCrearAut)
+		lbOper.config(selectmode = "extended")
 		optionLists.append(lbCambiar)
 		optionLists.append(lbOper)
 
 		#------------Buttons----------#
 		btnCrear = Button(frameMenu, text = "Crear autómata")
-		btnCrear.config(command = lambda: Operaciones.basico(lbCrearAut.get(ACTIVE),txtSimbolos.get(),frameImagen))
-
+		btnCrear.config(command = lambda: Automata.borraTxt(txtSimbolos,"F"+str(automats.__len__()+1),txtSimbolos.get(),frameImagen))
 		btnCambiar = Button(frameMenu, text = "Cambiar de autómata")
+		btnCambiar.config(command = lambda:Operaciones.cambiar_Imagen(lbCambiar.get(ACTIVE),frameImagen))
 		btnOpcional = Button(frameMenu, text = "Opcional (?)")
 		btnOpcional.config(command = lambda:Operaciones.opcional(frameImagen))
 		btnCerraduraP = Button(frameMenu, text = "Cerradura positiva (+)")
@@ -185,12 +184,11 @@ class Automata(Frame):
 		btnConcat = Button(frameMenu, text = "Concatenar (&)")
 		btnConcat.config(command = lambda: Operaciones.Operacion('Concat', frameImagen,lbOper.get(ACTIVE)))
 		btnUnirSel = Button(frameMenu, text = "Unir seleccionados (.|.|.)")
-		btnUnirSel.config(command = lambda: Operaciones.unirM(frameImagen, lstbox_Binarias.curselection()))
+		btnUnirSel.config(command = lambda: Operaciones.unirM(lbOper.curselection(), frameImagen))
 
 		lblCrear.pack(fill = "x")
 		lblSimbolos.pack(fill = "x")
 		txtSimbolos.pack(fill = "x")
-		lbCrearAut.pack(fill = "x")
 		btnCrear.pack(fill = "x")
 
 		lblCambiarAut.pack(fill = "x")
@@ -207,6 +205,10 @@ class Automata(Frame):
 		btnConcat.pack(fill = "x")
 		btnUnirSel.pack(fill = "x")
 		lbOper.pack(fill = "x")
+
+	def borraTxt(txtSimbolos,id,exp,frame):
+		txtSimbolos.delete(0, "end")
+		Operaciones.basico(id,exp,frame)
 
 class Analizar(Frame):
 	def __init__(self, master):
