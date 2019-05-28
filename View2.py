@@ -143,11 +143,8 @@ class Automata(Frame):
 		frameMenu.pack(side = "left", fill = "both")
 		frameImagen.pack(side = "left", fill = "both", expand = True)
 
-		lblSimbolos = Label(frameImagen, text = currAutomat)
-		frameImagen.pack(fill = "x")
-
-
 		oper = Operaciones()
+
 		#------------Labels----------#
 		lblCrear = Label(frameMenu, text = "Crear", width = 30) #bg
 		lblSimbolos = Label(frameMenu, text = "Ingresa los símbolos del autómata")
@@ -237,6 +234,7 @@ class Analizar(Frame):
 		lbSelecAut = OptionList(frameMenu)
 		lbSelecAut.desplegar(1)
 		optionLists.append(lbSelecAut)
+		
 
 		lblSelecAut.pack(fill = "x")
 		lbSelecAut.pack(fill = "x")
