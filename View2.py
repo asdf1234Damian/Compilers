@@ -35,7 +35,6 @@ class Operaciones:
 
 	def unirM(keys, frame):
 		global currAutomat
-		keys = ['Autómata: '+str(k+1) for k in keys]
 		if currAutomat:
 			if len(keys):
 				seleccion=set()
@@ -43,11 +42,15 @@ class Operaciones:
 					seleccion.add(automats[k])
 				automats[currAutomat].unirM(seleccion)
 				for k in keys:
-					del automats[k]
-			Operaciones.cambiar_Imagen(currAutomat,frame)
-			OptionList.actualizar()
+					if k!=currAutomat:
+						del automats[k]
+				Operaciones.cambiar_Imagen(currAutomat,frame)
+				OptionList.actualizar()
+			else:
+				messagebox.showinfo("Error al unir", "No se seleccionaron automatas para unir")
+				return
 		else:
-			messagebox.showinfo("Error de entrada", "Se necesita al menos un autómata creado")
+			messagebox.showinfo("Error al unir", "Se necesita al menos un autómata creado")
 
 
 	def cerrPos(frame):
@@ -74,7 +77,7 @@ class Operaciones:
 			currAutomat = id
 			OptionList.actualizar()
 		else:
-			messagebox.showinfo("Error de entrada", "Seleccione un autómata")
+			messagebox.showinfo("Error al cambiar de imagen", "Seleccione un autómata")
 
 	def Union(f2, frame):
 		global currAutomat
@@ -112,23 +115,16 @@ class OptionList(Listbox):
 	def __init__(self, master):
 		Listbox.__init__(self, master)
 
-	def desplegar(self,num):
-		for item in automats:
-			if num == 0: #No ha sido creado
-				if item not in automats.keys():
-					self.insert(END, item)
-
-			if num == 1:
-				if item != currAutomat:
-					if item in automats.keys():
-						self.insert(END, item)
-
+	def desplegar(self):
+		for item in automats.keys():
+			if item != currAutomat:
+				self.insert(END, item)
 		self.config(height = 0)
 
 	def actualizar():
 		for num in range((len(optionLists))):
 			optionLists[num].delete(0,END)
-			optionLists[num].desplegar(1)
+			optionLists[num].desplegar()
 
 class Automata(Frame):
 	def __init__(self,master):
@@ -154,9 +150,9 @@ class Automata(Frame):
 
 		#----------Option List------#
 		lbCambiar = OptionList(frameMenu)
-		lbCambiar.desplegar(1)
+		lbCambiar.desplegar()
 		lbOper = OptionList(frameMenu)
-		lbOper.desplegar(1)
+		lbOper.desplegar()
 		lbOper.config(selectmode = "extended")
 		optionLists.append(lbCambiar)
 		optionLists.append(lbOper)
@@ -177,7 +173,10 @@ class Automata(Frame):
 		btnConcat = Button(frameMenu, text = "Concatenar (&)")
 		btnConcat.config(command = lambda: Operaciones.Operacion('Concat', frameImagen,lbOper.get(ACTIVE)))
 		btnUnirSel = Button(frameMenu, text = "Unir seleccionados (.|.|.)")
-		btnUnirSel.config(command = lambda: Operaciones.unirM(lbOper.curselection(), frameImagen))
+
+
+
+		btnUnirSel.config(command = lambda: Operaciones.unirM([lbOper.get(0, END)[item] for item in lbOper.curselection()] , frameImagen))
 
 		lblCrear.pack(fill = "x")
 		lblSimbolos.pack(fill = "x")
@@ -200,7 +199,7 @@ class Automata(Frame):
 		lbOper.pack(fill = "x")
 
 	def borraTxt(txtSimbolos,exp,frame):
-		txtSimbolos.delete(0, "end")
+		txtSimbolos.delete(0, END)
 		Operaciones.basico(exp,frame)
 
 class Analizar(Frame):
@@ -228,7 +227,7 @@ class Analizar(Frame):
 
 		#-----------Listbox
 		lbSelecAut = OptionList(frameMenu)
-		lbSelecAut.desplegar(1)
+		lbSelecAut.desplegar()
 		optionLists.append(lbSelecAut)
 
 		lblSelecAut.pack(fill = "x")
