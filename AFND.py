@@ -94,11 +94,11 @@ class Automata:
                     trns.simbolos), '} ->', trns.destinos, sep='')
 
     #Funcion para crear la imagen dado el nombre del archivo. Se guarda en images
-    def plot(self,path,title):
+    def plot(self,path):
         self.G.clear()
         #Esto se cambia para cambiar el tamaño de la imagen
         self.G.attr(ratio='fill', size='3.8,2.77',
-                    dpi='300', rank='same', rankdir='LR',labelloc='t',label=title)
+                    dpi='300', rank='same', rankdir='LR',labelloc='t',label=path)
         self.G.edge('S', str(self.inicial))
         for origin,dest in self.estados.items():
             if self.estados[origin].final:
