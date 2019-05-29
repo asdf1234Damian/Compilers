@@ -1,4 +1,4 @@
-from tkinter import Tk,Frame,Button,Label,Entry,Listbox,END,ACTIVE, Menu, ttk, messagebox
+from tkinter import Tk,Frame,Button,Label,Entry,Listbox,END,ACTIVE, Menu, ttk, messagebox,filedialog
 from Calculadora.calculadora import Calculadora as calculator
 import AFND
 import Image
@@ -111,6 +111,20 @@ class Operaciones:
 		else:
 			messagebox.showinfo("Error de entrada", "No existe ese autómata")
 
+	def ConvertirAFD(frame):
+		global currAutomat
+		if not currAutomat:
+			messagebox.showinfo('Error en conversion','Debe al menos crear un automata')
+			return
+		f = filedialog.asksaveasfilename( defaultextension=".txt")
+		if f is None:
+			return
+		automats[currAutomat].conversion_A_Archivo(f)
+		automats[currAutomat] = AFND.Automata('', path=f)
+
+		Operaciones.cambiar_Imagen(currAutomat, frame)
+		OptionList.actualizar()
+
 class OptionList(Listbox):
 	def __init__(self, master):
 		Listbox.__init__(self, master)
@@ -172,11 +186,10 @@ class Automata(Frame):
 		btnUnion.config(command = lambda: Operaciones.Operacion('Union', frameImagen,lbOper.get(ACTIVE)))
 		btnConcat = Button(frameMenu, text = "Concatenar (&)")
 		btnConcat.config(command = lambda: Operaciones.Operacion('Concat', frameImagen,lbOper.get(ACTIVE)))
-		btnUnirSel = Button(frameMenu, text = "Unir seleccionados (.|.|.)")
-
-
-
+		btnUnirSel = Button(frameMenu, text = "Unir seleccionados (...|...|...)")
 		btnUnirSel.config(command = lambda: Operaciones.unirM([lbOper.get(0, END)[item] for item in lbOper.curselection()] , frameImagen))
+		btnAFD = Button(frameMenu, text = "Convertir a AFD")
+		btnAFD.config(command = lambda: Operaciones.ConvertirAFD(frameImagen))
 
 		lblCrear.pack(fill = "x")
 		lblSimbolos.pack(fill = "x")
@@ -192,11 +205,13 @@ class Automata(Frame):
 		btnOpcional.pack(fill = "x")
 		btnCerraduraP.pack(fill = "x")
 		btnCerraduraK.pack(fill = "x")
+		btnAFD.pack(fill = 'x')
 		lblOperB.pack(fill = "x")
 		btnUnion.pack(fill = "x")
 		btnConcat.pack(fill = "x")
 		btnUnirSel.pack(fill = "x")
 		lbOper.pack(fill = "x")
+
 
 	def borraTxt(txtSimbolos,exp,frame):
 		txtSimbolos.delete(0, END)
