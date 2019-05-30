@@ -301,10 +301,3 @@ class Automata:
                 else:
                     file.write('-1\n')
                 currS += 1
-
-test = Automata('a')
-test2 = Automata('b')
-test.unirM([test2])
-test.conversion_A_Archivo('asdf.txt')
-test = Automata('',path='asdf.txt')
-test.plot('test')
