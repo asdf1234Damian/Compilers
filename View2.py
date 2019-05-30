@@ -97,6 +97,18 @@ class Operaciones:
 		else:
 			err_lbl_Operacion.config(text = "Primero cree un automata")
 
+	def Pertenece(sigma, lblResultado):
+		global currAutomat
+		if not len(sigma):
+			sigma=AFND.EPS
+		if currAutomat:
+			if automats[currAutomat].pertenece(sigma):
+				lblResultado.config(text='Cadena valida')
+			else:
+				lblResultado.config(text='Cadena NO valida')
+		else:
+			messagebox.showinfo("Error de entrada", "Seleccione un autómata")
+
 
 
 	def Operacion(operacion, frame, f2 = None):
@@ -125,7 +137,8 @@ class Operaciones:
 		if not currAutomat:
 			messagebox.showinfo('Error en conversion','Debe al menos crear un automata')
 			return
-		f = filedialog.asksaveasfilename( defaultextension=".txt")
+		#f = filedialog.asksaveasfilename( defaultextension=".txt")
+		f = "AFD" + str(currAutomat) + ".txt"
 		if f is None:
 			return
 		automats[currAutomat].conversion_A_Archivo(f)
@@ -237,27 +250,30 @@ class Analizar(Frame):
 
 		#--------Labels
 		lblAcutal = Label(frameImagen, text = currAutomat)
-		lblAcutal.pack(side = "top", fill = Label(frameMenu), text = "Seleccionar autómata"  , width = 30)
-		lblResultado = Label(frameMenu, text = "" )
+		lblAcutal.pack(side = "top", fill = "x")
+		lblSelecAut = Label(frameMenu, text = "Seleccionar autómata"  , width = 30)
+		lblResultado = Label(frameMenu, text = ""  )
 		lblIngresaCad = Label(frameMenu, text = "Ingresa una cadena"  )
 
 		#-------Entry
 		txtCadena = Entry(frameMenu  )
 
 		#-----------Buttons
-		btnAFD = Button(frameMenu, text = "Crear tabla AFD")
-		btnAFD.config()
+		btnSelecAut = Button(frameMenu, text = "Ver condiciones")
 		btnAnalizar = Button(frameMenu, text = "Analizar")
+		btnAnalizar.config(command = lambda:Operaciones.Pertenece(txtCadena.get(), lblResultado))
+
 
 		#-----------Listbox
-
 		lbSelecAut = OptionList(frameMenu)
 		lbSelecAut.desplegar()
 		optionLists.append(lbSelecAut)
 
-		lblAFD.pack(fill = "x")
-		lbAFD.pack(fill = "x")
-		btnAFD.pack(fill = "x")
+		lblSelecAut.pack(fill = "x")
+		lbSelecAut.pack(fill = "x")
+		btnSelecAut.pack(fill = "x")
+		btnSelecAut.config(command = lambda:Operaciones.cambiar_Imagen(lbSelecAut.get(ACTIVE),frameImagen))
+
 
 		lblIngresaCad.pack(fill = "x")
 		txtCadena.pack(fill = "x")
