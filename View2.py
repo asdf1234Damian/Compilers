@@ -2,6 +2,7 @@ from tkinter import Tk,Frame,Button,Label,Entry,Listbox,END,ACTIVE, Menu, ttk, m
 from Calculadora.calculadora import Calculadora as calculator
 import AFND
 import Image
+import platform
 import os.path
 # -----------Guarda autómatas seleccionados-----#
 automats= {}
@@ -191,15 +192,22 @@ class Operaciones:
 
 	def ConvertirAFD(frame):
 		global currAutomat
-		if automats[currAutomat].determinista:
-			messagebox.showinfo("Error de entrada", "El automata ya es determinista")
-			return
 		if not currAutomat:
 			messagebox.showinfo('Error en conversion','Debe al menos crear un automata')
 			return
+<<<<<<< HEAD
 		#f = filedialog.asksaveasfilename( defaultextension=".txt")
 		f = "AFD" + str(currAutomat) + ".txt"
 
+=======
+		if automats[currAutomat].determinista:
+			messagebox.showinfo("Error de entrada", "El automata ya es determinista")
+			return
+		if platform.system() == 'Linux':
+			f = filedialog.asksaveasfilename( defaultextension=".txt",initialdir = '~/Documents')
+		else:
+			f = filedialog.asksaveasfilename( defaultextension=".txt")
+>>>>>>> f48081d5db68321d459f767ca1c5080aac1fec93
 		if f is None:
 			return
 		automats[currAutomat].conversion_A_Archivo(f)
@@ -225,7 +233,6 @@ class OptionList(Listbox):
 class Automata(Frame):
 	def __init__(self,master):
 		Frame.__init__(self, master)
-
 		frameMenu = Frame(self)
 		frameImagen = Frame(self)
 		frameMenu.pack(side = "left", fill = "both")
@@ -256,6 +263,10 @@ class Automata(Frame):
 		#------------Buttons----------#
 		btnCrear = Button(frameMenu, text = "Crear autómata")
 		btnCrear.config(command = lambda: Automata.borraTxt(txtSimbolos,txtSimbolos.get(),frameImagen))
+		btnImport = Button(frameMenu, text = "Importar archivo")
+		#TODO#TODO#TODO#TODO#TODO#TODO#TODO#TODO#TODO#TODO#TODO#TODO#TODO#TODO#TODO#TODO#TODO#TODO#TODO#TODO#TODO
+		btnImport.config(command = lambda: Automata.importFile(frameImagen))#TODO#TODO
+		#TODO#TODO#TODO#TODO#TODO#TODO#TODO#TODO#TODO#TODO#TODO#TODO#TODO#TODO#TODO#TODO#TODO#TODO#TODO#TODO#TODO
 		btnCambiar = Button(frameMenu, text = "Cambiar de autómata")
 		btnCambiar.config(command = lambda:Operaciones.cambiar_Imagen(lbCambiar.get(ACTIVE),frameImagen))
 		btnOpcional = Button(frameMenu, text = "Opcional (?)")
@@ -277,6 +288,7 @@ class Automata(Frame):
 		lblSimbolos.pack(fill = "x")
 		txtSimbolos.pack(fill = "x")
 		btnCrear.pack(fill = "x")
+		btnImport.pack(fill = "x")
 
 		lblCambiarAut.pack(fill = "x")
 		lbCambiar.pack(fill = "x")
@@ -298,6 +310,24 @@ class Automata(Frame):
 	def borraTxt(txtSimbolos,exp,frame):
 		txtSimbolos.delete(0, END)
 		Operaciones.basico(exp,frame)
+
+	def importFile(frame):
+		global id
+		if platform.system() == 'Linux':
+			f = filedialog.askopenfilename( defaultextension=".txt",initialdir = '~/Documents')
+		else:
+			f = filedialog.askopenfilename( defaultextension=".txt")
+
+		if f is None:
+			 return
+		else:
+			thisid='Autómata: '+str(id)
+			automats[thisid] = AFND.Automata('',path=f)
+			Operaciones.cambiar_Imagen(thisid,frame)
+			id+=1
+			OptionList.actualizar()
+
+
 
 class Analizar(Frame):
 	def __init__(self, master):
@@ -508,6 +538,5 @@ calcula = Calculadora(tab_control)
 tab_control.add(calcula, text = "Calculadora")
 
 tab_control.pack(fill = "both", expand = True)
-
 root.mainloop()
 AFND.delImages()
