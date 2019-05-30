@@ -24,6 +24,9 @@ class Operaciones:
 
 	def opcional(frame):
 		global currAutomat
+		if automats[currAutomat].determinista:
+			messagebox.showinfo("Error de entrada", "No se puede realizar esa operacion")
+			return
 		if not currAutomat:
 			messagebox.showinfo("Error de entrada", "Seleccie un autómata")
 			return
@@ -35,11 +38,30 @@ class Operaciones:
 
 	def unirM(keys, frame):
 		global currAutomat
+		if automats[currAutomat].determinista:
+			messagebox.showinfo("Error de entrada", "No se puede realizar esa operacion")
+			return
+		if isinstance(automats[currAutomat].final,list):
+			messagebox.showinfo("Autómata invalido", "Autómata con mas de un final")
+			return
+		if automats[currAutomat].determinista:
+			messagebox.showinfo("Error de entrada", "No se puede realizar esa operacion")
+			return
 		if currAutomat:
 			if len(keys):
 				seleccion=set()
 				for k in keys:
+					if automats[k].determinista:
+						messagebox.showinfo("Error de entrada", "No se puede realizar esa operacion")
+						return
+					if isinstance(automats[k].final,list):
+						messagebox.showinfo("Autómata invalido", "Autómata con mas de un final")
+						return
+					if automats[k].determinista:
+						messagebox.showinfo("Error de entrada", "No se puede realizar esa operacion")
+						return
 					seleccion.add(automats[k])
+
 				automats[currAutomat].unirM(seleccion)
 				for k in keys:
 					if k!=currAutomat:
@@ -55,19 +77,31 @@ class Operaciones:
 
 	def cerrPos(frame):
 		global currAutomat
-		if currAutomat:
-			automats[currAutomat].cerradura_positiva()
-			Operaciones.cambiar_Imagen(currAutomat, frame)
-		else:
+		if automats[currAutomat].determinista:
+			messagebox.showinfo("Error de entrada", "No se puede realizar esa operacion")
+			return
+		if not currAutomat:
 			messagebox.showinfo("Error de entrada", "Seleccione un autómata")
+			return
+		if isinstance(automats[currAutomat].final,list):
+			messagebox.showinfo("Autómata invalido", "Autómata con mas de un final")
+			return
+		automats[currAutomat].cerradura_positiva()
+		Operaciones.cambiar_Imagen(currAutomat, frame)
 
 	def cerrKle(frame):
 		global currAutomat
-		if currAutomat:
-			automats[currAutomat].cerradura_kleene()
-			Operaciones.cambiar_Imagen(currAutomat, frame)
-		else:
+		if automats[currAutomat].determinista:
+			messagebox.showinfo("Error de entrada", "No se puede realizar esa operacion")
+			return
+		if not currAutomat:
 			messagebox.showinfo("Error de entrada", "Seleccione un autómata")
+			return
+		if isinstance(automats[currAutomat].final,list):
+			messagebox.showinfo("Autómata invalido", "Autómata con mas de un final")
+			return
+		automats[currAutomat].cerradura_kleene()
+		Operaciones.cambiar_Imagen(currAutomat, frame)
 
 	def cambiar_Imagen(id, frame):
 		global currAutomat
@@ -81,12 +115,35 @@ class Operaciones:
 
 	def Union(f2, frame):
 		global currAutomat
-		if f2 and currAutomat:
-			automats[currAutomat].unir(automats[f2])
-			Operaciones.cambiar_Imagen(currAutomat, frame)
-			del automats[f2]
-		else:
+		if not (f2 and currAutomat):
 			messagebox.showinfo("Error de entrada", "Seleccione al menos 2 autómatas")
+			return
+		if automats[currAutomat].determinista or automats[f2].determinista:
+			messagebox.showinfo("Error de entrada", "No se puede realizar esa operacion")
+			return
+		# print(isinstance(automats[currAutomat].final,list) or isinstance(automats[f2].final,list))
+		if isinstance(automats[currAutomat].final,list) or isinstance(automats[f2].final,list):
+			messagebox.showinfo("Autómata invalido", "Autómata con mas de un final")
+			return
+		automats[currAutomat].unir(automats[f2])
+		Operaciones.cambiar_Imagen(currAutomat, frame)
+		del automats[f2]
+
+	def Concat(f2, frame):
+		global currAutomat
+		if not (f2 and currAutomat):
+			messagebox.showinfo("Error de entrada", "Seleccione al menos 2 autómatas")
+			return
+		if automats[currAutomat].determinista or automats[f2].determinista:
+			messagebox.showinfo("Error de entrada", "No se puede realizar esa operacion")
+			return
+		# print(isinstance(automats[currAutomat].final,list) or isinstance(automats[f2].final,list))
+		if isinstance(automats[currAutomat].final,list) or isinstance(automats[f2].final,list):
+			messagebox.showinfo("Autómata invalido", "Autómata con mas de un final")
+			return
+		automats[currAutomat].concat(automats[f2])
+		Operaciones.cambiar_Imagen(currAutomat, frame)
+		del automats[f2]
 
 	def CrearTabla(sigma):
 		global currAutomat
@@ -134,16 +191,23 @@ class Operaciones:
 
 	def ConvertirAFD(frame):
 		global currAutomat
+		if automats[currAutomat].determinista:
+			messagebox.showinfo("Error de entrada", "El automata ya es determinista")
+			return
 		if not currAutomat:
 			messagebox.showinfo('Error en conversion','Debe al menos crear un automata')
 			return
+<<<<<<< HEAD
 		#f = filedialog.asksaveasfilename( defaultextension=".txt")
 		f = "AFD" + str(currAutomat) + ".txt"
+=======
+		f = filedialog.asksaveasfilename( defaultextension=".txt")
+
+>>>>>>> 8c8395eeec4faa1abd52843f14742644e1d8dfec
 		if f is None:
 			return
 		automats[currAutomat].conversion_A_Archivo(f)
 		automats[currAutomat] = AFND.Automata('', path=f)
-
 		Operaciones.cambiar_Imagen(currAutomat, frame)
 		OptionList.actualizar()
 
@@ -205,9 +269,9 @@ class Automata(Frame):
 		btnCerraduraK = Button(frameMenu, text = "Cerradura kleene (*)")
 		btnCerraduraK.config(command = lambda:Operaciones.cerrKle(frameImagen))
 		btnUnion = Button(frameMenu, text = "Unión (|)")
-		btnUnion.config(command = lambda: Operaciones.Operacion('Union', frameImagen,lbOper.get(ACTIVE)))
+		btnUnion.config(command = lambda: Operaciones.Union(lbOper.get(ACTIVE),frameImagen))
 		btnConcat = Button(frameMenu, text = "Concatenar (&)")
-		btnConcat.config(command = lambda: Operaciones.Operacion('Concat', frameImagen,lbOper.get(ACTIVE)))
+		btnConcat.config(command = lambda:Operaciones.Union(lbOper.get(ACTIVE),frameImagen))
 		btnUnirSel = Button(frameMenu, text = "Unir seleccionados (...|...|...)")
 		btnUnirSel.config(command = lambda: Operaciones.unirM([lbOper.get(0, END)[item] for item in lbOper.curselection()] , frameImagen))
 		btnAFD = Button(frameMenu, text = "Convertir a AFD")
