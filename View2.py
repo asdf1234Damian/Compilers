@@ -61,7 +61,6 @@ class Operaciones:
 						messagebox.showinfo("Error de entrada", "No se puede realizar esa operacion")
 						return
 					seleccion.add(automats[k])
-
 				automats[currAutomat].unirM(seleccion)
 				for k in keys:
 					if k!=currAutomat:
@@ -126,8 +125,9 @@ class Operaciones:
 			messagebox.showinfo("Autómata invalido", "Autómata con mas de un final")
 			return
 		automats[currAutomat].unir(automats[f2])
-		Operaciones.cambiar_Imagen(currAutomat, frame)
 		del automats[f2]
+		Operaciones.cambiar_Imagen(currAutomat, frame)
+		OptionList.actualizar()
 
 	def Concat(f2, frame):
 		global currAutomat
@@ -137,13 +137,13 @@ class Operaciones:
 		if automats[currAutomat].determinista or automats[f2].determinista:
 			messagebox.showinfo("Error de entrada", "No se puede realizar esa operacion")
 			return
-		# print(isinstance(automats[currAutomat].final,list) or isinstance(automats[f2].final,list))
 		if isinstance(automats[currAutomat].final,list) or isinstance(automats[f2].final,list):
 			messagebox.showinfo("Autómata invalido", "Autómata con mas de un final")
 			return
 		automats[currAutomat].concat(automats[f2])
-		Operaciones.cambiar_Imagen(currAutomat, frame)
 		del automats[f2]
+		Operaciones.cambiar_Imagen(currAutomat, frame)
+		OptionList.actualizar()
 
 
 
