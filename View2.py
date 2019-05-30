@@ -8,51 +8,47 @@ automats= {}
 cantidades = list()
 currAutomat = None
 optionLists = list()
+id = 0
 global frame
 class Operaciones:
-	def basico(id,exp,frame):
+	def basico(exp,frame):
+		global id
 		if (len(exp)):
-				automats[id] = AFND.Automata(exp)
-				Operaciones.cambiar_Imagen(id,frame)
-				OptionList.actualizar()
+			thisid='Autómata: '+str(id)
+			automats[thisid] = AFND.Automata(exp)
+			Operaciones.cambiar_Imagen(thisid,frame)
+			id+=1
+			OptionList.actualizar()
 		else:
 			messagebox.showinfo("Error de entrada", "Ingrese un símbolo válido")
 
 	def opcional(frame):
 		global currAutomat
-		if currAutomat:
-			automats[currAutomat].opcional()
-			Operaciones.cambiar_Imagen(currAutomat, frame)
-		else:
+		if not currAutomat:
 			messagebox.showinfo("Error de entrada", "Seleccie un autómata")
+			return
+		if isinstance(automats[currAutomat].final,list):
+			messagebox.showinfo("Autómata invalido", "Autómata con mas de un final")
+			return
+		automats[currAutomat].opcional()
+		Operaciones.cambiar_Imagen(currAutomat, frame)
 
-	def unirM(seleccion, frame):
+	def unirM(keys, frame):
 		global currAutomat
-		if len(seleccion)>1:
-			keys = ['F'+str(i+1) for i in list(seleccion)]
-			#seleccion = []
-			seleccion = set()
-			if  not currAutomat in keys:
-				currAutomat = keys[0]
-			for k in keys:
-				if k != currAutomat and k in automats.keys():
-					seleccion[k] = automats[k]
-			if len(seleccion):
-				automats[currAutomat].unirM(seleccion,frame)
-				Operaciones.cambiar_Imagen(currAutomat, frame)
-			else:
-				mainAutomata = keys[0]
-				keys.remove(keys[0])
-			automatasAUnir = []
-			for k in keys:
-				if k in automats.keys():
-					automatasAUnir.append(automats[k])
-					automats[mainAutomata].unirM(automatasAUnir,frame)
-					currAutomat = mainAutomata
-					Operaciones.cambiar_Imagen(currAutomat, frame)
+		keys = ['Autómata: '+str(k+1) for k in keys]
+		if currAutomat:
+			if len(keys):
+				seleccion=set()
+				for k in keys:
+					seleccion.add(automats[k])
+				automats[currAutomat].unirM(seleccion)
+				for k in keys:
+					del automats[k]
+			Operaciones.cambiar_Imagen(currAutomat,frame)
 			OptionList.actualizar()
 		else:
-			messagebox.showinfo("Error de entrada", "Seleccione al menos 2 autómatas")
+			messagebox.showinfo("Error de entrada", "Se necesita al menos un autómata creado")
+
 
 	def cerrPos(frame):
 		global currAutomat
@@ -89,9 +85,18 @@ class Operaciones:
 		else:
 			messagebox.showinfo("Error de entrada", "Seleccione al menos 2 autómatas")
 
+	def CrearTabla(sigma):
+		global currAutomat
+		if currAutomat:
+			path = str(currAutomat)+'.txt';
+			automats[currAutomat].conversion_A_Archivo(path)
+			#automats[currAutomat].crearDeTablas(currAutomat+'.txt')
+		else:
+			err_lbl_Operacion.config(text = "Primero cree un automata")
 
 
-	def Operacion(operacion, frame, f2 = None, sigma=''):
+
+	def Operacion(operacion, frame, f2 = None):
 		global currAutomat
 		if f2:
 			if f2 in automats.keys():
@@ -167,7 +172,7 @@ class Automata(Frame):
 
 		#------------Buttons----------#
 		btnCrear = Button(frameMenu, text = "Crear autómata")
-		btnCrear.config(command = lambda: Automata.borraTxt(txtSimbolos,"F"+str(automats.__len__()+1),txtSimbolos.get(),frameImagen))
+		btnCrear.config(command = lambda: Automata.borraTxt(txtSimbolos,txtSimbolos.get(),frameImagen))
 		btnCambiar = Button(frameMenu, text = "Cambiar de autómata")
 		btnCambiar.config(command = lambda:Operaciones.cambiar_Imagen(lbCambiar.get(ACTIVE),frameImagen))
 		btnOpcional = Button(frameMenu, text = "Opcional (?)")
@@ -203,9 +208,9 @@ class Automata(Frame):
 		btnUnirSel.pack(fill = "x")
 		lbOper.pack(fill = "x")
 
-	def borraTxt(txtSimbolos,id,exp,frame):
+	def borraTxt(txtSimbolos,exp,frame):
 		txtSimbolos.delete(0, "end")
-		Operaciones.basico(id,exp,frame)
+		Operaciones.basico(exp,frame)
 
 class Analizar(Frame):
 	def __init__(self, master):
@@ -218,8 +223,7 @@ class Analizar(Frame):
 
 		#--------Labels
 		lblAcutal = Label(frameImagen, text = currAutomat)
-		lblAcutal.pack(side = "top", fill = "x")
-		lblSelecAut = Label(frameMenu, text = "Seleccionar autómata"  , width = 30)
+		lblAcutal.pack(side = "top", fill = Label(frameMenu, text = "Seleccionar autómata"  , width = 30)
 		lblResultado = Label(frameMenu, text = "",  )
 		lblIngresaCad = Label(frameMenu, text = "Ingresa una cadena"  )
 
@@ -227,18 +231,18 @@ class Analizar(Frame):
 		txtCadena = Entry(frameMenu  )
 
 		#-----------Buttons
-		btnSelecAut = Button(frameMenu, text = "Ver condiciones")
+		btnAFD = Button(frameMenu, text = "Crear tabla AFD")
+		btnAFD.config()
 		btnAnalizar = Button(frameMenu, text = "Analizar")
 
 		#-----------Listbox
-		lbSelecAut = OptionList(frameMenu)
-		lbSelecAut.desplegar(1)
-		optionLists.append(lbSelecAut)
+		lbAFD = OptionFD.desplegar(1)
+		optionLists.append(lbAFD)
 		
 
-		lblSelecAut.pack(fill = "x")
-		lbSelecAut.pack(fill = "x")
-		btnSelecAut.pack(fill = "x")
+		lblAFD.pack(fill = "x")
+		lbAFD.pack(fill = "x")
+		btnAFD.pack(fill = "x")
 
 		lblIngresaCad.pack(fill = "x")
 		txtCadena.pack(fill = "x")
@@ -361,7 +365,7 @@ class Calculadora(Frame):
 
 	def escribe(label, texto):
 		cantidades.append(texto)
-		label.config(text = cantidades)
+		label.config(text = ''.join(cantidades))
 
 	def borraTodo(label):
 		del cantidades[:]
@@ -414,3 +418,4 @@ tab_control.add(calcula, text = "Calculadora")
 tab_control.pack(fill = "both", expand = True)
 
 root.mainloop()
+AFND.delImages()

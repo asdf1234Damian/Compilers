@@ -34,9 +34,10 @@ class Estado:
 class Automata:
     #Variable estatica de la clase para que los nodos sigan una secuencia
     nxtNode = 0
-    #Si existe un path, se crea basado en el archivo 
-    def __init__(self, exp,path=None):
+    #Si existe un path, se crea basado en el archivo
+    def __init__(self, exp,title='Automata',path=None):
         #Inicializacion de variables
+        self.title = title
         self.exp  = exp
         self.G = Digraph()
         self.estados = {}  # Enteros
@@ -91,13 +92,13 @@ class Automata:
             for exp, trns in destino.transiciones.items():
                 print('\t', exp, ':= {', ','.join(
                     trns.simbolos), '} ->', trns.destinos, sep='')
-    
+
     #Funcion para crear la imagen dado el nombre del archivo. Se guarda en images
     def plot(self,path):
         self.G.clear()
-        #Esto se cambia para cambiar el tamaño de la imagen 
+        #Esto se cambia para cambiar el tamaño de la imagen
         self.G.attr(ratio='fill', size='3.8,2.77',
-                    dpi='300', rank='same', rankdir='LR')
+                    dpi='300', rank='same', rankdir='LR',labelloc='t',label=path)
         self.G.edge('S', str(self.inicial))
         for origin,dest in self.estados.items():
             if self.estados[origin].final:
@@ -219,10 +220,10 @@ class Automata:
         self.estados[nInicial] = Estado(False)
         self.estados[nFinal] = Estado(True)
         # Se unen a los dos automatas con los nuevso estados
-        self.estados[nInicial].addEpsTrans(self.inicial)
+         self.estados[self.final].addEpsTrans(nFinal)
+      self.estados[nInicial].addEpsTrans(self.inicial)
         self.estados[nInicial].addEpsTrans(f2.inicial)
-        self.estados[self.final].addEpsTrans(nFinal)
-        self.estados[f2.final].addEpsTrans(nFinal)
+         self.estados[f2.final].addEpsTrans(nFinal)
         # Cambia los estados finales e iniciales
         self.estados[f2.final].final = False
         self.estados[self.final].final = False
