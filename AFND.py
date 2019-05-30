@@ -42,6 +42,7 @@ class Automata:
         self.G = Digraph()
         self.estados = {}  # Enteros
         self.alf = set()
+        self.determinista = False
         #Caso, crear de archivo
         if path:
             #La primer linea del archivo es el alfabeto
@@ -63,6 +64,7 @@ class Automata:
                         simb = self.alf[i]
                         fin = 'S'+linea[i+1]
                         self.estados[nodeName].addTransicion(simb, simb, fin)
+                self.determinista = True
             return
         #Creado desde la expresion
         self.inicial = Automata.nxtNode
