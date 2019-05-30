@@ -197,13 +197,9 @@ class Operaciones:
 		if not currAutomat:
 			messagebox.showinfo('Error en conversion','Debe al menos crear un automata')
 			return
-<<<<<<< HEAD
 		#f = filedialog.asksaveasfilename( defaultextension=".txt")
 		f = "AFD" + str(currAutomat) + ".txt"
-=======
-		f = filedialog.asksaveasfilename( defaultextension=".txt")
 
->>>>>>> 8c8395eeec4faa1abd52843f14742644e1d8dfec
 		if f is None:
 			return
 		automats[currAutomat].conversion_A_Archivo(f)
