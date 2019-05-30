@@ -48,6 +48,7 @@ class Automata:
             #La primer linea del archivo es el alfabeto
             f = open(path, "r").readlines()
             self. alf = f[0].split()
+            self.final = []
             # El estado inicial esta en la linea 2 en la segunda posicion
             self.inicial = f[1].split()[0]
             #las lineas de 1 en adelante son los estados y transicones
@@ -59,6 +60,7 @@ class Automata:
                 nodeName = linea[0]
                 #Crea el estado
                 self.estados[nodeName] = Estado(terminal)
+                self.final.append(nodeName)
                 for i in range(len(self.alf)):
                     if linea[i+1] != '-1':
                         simb = self.alf[i]

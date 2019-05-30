@@ -111,6 +111,8 @@ class Operaciones:
 			currAutomat = id
 			OptionList.actualizar()
 		else:
+			if currAutomat is None:
+				return
 			messagebox.showinfo("Error al cambiar de imagen", "Seleccione un autómata")
 
 	def Union(f2, frame):
@@ -228,9 +230,9 @@ class Automata(Frame):
 	def __init__(self,master):
 		Frame.__init__(self, master)
 		frameMenu = Frame(self)
-		frameImagen = Frame(self)
+		self.frameImagen = Frame(self)
 		frameMenu.pack(side = "left", fill = "both")
-		frameImagen.pack(side = "left", fill = "both", expand = True)
+		self.frameImagen.pack(side = "left", fill = "both", expand = True)
 
 		oper = Operaciones()
 
@@ -256,27 +258,25 @@ class Automata(Frame):
 
 		#------------Buttons----------#
 		btnCrear = Button(frameMenu, text = "Crear autómata")
-		btnCrear.config(command = lambda: Automata.borraTxt(txtSimbolos,txtSimbolos.get(),frameImagen))
+		btnCrear.config(command = lambda: Automata.borraTxt(txtSimbolos,txtSimbolos.get(),self.frameImagen))
 		btnImport = Button(frameMenu, text = "Importar archivo")
-		#TODO#TODO#TODO#TODO#TODO#TODO#TODO#TODO#TODO#TODO#TODO#TODO#TODO#TODO#TODO#TODO#TODO#TODO#TODO#TODO#TODO
-		btnImport.config(command = lambda: Automata.importFile(frameImagen))#TODO#TODO
-		#TODO#TODO#TODO#TODO#TODO#TODO#TODO#TODO#TODO#TODO#TODO#TODO#TODO#TODO#TODO#TODO#TODO#TODO#TODO#TODO#TODO
+		btnImport.config(command = lambda: Automata.importFile(self.frameImagen))
 		btnCambiar = Button(frameMenu, text = "Cambiar de autómata")
-		btnCambiar.config(command = lambda:Operaciones.cambiar_Imagen(lbCambiar.get(ACTIVE),frameImagen))
+		btnCambiar.config(command = lambda:Operaciones.cambiar_Imagen(lbCambiar.get(ACTIVE),self.frameImagen))
 		btnOpcional = Button(frameMenu, text = "Opcional (?)")
-		btnOpcional.config(command = lambda:Operaciones.opcional(frameImagen))
+		btnOpcional.config(command = lambda:Operaciones.opcional(self.frameImagen))
 		btnCerraduraP = Button(frameMenu, text = "Cerradura positiva (+)")
-		btnCerraduraP.config(command = lambda:Operaciones.cerrPos(frameImagen))
+		btnCerraduraP.config(command = lambda:Operaciones.cerrPos(self.frameImagen))
 		btnCerraduraK = Button(frameMenu, text = "Cerradura kleene (*)")
-		btnCerraduraK.config(command = lambda:Operaciones.cerrKle(frameImagen))
+		btnCerraduraK.config(command = lambda:Operaciones.cerrKle(self.frameImagen))
 		btnUnion = Button(frameMenu, text = "Unión (|)")
-		btnUnion.config(command = lambda: Operaciones.Union(lbOper.get(ACTIVE),frameImagen))
+		btnUnion.config(command = lambda: Operaciones.Union(lbOper.get(ACTIVE),self.frameImagen))
 		btnConcat = Button(frameMenu, text = "Concatenar (&)")
-		btnConcat.config(command = lambda:Operaciones.Union(lbOper.get(ACTIVE),frameImagen))
+		btnConcat.config(command = lambda:Operaciones.Union(lbOper.get(ACTIVE),self.frameImagen))
 		btnUnirSel = Button(frameMenu, text = "Unir seleccionados (...|...|...)")
-		btnUnirSel.config(command = lambda: Operaciones.unirM([lbOper.get(0, END)[item] for item in lbOper.curselection()] , frameImagen))
+		btnUnirSel.config(command = lambda: Operaciones.unirM([lbOper.get(0, END)[item] for item in lbOper.curselection()] , self.frameImagen))
 		btnAFD = Button(frameMenu, text = "Convertir a AFD")
-		btnAFD.config(command = lambda: Operaciones.ConvertirAFD(frameImagen))
+		btnAFD.config(command = lambda: Operaciones.ConvertirAFD(self.frameImagen))
 
 		lblCrear.pack(fill = "x")
 		lblSimbolos.pack(fill = "x")
@@ -326,14 +326,13 @@ class Automata(Frame):
 class Analizar(Frame):
 	def __init__(self, master):
 		ttk.Frame.__init__(self, master)
-
 		frameMenu = Frame(self)
-		frameImagen = Frame(self)
+		self.frameImagen = Frame(self)
 		frameMenu.pack(side = "left", fill = "both")
-		frameImagen.pack(side = "left", fill = "both", expand = True)
+		self.frameImagen.pack(side = "left", fill = "both", expand = True)
 
 		#--------Labels
-		lblAcutal = Label(frameImagen, text = currAutomat)
+		lblAcutal = Label(frameMenu, text = currAutomat)
 		lblAcutal.pack(side = "top", fill = "x")
 		lblSelecAut = Label(frameMenu, text = "Seleccionar autómata"  , width = 30)
 		lblResultado = Label(frameMenu, text = ""  )
@@ -355,14 +354,17 @@ class Analizar(Frame):
 
 		lblSelecAut.pack(fill = "x")
 		lbSelecAut.pack(fill = "x")
+		btnSelecAut.config(command = lambda:Operaciones.cambiar_Imagen(lbSelecAut.get(ACTIVE),self.frameImagen))
 		btnSelecAut.pack(fill = "x")
-		btnSelecAut.config(command = lambda:Operaciones.cambiar_Imagen(lbSelecAut.get(ACTIVE),frameImagen))
 
 
 		lblIngresaCad.pack(fill = "x")
 		txtCadena.pack(fill = "x")
 		lblResultado.pack(fill = "x")
 		btnAnalizar.pack(fill = "x")
+		Operaciones.cambiar_Imagen(currAutomat,self.frameImagen)
+		OptionList.actualizar()
+
 
 class Calculadora(Frame):
 
@@ -502,7 +504,10 @@ class Calculadora(Frame):
 		label.config(text = res)
 		#f.truncate(0)
 
-
+def tab_update(event):
+	OptionList.actualizar()
+	Operaciones.cambiar_Imagen(currAutomat,analizarAutomata.frameImagen)
+	Operaciones.cambiar_Imagen(currAutomat,crearAutomata.frameImagen)
 root = Tk()
 w, h = root.winfo_screenwidth(), root.winfo_screenheight()
 root.geometry("%dx%d+0+0" % (w, h))
@@ -511,6 +516,7 @@ root.config(bg = "white")
 root.option_add("*font", "Helvetica 11")
 
 tab_control = ttk.Notebook(root)
+tab_control.bind("<<NotebookTabChanged>>", tab_update)
 mygreen = "#a9c1e8"
 myred = "#2d4263"
 
@@ -525,7 +531,10 @@ style.theme_use("Barra")
 
 crearAutomata = Automata(tab_control)
 tab_control.add(crearAutomata, text = "Crear Autómata")
+
 analizarAutomata = Analizar(tab_control)
+Operaciones.cambiar_Imagen('0',analizarAutomata.frameImagen)
+
 tab_control.add(analizarAutomata, text = "Analizar Autómata")
 
 calcula = Calculadora(tab_control)
