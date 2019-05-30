@@ -195,11 +195,6 @@ class Operaciones:
 		if not currAutomat:
 			messagebox.showinfo('Error en conversion','Debe al menos crear un automata')
 			return
-<<<<<<< HEAD
-		#f = filedialog.asksaveasfilename( defaultextension=".txt")
-		f = "AFD" + str(currAutomat) + ".txt"
-
-=======
 		if automats[currAutomat].determinista:
 			messagebox.showinfo("Error de entrada", "El automata ya es determinista")
 			return
@@ -207,7 +202,6 @@ class Operaciones:
 			f = filedialog.asksaveasfilename( defaultextension=".txt",initialdir = '~/Documents')
 		else:
 			f = filedialog.asksaveasfilename( defaultextension=".txt")
->>>>>>> f48081d5db68321d459f767ca1c5080aac1fec93
 		if f is None:
 			return
 		automats[currAutomat].conversion_A_Archivo(f)
