@@ -1,4 +1,4 @@
-from tkinter import Tk,Frame,Button,Label,Entry,Listbox,END,ACTIVE, Menu, ttk, messagebox
+from tkinter import Tk,Frame,Button,Label,Entry,Listbox,END,ACTIVE, Menu, ttk, messagebox,filedialog
 from Calculadora.calculadora import Calculadora as calculator
 import AFND
 import Image
@@ -35,7 +35,6 @@ class Operaciones:
 
 	def unirM(keys, frame):
 		global currAutomat
-		keys = ['Autómata: '+str(k+1) for k in keys]
 		if currAutomat:
 			if len(keys):
 				seleccion=set()
@@ -43,11 +42,15 @@ class Operaciones:
 					seleccion.add(automats[k])
 				automats[currAutomat].unirM(seleccion)
 				for k in keys:
-					del automats[k]
-			Operaciones.cambiar_Imagen(currAutomat,frame)
-			OptionList.actualizar()
+					if k!=currAutomat:
+						del automats[k]
+				Operaciones.cambiar_Imagen(currAutomat,frame)
+				OptionList.actualizar()
+			else:
+				messagebox.showinfo("Error al unir", "No se seleccionaron automatas para unir")
+				return
 		else:
-			messagebox.showinfo("Error de entrada", "Se necesita al menos un autómata creado")
+			messagebox.showinfo("Error al unir", "Se necesita al menos un autómata creado")
 
 
 	def cerrPos(frame):
@@ -74,7 +77,7 @@ class Operaciones:
 			currAutomat = id
 			OptionList.actualizar()
 		else:
-			messagebox.showinfo("Error de entrada", "Seleccione un autómata")
+			messagebox.showinfo("Error al cambiar de imagen", "Seleccione un autómata")
 
 	def Union(f2, frame):
 		global currAutomat
@@ -117,27 +120,34 @@ class Operaciones:
 		else:
 			messagebox.showinfo("Error de entrada", "No existe ese autómata")
 
+	def ConvertirAFD(frame):
+		global currAutomat
+		if not currAutomat:
+			messagebox.showinfo('Error en conversion','Debe al menos crear un automata')
+			return
+		f = filedialog.asksaveasfilename( defaultextension=".txt")
+		if f is None:
+			return
+		automats[currAutomat].conversion_A_Archivo(f)
+		automats[currAutomat] = AFND.Automata('', path=f)
+
+		Operaciones.cambiar_Imagen(currAutomat, frame)
+		OptionList.actualizar()
+
 class OptionList(Listbox):
 	def __init__(self, master):
 		Listbox.__init__(self, master)
 
-	def desplegar(self,num):
-		for item in automats:
-			if num == 0: #No ha sido creado
-				if item not in automats.keys():
-					self.insert(END, item)
-
-			if num == 1:
-				if item != currAutomat:
-					if item in automats.keys():
-						self.insert(END, item)
-
+	def desplegar(self):
+		for item in automats.keys():
+			if item != currAutomat:
+				self.insert(END, item)
 		self.config(height = 0)
 
 	def actualizar():
 		for num in range((len(optionLists))):
 			optionLists[num].delete(0,END)
-			optionLists[num].desplegar(1)
+			optionLists[num].desplegar()
 
 class Automata(Frame):
 	def __init__(self,master):
@@ -163,9 +173,9 @@ class Automata(Frame):
 
 		#----------Option List------#
 		lbCambiar = OptionList(frameMenu)
-		lbCambiar.desplegar(1)
+		lbCambiar.desplegar()
 		lbOper = OptionList(frameMenu)
-		lbOper.desplegar(1)
+		lbOper.desplegar()
 		lbOper.config(selectmode = "extended")
 		optionLists.append(lbCambiar)
 		optionLists.append(lbOper)
@@ -185,8 +195,10 @@ class Automata(Frame):
 		btnUnion.config(command = lambda: Operaciones.Operacion('Union', frameImagen,lbOper.get(ACTIVE)))
 		btnConcat = Button(frameMenu, text = "Concatenar (&)")
 		btnConcat.config(command = lambda: Operaciones.Operacion('Concat', frameImagen,lbOper.get(ACTIVE)))
-		btnUnirSel = Button(frameMenu, text = "Unir seleccionados (.|.|.)")
-		btnUnirSel.config(command = lambda: Operaciones.unirM(lbOper.curselection(), frameImagen))
+		btnUnirSel = Button(frameMenu, text = "Unir seleccionados (...|...|...)")
+		btnUnirSel.config(command = lambda: Operaciones.unirM([lbOper.get(0, END)[item] for item in lbOper.curselection()] , frameImagen))
+		btnAFD = Button(frameMenu, text = "Convertir a AFD")
+		btnAFD.config(command = lambda: Operaciones.ConvertirAFD(frameImagen))
 
 		lblCrear.pack(fill = "x")
 		lblSimbolos.pack(fill = "x")
@@ -202,14 +214,16 @@ class Automata(Frame):
 		btnOpcional.pack(fill = "x")
 		btnCerraduraP.pack(fill = "x")
 		btnCerraduraK.pack(fill = "x")
+		btnAFD.pack(fill = 'x')
 		lblOperB.pack(fill = "x")
 		btnUnion.pack(fill = "x")
 		btnConcat.pack(fill = "x")
 		btnUnirSel.pack(fill = "x")
 		lbOper.pack(fill = "x")
 
+
 	def borraTxt(txtSimbolos,exp,frame):
-		txtSimbolos.delete(0, "end")
+		txtSimbolos.delete(0, END)
 		Operaciones.basico(exp,frame)
 
 class Analizar(Frame):
@@ -223,8 +237,8 @@ class Analizar(Frame):
 
 		#--------Labels
 		lblAcutal = Label(frameImagen, text = currAutomat)
-		lblAcutal.pack(side = "top", fill = Label(frameMenu, text = "Seleccionar autómata"  , width = 30)
-		lblResultado = Label(frameMenu, text = "",  )
+		lblAcutal.pack(side = "top", fill = Label(frameMenu), text = "Seleccionar autómata"  , width = 30)
+		lblResultado = Label(frameMenu, text = "" )
 		lblIngresaCad = Label(frameMenu, text = "Ingresa una cadena"  )
 
 		#-------Entry
@@ -236,9 +250,10 @@ class Analizar(Frame):
 		btnAnalizar = Button(frameMenu, text = "Analizar")
 
 		#-----------Listbox
-		lbAFD = OptionFD.desplegar(1)
-		optionLists.append(lbAFD)
-		
+
+		lbSelecAut = OptionList(frameMenu)
+		lbSelecAut.desplegar()
+		optionLists.append(lbSelecAut)
 
 		lblAFD.pack(fill = "x")
 		lbAFD.pack(fill = "x")
@@ -250,6 +265,7 @@ class Analizar(Frame):
 		btnAnalizar.pack(fill = "x")
 
 class Calculadora(Frame):
+
 	def __init__(self, master):
 		master.grid_rowconfigure(0, weight=1)
 		master.grid_columnconfigure(0, weight=1)

@@ -1,0 +1,386 @@
+Created by PLY version 3.11 (http://www.dabeaz.com/ply)
+
+Grammar
+
+Rule 0     S' -> expr
+Rule 1     expr -> NUMBER
+Rule 2     expr -> VAR
+Rule 3     expr -> VAR EQUALS expr
+Rule 4     expr -> expr PLUS expr
+Rule 5     expr -> expr MINUS expr
+Rule 6     expr -> expr POR expr
+Rule 7     expr -> expr DIVIDE expr
+Rule 8     expr -> LPAR expr RPAR
+Rule 9     expr -> MINUS expr
+
+Terminals, with rules where they appear
+
+DIVIDE               : 7
+EQUALS               : 3
+LPAR                 : 8
+MINUS                : 5 9
+NUMBER               : 1
+PLUS                 : 4
+POR                  : 6
+RPAR                 : 8
+VAR                  : 2 3
+error                : 
+
+Nonterminals, with rules where they appear
+
+expr                 : 3 4 4 5 5 6 6 7 7 8 9 0
+
+Parsing method: LALR
+
+state 0
+
+    (0) S' -> . expr
+    (1) expr -> . NUMBER
+    (2) expr -> . VAR
+    (3) expr -> . VAR EQUALS expr
+    (4) expr -> . expr PLUS expr
+    (5) expr -> . expr MINUS expr
+    (6) expr -> . expr POR expr
+    (7) expr -> . expr DIVIDE expr
+    (8) expr -> . LPAR expr RPAR
+    (9) expr -> . MINUS expr
+
+    NUMBER          shift and go to state 2
+    VAR             shift and go to state 3
+    LPAR            shift and go to state 5
+    MINUS           shift and go to state 4
+
+    expr                           shift and go to state 1
+
+state 1
+
+    (0) S' -> expr .
+    (4) expr -> expr . PLUS expr
+    (5) expr -> expr . MINUS expr
+    (6) expr -> expr . POR expr
+    (7) expr -> expr . DIVIDE expr
+
+    PLUS            shift and go to state 6
+    MINUS           shift and go to state 7
+    POR             shift and go to state 8
+    DIVIDE          shift and go to state 9
+
+
+state 2
+
+    (1) expr -> NUMBER .
+
+    PLUS            reduce using rule 1 (expr -> NUMBER .)
+    MINUS           reduce using rule 1 (expr -> NUMBER .)
+    POR             reduce using rule 1 (expr -> NUMBER .)
+    DIVIDE          reduce using rule 1 (expr -> NUMBER .)
+    $end            reduce using rule 1 (expr -> NUMBER .)
+    RPAR            reduce using rule 1 (expr -> NUMBER .)
+
+
+state 3
+
+    (2) expr -> VAR .
+    (3) expr -> VAR . EQUALS expr
+
+    PLUS            reduce using rule 2 (expr -> VAR .)
+    MINUS           reduce using rule 2 (expr -> VAR .)
+    POR             reduce using rule 2 (expr -> VAR .)
+    DIVIDE          reduce using rule 2 (expr -> VAR .)
+    $end            reduce using rule 2 (expr -> VAR .)
+    RPAR            reduce using rule 2 (expr -> VAR .)
+    EQUALS          shift and go to state 10
+
+
+state 4
+
+    (9) expr -> MINUS . expr
+    (1) expr -> . NUMBER
+    (2) expr -> . VAR
+    (3) expr -> . VAR EQUALS expr
+    (4) expr -> . expr PLUS expr
+    (5) expr -> . expr MINUS expr
+    (6) expr -> . expr POR expr
+    (7) expr -> . expr DIVIDE expr
+    (8) expr -> . LPAR expr RPAR
+    (9) expr -> . MINUS expr
+
+    NUMBER          shift and go to state 2
+    VAR             shift and go to state 3
+    LPAR            shift and go to state 5
+    MINUS           shift and go to state 4
+
+    expr                           shift and go to state 11
+
+state 5
+
+    (8) expr -> LPAR . expr RPAR
+    (1) expr -> . NUMBER
+    (2) expr -> . VAR
+    (3) expr -> . VAR EQUALS expr
+    (4) expr -> . expr PLUS expr
+    (5) expr -> . expr MINUS expr
+    (6) expr -> . expr POR expr
+    (7) expr -> . expr DIVIDE expr
+    (8) expr -> . LPAR expr RPAR
+    (9) expr -> . MINUS expr
+
+    NUMBER          shift and go to state 2
+    VAR             shift and go to state 3
+    LPAR            shift and go to state 5
+    MINUS           shift and go to state 4
+
+    expr                           shift and go to state 12
+
+state 6
+
+    (4) expr -> expr PLUS . expr
+    (1) expr -> . NUMBER
+    (2) expr -> . VAR
+    (3) expr -> . VAR EQUALS expr
+    (4) expr -> . expr PLUS expr
+    (5) expr -> . expr MINUS expr
+    (6) expr -> . expr POR expr
+    (7) expr -> . expr DIVIDE expr
+    (8) expr -> . LPAR expr RPAR
+    (9) expr -> . MINUS expr
+
+    NUMBER          shift and go to state 2
+    VAR             shift and go to state 3
+    LPAR            shift and go to state 5
+    MINUS           shift and go to state 4
+
+    expr                           shift and go to state 13
+
+state 7
+
+    (5) expr -> expr MINUS . expr
+    (1) expr -> . NUMBER
+    (2) expr -> . VAR
+    (3) expr -> . VAR EQUALS expr
+    (4) expr -> . expr PLUS expr
+    (5) expr -> . expr MINUS expr
+    (6) expr -> . expr POR expr
+    (7) expr -> . expr DIVIDE expr
+    (8) expr -> . LPAR expr RPAR
+    (9) expr -> . MINUS expr
+
+    NUMBER          shift and go to state 2
+    VAR             shift and go to state 3
+    LPAR            shift and go to state 5
+    MINUS           shift and go to state 4
+
+    expr                           shift and go to state 14
+
+state 8
+
+    (6) expr -> expr POR . expr
+    (1) expr -> . NUMBER
+    (2) expr -> . VAR
+    (3) expr -> . VAR EQUALS expr
+    (4) expr -> . expr PLUS expr
+    (5) expr -> . expr MINUS expr
+    (6) expr -> . expr POR expr
+    (7) expr -> . expr DIVIDE expr
+    (8) expr -> . LPAR expr RPAR
+    (9) expr -> . MINUS expr
+
+    NUMBER          shift and go to state 2
+    VAR             shift and go to state 3
+    LPAR            shift and go to state 5
+    MINUS           shift and go to state 4
+
+    expr                           shift and go to state 15
+
+state 9
+
+    (7) expr -> expr DIVIDE . expr
+    (1) expr -> . NUMBER
+    (2) expr -> . VAR
+    (3) expr -> . VAR EQUALS expr
+    (4) expr -> . expr PLUS expr
+    (5) expr -> . expr MINUS expr
+    (6) expr -> . expr POR expr
+    (7) expr -> . expr DIVIDE expr
+    (8) expr -> . LPAR expr RPAR
+    (9) expr -> . MINUS expr
+
+    NUMBER          shift and go to state 2
+    VAR             shift and go to state 3
+    LPAR            shift and go to state 5
+    MINUS           shift and go to state 4
+
+    expr                           shift and go to state 16
+
+state 10
+
+    (3) expr -> VAR EQUALS . expr
+    (1) expr -> . NUMBER
+    (2) expr -> . VAR
+    (3) expr -> . VAR EQUALS expr
+    (4) expr -> . expr PLUS expr
+    (5) expr -> . expr MINUS expr
+    (6) expr -> . expr POR expr
+    (7) expr -> . expr DIVIDE expr
+    (8) expr -> . LPAR expr RPAR
+    (9) expr -> . MINUS expr
+
+    NUMBER          shift and go to state 2
+    VAR             shift and go to state 3
+    LPAR            shift and go to state 5
+    MINUS           shift and go to state 4
+
+    expr                           shift and go to state 17
+
+state 11
+
+    (9) expr -> MINUS expr .
+    (4) expr -> expr . PLUS expr
+    (5) expr -> expr . MINUS expr
+    (6) expr -> expr . POR expr
+    (7) expr -> expr . DIVIDE expr
+
+    PLUS            reduce using rule 9 (expr -> MINUS expr .)
+    MINUS           reduce using rule 9 (expr -> MINUS expr .)
+    $end            reduce using rule 9 (expr -> MINUS expr .)
+    RPAR            reduce using rule 9 (expr -> MINUS expr .)
+    POR             shift and go to state 8
+    DIVIDE          shift and go to state 9
+
+  ! POR             [ reduce using rule 9 (expr -> MINUS expr .) ]
+  ! DIVIDE          [ reduce using rule 9 (expr -> MINUS expr .) ]
+  ! PLUS            [ shift and go to state 6 ]
+  ! MINUS           [ shift and go to state 7 ]
+
+
+state 12
+
+    (8) expr -> LPAR expr . RPAR
+    (4) expr -> expr . PLUS expr
+    (5) expr -> expr . MINUS expr
+    (6) expr -> expr . POR expr
+    (7) expr -> expr . DIVIDE expr
+
+    RPAR            shift and go to state 18
+    PLUS            shift and go to state 6
+    MINUS           shift and go to state 7
+    POR             shift and go to state 8
+    DIVIDE          shift and go to state 9
+
+
+state 13
+
+    (4) expr -> expr PLUS expr .
+    (4) expr -> expr . PLUS expr
+    (5) expr -> expr . MINUS expr
+    (6) expr -> expr . POR expr
+    (7) expr -> expr . DIVIDE expr
+
+    PLUS            reduce using rule 4 (expr -> expr PLUS expr .)
+    MINUS           reduce using rule 4 (expr -> expr PLUS expr .)
+    $end            reduce using rule 4 (expr -> expr PLUS expr .)
+    RPAR            reduce using rule 4 (expr -> expr PLUS expr .)
+    POR             shift and go to state 8
+    DIVIDE          shift and go to state 9
+
+  ! POR             [ reduce using rule 4 (expr -> expr PLUS expr .) ]
+  ! DIVIDE          [ reduce using rule 4 (expr -> expr PLUS expr .) ]
+  ! PLUS            [ shift and go to state 6 ]
+  ! MINUS           [ shift and go to state 7 ]
+
+
+state 14
+
+    (5) expr -> expr MINUS expr .
+    (4) expr -> expr . PLUS expr
+    (5) expr -> expr . MINUS expr
+    (6) expr -> expr . POR expr
+    (7) expr -> expr . DIVIDE expr
+
+    PLUS            reduce using rule 5 (expr -> expr MINUS expr .)
+    MINUS           reduce using rule 5 (expr -> expr MINUS expr .)
+    $end            reduce using rule 5 (expr -> expr MINUS expr .)
+    RPAR            reduce using rule 5 (expr -> expr MINUS expr .)
+    POR             shift and go to state 8
+    DIVIDE          shift and go to state 9
+
+  ! POR             [ reduce using rule 5 (expr -> expr MINUS expr .) ]
+  ! DIVIDE          [ reduce using rule 5 (expr -> expr MINUS expr .) ]
+  ! PLUS            [ shift and go to state 6 ]
+  ! MINUS           [ shift and go to state 7 ]
+
+
+state 15
+
+    (6) expr -> expr POR expr .
+    (4) expr -> expr . PLUS expr
+    (5) expr -> expr . MINUS expr
+    (6) expr -> expr . POR expr
+    (7) expr -> expr . DIVIDE expr
+
+    PLUS            reduce using rule 6 (expr -> expr POR expr .)
+    MINUS           reduce using rule 6 (expr -> expr POR expr .)
+    POR             reduce using rule 6 (expr -> expr POR expr .)
+    DIVIDE          reduce using rule 6 (expr -> expr POR expr .)
+    $end            reduce using rule 6 (expr -> expr POR expr .)
+    RPAR            reduce using rule 6 (expr -> expr POR expr .)
+
+  ! PLUS            [ shift and go to state 6 ]
+  ! MINUS           [ shift and go to state 7 ]
+  ! POR             [ shift and go to state 8 ]
+  ! DIVIDE          [ shift and go to state 9 ]
+
+
+state 16
+
+    (7) expr -> expr DIVIDE expr .
+    (4) expr -> expr . PLUS expr
+    (5) expr -> expr . MINUS expr
+    (6) expr -> expr . POR expr
+    (7) expr -> expr . DIVIDE expr
+
+    PLUS            reduce using rule 7 (expr -> expr DIVIDE expr .)
+    MINUS           reduce using rule 7 (expr -> expr DIVIDE expr .)
+    POR             reduce using rule 7 (expr -> expr DIVIDE expr .)
+    DIVIDE          reduce using rule 7 (expr -> expr DIVIDE expr .)
+    $end            reduce using rule 7 (expr -> expr DIVIDE expr .)
+    RPAR            reduce using rule 7 (expr -> expr DIVIDE expr .)
+
+  ! PLUS            [ shift and go to state 6 ]
+  ! MINUS           [ shift and go to state 7 ]
+  ! POR             [ shift and go to state 8 ]
+  ! DIVIDE          [ shift and go to state 9 ]
+
+
+state 17
+
+    (3) expr -> VAR EQUALS expr .
+    (4) expr -> expr . PLUS expr
+    (5) expr -> expr . MINUS expr
+    (6) expr -> expr . POR expr
+    (7) expr -> expr . DIVIDE expr
+
+    $end            reduce using rule 3 (expr -> VAR EQUALS expr .)
+    RPAR            reduce using rule 3 (expr -> VAR EQUALS expr .)
+    PLUS            shift and go to state 6
+    MINUS           shift and go to state 7
+    POR             shift and go to state 8
+    DIVIDE          shift and go to state 9
+
+  ! PLUS            [ reduce using rule 3 (expr -> VAR EQUALS expr .) ]
+  ! MINUS           [ reduce using rule 3 (expr -> VAR EQUALS expr .) ]
+  ! POR             [ reduce using rule 3 (expr -> VAR EQUALS expr .) ]
+  ! DIVIDE          [ reduce using rule 3 (expr -> VAR EQUALS expr .) ]
+
+
+state 18
+
+    (8) expr -> LPAR expr RPAR .
+
+    PLUS            reduce using rule 8 (expr -> LPAR expr RPAR .)
+    MINUS           reduce using rule 8 (expr -> LPAR expr RPAR .)
+    POR             reduce using rule 8 (expr -> LPAR expr RPAR .)
+    DIVIDE          reduce using rule 8 (expr -> LPAR expr RPAR .)
+    $end            reduce using rule 8 (expr -> LPAR expr RPAR .)
+    RPAR            reduce using rule 8 (expr -> LPAR expr RPAR .)
+

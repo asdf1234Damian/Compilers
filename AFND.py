@@ -12,11 +12,11 @@ def delImages():
     for f in files:
         os.remove(f)
 
-class Transicion: 
+class Transicion:
     def __init__(self, simbolos, destinos):
         self.simbolos = simbolos
         self.destinos = [destinos]
-    
+
 class Estado:
     def __init__(self, esFinal):
         self.final = esFinal
@@ -113,7 +113,7 @@ class Automata:
     # Regresa los estados alcanzables por transiciones epsilon desde cualquier estado en edos
     def cEpsilon(self,edos):
         res = []
-        i = 0 
+        i = 0
         while i != len(edos):
             edo = self.estados[edos[i]]
             if EPS in edo.transiciones.keys():
@@ -148,7 +148,7 @@ class Automata:
         if isinstance(self.final,int):
             if self.final in edos:
                 return True
-        else: 
+        else:
             if len(set(self.final).intersection(edos)):
                 return True
         return False
@@ -220,10 +220,10 @@ class Automata:
         self.estados[nInicial] = Estado(False)
         self.estados[nFinal] = Estado(True)
         # Se unen a los dos automatas con los nuevso estados
-         self.estados[self.final].addEpsTrans(nFinal)
-      self.estados[nInicial].addEpsTrans(self.inicial)
+        self.estados[self.final].addEpsTrans(nFinal)
+        self.estados[nInicial].addEpsTrans(self.inicial)
         self.estados[nInicial].addEpsTrans(f2.inicial)
-         self.estados[f2.final].addEpsTrans(nFinal)
+        self.estados[f2.final].addEpsTrans(nFinal)
         # Cambia los estados finales e iniciales
         self.estados[f2.final].final = False
         self.estados[self.final].final = False
@@ -274,7 +274,7 @@ class Automata:
             #Inicializa la tabla y el indice para recorrerla
             S = [self.cEpsilon([self.inicial])]
             currS = 0
-            #Imprime el alfabeto primero 
+            #Imprime el alfabeto primero
             file.writelines(' '.join(self.alf)+'\n')
             #Mientras no haya llegado al ultimo estado
             while currS != len(S):
@@ -286,7 +286,7 @@ class Automata:
                 #cada simbolo del alfabeto
                 for simb in self.alf:
                     sj = self.irA(si,simb)
-                    #Se guarda sj en caso de que no este y despues se 
+                    #Se guarda sj en caso de que no este y despues se
                     #imprime el indice respectivo
                     if len(sj):
                         if not sj in S:
@@ -299,5 +299,10 @@ class Automata:
                 else:
                     file.write('-1\n')
                 currS += 1
-        #self = Automata('')
-        #self.crearDeTablas(path)
+
+test = Automata('a')
+test2 = Automata('b')
+test.unirM([test2])
+test.conversion_A_Archivo('asdf.txt')
+test = Automata('',path='asdf.txt')
+test.plot('test')
