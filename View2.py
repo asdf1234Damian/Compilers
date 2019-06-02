@@ -244,7 +244,7 @@ class Automata(Frame):
 	def __init__(self,master):
 		Frame.__init__(self, master)
 		frameMenu = Frame(self)
-		self.frameImagen = Frame(self)
+		self.frameImagen = Frame(self,bg = 'white')
 		frameMenu.pack(side = "left", fill = "both")
 		self.frameImagen.pack(side = "left", fill = "both", expand = True)
 
@@ -523,6 +523,7 @@ class Gramaticas(Frame):
 	def __init__(self, master):
 		self.G = None
 		ttk.Frame.__init__(self, master)
+		#----MENU ----#
 		self.menu = Frame(self)
 		self.menu.pack(side='left',fill='both')
 		#--------Boton para cargar Gramatica ----#
@@ -530,9 +531,9 @@ class Gramaticas(Frame):
 		btnCargar.config(command = lambda:self.cargarGram())
 		btnCargar.pack(fill='x')
 		#--------Tipo de gramatica ----#
-		selection = StringVar(self.menu)
-		selection.set('LL0')
-		olGramType = OptionMenu(self.menu,selection,*{'LL0','LL1'})
+		self.gramType = StringVar(self.menu)
+		self.gramType.set('LL0')
+		olGramType = OptionMenu(self.menu,self.gramType,*{'LL0','LL1'})
 		olGramType.pack(fill='x')
 		#--------Analizar cadena ----#
 		lblAnalizar = Label(self.menu,text='Cadena a analizar')
@@ -540,23 +541,32 @@ class Gramaticas(Frame):
 		txtCadena = Entry(self.menu,width=4)
 		txtCadena.pack(fill='x')
 		self.btnAnalizar = Button(self.menu,text='Analizar cadena')
+		self.btnAnalizar.config(state='disabled',command = lambda:self.analizar)
 		self.btnAnalizar.pack(fill='x')
-		self.btnAnalizar.config(state='disabled')
+		#----INFO ----#
+		self.info = Frame(self, bg ='red')
+		self.info.pack(fill='x')
+		lblTituloGram = Label(self.info, text = 'Informacion de la gramatica'	)
+		lblTituloGram.pack(side = 'top', fill='x')
+		self.lblinfoGram = Label(self.info, text = '')
+		self.lblinfoGram.pack(side = 'top', fill='x')
+
+
+
 
 
 
 	def cargarGram(self):
 		f = filedialog.askopenfilename(defaultextension='.txt',initialdir = defaultdir)
-		if f is None:
+		if not len(f):
 			return
-		print(f)
-		self.G = Gramatica.Gramatica(f, 'LL1')
-		print(self.G.errorAlCrear)
+		self.G = Gramatica.Gramatica(f, self.gramType.get())
 		if self.G.errorAlCrear!=False:
 			messagebox.showinfo("Error al crear la gramatica", "La gramatica no se puedo crear porque" +self.G.errorAlCrear)
 			self.G = None
 			return
 		self.btnAnalizar.config(state = 'normal')
+		self.lblinfoGram.config(text = str(self.G))
 
 
 
@@ -603,4 +613,5 @@ tab_control.add(calcula, text = "Calculadora")
 tab_control.select(2)
 tab_control.pack(fill = "both", expand = True)
 root.mainloop()
+analizarAutomata.G =
 AFND.delImages()

@@ -57,14 +57,52 @@ class Gramatica:
 			self.errorAlCrear='el tipo de analisis nol es valido'
 
 	def __str__(self):
-		pass
-		# str = ''
-		# str += 'Raiz' + self.raiz
-		# str += 'Vt' + self.terminales
-		# str += 'Vn' + self.noTerminales
-		# str += ''.rjust(50,'-')
-		# i+=0
-		# for izq,derArri
+		res = ''
+		if self.errorAlCrear:
+			return res
+		res += 'Raiz: ' + self.raiz + '\n'
+		res += 'Vt: {' + ','.join(self.terminales) + '} \n'
+		res += 'Vn: {' + ','.join(self.noTerminales) + '\n'
+		res +=''.rjust(50,'-')+ '\n'
+		i=0
+		for izq,derArr in self.reglas.items():
+			for der in derArr:
+				res += str(i)+') ' + izq + ' -> ' + ','.join(der) + '\n'
+				i+=1
+		if self.tipo == 'LL1':
+			res += ''.rjust(50,'-')+'\n'
+			terminales = self.terminales[:]
+			terminales.remove(EPS)
+			terminales.append('$')
+			res+=''.center(6)+'|'
+			for t in terminales:
+				res += t.center(6)+'|'
+			res += '\n'
+			for x in self.noTerminales:
+				res += '-'*8*(len(terminales)+1)
+				res += x.center(6)+'|'
+				for y in terminales:
+					res += (''.join(self.tabla[x][y][:-1])).center(6) + '|'
+				res += '\n'
+		if self.tipo == 'LR0':
+			print(''.rjust(50,'-'))
+			simbolos = self.terminales[:]
+			simbolos.remove(EPS)
+			simbolos.append('$')
+			simbolos += self.noTerminales[:]
+			print(''.center(6),'|',end = '')
+			for s in simbolos:
+				print(s.center(6),'|',end = '')
+			print()
+			for i in range(len(self.tabla.keys())):
+				print(str(i).center(6),'|',end = '')
+				for s in simbolos:
+					if s in self.tabla[i].keys():
+						print((''.join(map(str,self.tabla[i][s]))).center(6),'|',end = '')
+					else:
+						print(''.center(6),'|',end = '')
+				print()
+		return res
 
 	def print(self):
 		print('Raiz:', self.raiz)
@@ -325,3 +363,8 @@ class Gramatica:
 				cerr = self.cerraduraLR0(rs[tokePos],r,0,stack)
 				c += cerr
 		return c
+
+
+print('Gram')
+gram = Gramatica('testFiles/Gramatica.txt', 'LL1')
+gram.analyzeLL1('n+n')
