@@ -1,4 +1,5 @@
 import itertools
+import sys
 EPS = 'ε'
 
 #Funcion para eliminar repeticiones sin usar set
@@ -9,12 +10,15 @@ def delRep(l):
 
 class Gramatica:
 	def __init__(self, path,type):
+		self.siva = False
 		self.tabla = {}
 		self.reglas = {}
 		self.terminales = set()
 		self.noTerminales = set()
 		self.raiz = None
 		self.tipo = type
+		self.recursiva=False
+		self.errorAlCrear = False
 		#Crea el diccionario de reglas segun el archivo
 		with open(path, "r") as file:
 			file = file.readlines()
@@ -31,22 +35,36 @@ class Gramatica:
 				izq = line[0]
 				self.noTerminales.add(izq)
 				der = line[1:]
+				if izq == der[0]:
+					print('recursion en',izq,der)
+					self.recursiva=True
 				if izq in self.reglas.keys():
 					self.reglas[izq].append(der)
 				else:
 					self.reglas[izq] = [der]
-
 			#Se calcula terminales
 			self.terminales = simbolos - self.noTerminales
 			if not EPS in self.terminales:
 				self.terminales.add(EPS)
-			# self.terminales.add('$')
+			self.terminales.add('$')
 			self.terminales = delRep(self.terminales)
 			self.noTerminales = delRep(self.noTerminales)
 		if self.tipo == 'LL1':
 			self.genTablaLL1()
-		if self.tipo == 'LR0':
+		elif self.tipo == 'LR0':
 			self.genTablaLR0()
+		else:
+			self.errorAlCrear='el tipo de analisis nol es valido'
+
+	def __str__(self):
+		pass
+		# str = ''
+		# str += 'Raiz' + self.raiz
+		# str += 'Vt' + self.terminales
+		# str += 'Vn' + self.noTerminales
+		# str += ''.rjust(50,'-')
+		# i+=0
+		# for izq,derArri
 
 	def print(self):
 		print('Raiz:', self.raiz)
@@ -140,6 +158,9 @@ class Gramatica:
 
 
 	def genTablaLL1(self):
+		if self.recursiva:
+			self.errorAlCrear = 'no se puede usar LL1 para una gramatica recursiva'
+			return
 		terminales = self.terminales[:]
 		terminales.remove(EPS)
 		terminales.append('$')
@@ -149,7 +170,7 @@ class Gramatica:
 			for der in derArr:
 				i+=1
 				if EPS in der:
-					f = self.follow(izq)
+					f = self.follow(izq,[])
 				else:
 					f = self.first(der[:],True)
 				for s in f:
@@ -241,7 +262,6 @@ class Gramatica:
 					else:
 						print('(S'+str(s.index(sj)),end=')\n')
 			i+=1
-		print('Construccion de la talba'.center(50,'-'))
 		j = 0
 		for sj in s:
 			self.tabla[j] = {}
@@ -305,11 +325,3 @@ class Gramatica:
 				cerr = self.cerraduraLR0(rs[tokePos],r,0,stack)
 				c += cerr
 		return c
-
-g  = Gramatica('testFiles/gramaticaRecursiva.txt','LR0')
-g.extendGram()
-g.genTablaLR0()
-
-# g.cerraduraLR0('E',['E','-','T'], 0)
-g.print()
-# print(g.analyze('n+n*(n-n)'))

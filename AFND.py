@@ -102,7 +102,7 @@ class Automata:
         self.G.clear()
         #Esto se cambia para cambiar el tamaño de la imagen
         self.G.attr(ratio='fill', size='3.8,2.77',
-                    dpi='300', rank='same', rankdir='LR',labelloc='t',label=path)
+                    dpi='450', rank='same', rankdir='LR',labelloc='t',label=path)
         self.G.edge('S', str(self.inicial))
         for origin,dest in self.estados.items():
             if self.estados[origin].final:
@@ -136,6 +136,7 @@ class Automata:
         for edo in stack:
             if edo in self.estados.keys():
                 for tr in self.estados[edo].transiciones.values():
+
                     if s in tr.simbolos:
                         result = result.union(set(tr.destinos))
         return list(result)

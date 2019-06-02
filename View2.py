@@ -1,15 +1,22 @@
-from tkinter import Tk,Frame,Button,Label,Entry,Listbox,END,ACTIVE, Menu, ttk, messagebox,filedialog
+from tkinter import Tk,Frame,Button,Label,Entry,Listbox,END,ACTIVE, Menu, ttk, messagebox,filedialog,OptionMenu,StringVar
 from Calculadora.calculadora import Calculadora as calculator
 import AFND
+import Gramatica
 import Image
 import platform
 import os.path
+
 # -----------Guarda autómatas seleccionados-----#
 automats= {}
 cantidades = list()
 currAutomat = None
 optionLists = list()
 id = 0
+if platform.system() == 'Linux':
+	defaultdir = '~/Documents'
+else:
+	defaultdir = None
+
 global frame
 class Operaciones:
 	def basico(exp,frame):
@@ -115,6 +122,17 @@ class Operaciones:
 				return
 			messagebox.showinfo("Error al cambiar de imagen", "Seleccione un autómata")
 
+	def display_Image():
+		global currAutomat
+		frame = tab_control.index(tab_control.select())
+		if currAutomat:
+			if frame == 0:
+				frame = crearAutomata.frameImagen
+			else:
+				frame = analizarAutomata.frameImagen
+			Image.ImageWidow(frame, path='images/'+currAutomat+'.png')
+
+
 	def Union(f2, frame):
 		global currAutomat
 		if not (f2 and currAutomat):
@@ -123,7 +141,6 @@ class Operaciones:
 		if automats[currAutomat].determinista or automats[f2].determinista:
 			messagebox.showinfo("Error de entrada", "No se puede realizar esa operacion")
 			return
-		# print(isinstance(automats[currAutomat].final,list) or isinstance(automats[f2].final,list))
 		if isinstance(automats[currAutomat].final,list) or isinstance(automats[f2].final,list):
 			messagebox.showinfo("Autómata invalido", "Autómata con mas de un final")
 			return
@@ -159,8 +176,8 @@ class Operaciones:
 
 	def Pertenece(sigma, lblResultado):
 		global currAutomat
-		if not len(sigma):
-			sigma=AFND.EPS
+		# if not len(sigma):
+		# 	sigma=AFND.EPS
 		if currAutomat:
 			if automats[currAutomat].pertenece(sigma):
 				lblResultado.config(text='Cadena valida')
@@ -200,10 +217,7 @@ class Operaciones:
 		if automats[currAutomat].determinista:
 			messagebox.showinfo("Error de entrada", "El automata ya es determinista")
 			return
-		if platform.system() == 'Linux':
-			f = filedialog.asksaveasfilename( defaultextension=".txt",initialdir = '~/Documents')
-		else:
-			f = filedialog.asksaveasfilename( defaultextension=".txt")
+		f = filedialog.asksaveasfilename( defaultextension=".txt", initialdir=defaultdir)
 		if f is None:
 			return
 		automats[currAutomat].conversion_A_Archivo(f)
@@ -272,11 +286,12 @@ class Automata(Frame):
 		btnUnion = Button(frameMenu, text = "Unión (|)")
 		btnUnion.config(command = lambda: Operaciones.Union(lbOper.get(ACTIVE),self.frameImagen))
 		btnConcat = Button(frameMenu, text = "Concatenar (&)")
-		btnConcat.config(command = lambda:Operaciones.Union(lbOper.get(ACTIVE),self.frameImagen))
+		btnConcat.config(command = lambda:Operaciones.Concat(lbOper.get(ACTIVE),self.frameImagen))
 		btnUnirSel = Button(frameMenu, text = "Unir seleccionados (...|...|...)")
 		btnUnirSel.config(command = lambda: Operaciones.unirM([lbOper.get(0, END)[item] for item in lbOper.curselection()] , self.frameImagen))
 		btnAFD = Button(frameMenu, text = "Convertir a AFD")
 		btnAFD.config(command = lambda: Operaciones.ConvertirAFD(self.frameImagen))
+
 
 		lblCrear.pack(fill = "x")
 		lblSimbolos.pack(fill = "x")
@@ -380,7 +395,6 @@ class Calculadora(Frame):
 		self.rowconfigure(2, weight = 1)
 		self.rowconfigure(3, weight = 1)
 		self.rowconfigure(4, weight = 1)
-
 		self.columnconfigure(0, weight = 1)
 		self.columnconfigure(1, weight = 1)
 		self.columnconfigure(2, weight = 1)
@@ -504,13 +518,58 @@ class Calculadora(Frame):
 		label.config(text = res)
 		#f.truncate(0)
 
+
+class Gramaticas(Frame):
+	def __init__(self, master):
+		self.G = None
+		ttk.Frame.__init__(self, master)
+		self.menu = Frame(self)
+		self.menu.pack(side='left',fill='both')
+		#--------Boton para cargar Gramatica ----#
+		btnCargar = Button(self.menu,text = 'Cargar gramatica')
+		btnCargar.config(command = lambda:self.cargarGram())
+		btnCargar.pack(fill='x')
+		#--------Tipo de gramatica ----#
+		selection = StringVar(self.menu)
+		selection.set('LL0')
+		olGramType = OptionMenu(self.menu,selection,*{'LL0','LL1'})
+		olGramType.pack(fill='x')
+		#--------Analizar cadena ----#
+		lblAnalizar = Label(self.menu,text='Cadena a analizar')
+		lblAnalizar.pack(fill='x')
+		txtCadena = Entry(self.menu,width=4)
+		txtCadena.pack(fill='x')
+		self.btnAnalizar = Button(self.menu,text='Analizar cadena')
+		self.btnAnalizar.pack(fill='x')
+		self.btnAnalizar.config(state='disabled')
+
+
+
+	def cargarGram(self):
+		f = filedialog.askopenfilename(defaultextension='.txt',initialdir = defaultdir)
+		if f is None:
+			return
+		print(f)
+		self.G = Gramatica.Gramatica(f, 'LL1')
+		print(self.G.errorAlCrear)
+		if self.G.errorAlCrear!=False:
+			messagebox.showinfo("Error al crear la gramatica", "La gramatica no se puedo crear porque" +self.G.errorAlCrear)
+			self.G = None
+			return
+		self.btnAnalizar.config(state = 'normal')
+
+
+
+
 def tab_update(event):
 	OptionList.actualizar()
-	Operaciones.cambiar_Imagen(currAutomat,analizarAutomata.frameImagen)
-	Operaciones.cambiar_Imagen(currAutomat,crearAutomata.frameImagen)
+	Operaciones.display_Image()
+
+
+
 root = Tk()
 w, h = root.winfo_screenwidth(), root.winfo_screenheight()
-root.geometry("%dx%d+0+0" % (w, h))
+root.geometry("%dx%d+%d+%d" % (w/2, h,w/2,0))
 root.title("AFND")
 root.config(bg = "white")
 root.option_add("*font", "Helvetica 11")
@@ -533,13 +592,15 @@ crearAutomata = Automata(tab_control)
 tab_control.add(crearAutomata, text = "Crear Autómata")
 
 analizarAutomata = Analizar(tab_control)
-Operaciones.cambiar_Imagen('0',analizarAutomata.frameImagen)
-
 tab_control.add(analizarAutomata, text = "Analizar Autómata")
+
+
+analizarGramatica = Gramaticas(tab_control)
+tab_control.add(analizarGramatica,text = 'Gramaticas')
 
 calcula = Calculadora(tab_control)
 tab_control.add(calcula, text = "Calculadora")
-
+tab_control.select(2)
 tab_control.pack(fill = "both", expand = True)
 root.mainloop()
 AFND.delImages()
