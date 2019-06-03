@@ -13,9 +13,10 @@ currAutomat = None
 optionLists = list()
 id = 0
 if platform.system() == 'Linux':
-	defaultdir = '~/Documents'
+	DEFAULTDIR = '~/Documents'
+	DEFAULTFONT = ("Consolas", 12)
 else:
-	defaultdir = None
+	DEFAULTDIR = None
 
 global frame
 class Operaciones:
@@ -217,7 +218,7 @@ class Operaciones:
 		if automats[currAutomat].determinista:
 			messagebox.showinfo("Error de entrada", "El automata ya es determinista")
 			return
-		f = filedialog.asksaveasfilename( defaultextension=".txt", initialdir=defaultdir)
+		f = filedialog.asksaveasfilename( defaultextension=".txt", initialdir=DEFAULTDIR)
 		if f is None:
 			return
 		automats[currAutomat].conversion_A_Archivo(f)
@@ -525,7 +526,8 @@ class Gramaticas(Frame):
 		ttk.Frame.__init__(self, master)
 		#----MENU ----#
 		self.menu = Frame(self)
-		self.menu.pack(side='left',fill='both')
+		self.menu.grid(row = 0, column = 0,sticky='nsew',rowspan = 2)
+		# self.menu.pack(side='left',fill='both')
 		#--------Boton para cargar Gramatica ----#
 		btnCargar = Button(self.menu,text = 'Cargar gramatica')
 		btnCargar.config(command = lambda:self.cargarGram())
@@ -538,26 +540,39 @@ class Gramaticas(Frame):
 		#--------Analizar cadena ----#
 		lblAnalizar = Label(self.menu,text='Cadena a analizar')
 		lblAnalizar.pack(fill='x')
-		txtCadena = Entry(self.menu,width=4)
-		txtCadena.pack(fill='x')
+		self.txtCadena = Entry(self.menu,width=4)
+		self.txtCadena.pack(fill='x')
 		self.btnAnalizar = Button(self.menu,text='Analizar cadena')
-		self.btnAnalizar.config(state='disabled',command = lambda:self.analizar)
+		self.btnAnalizar.config(state='disabled',command = lambda:self.analizar())
 		self.btnAnalizar.pack(fill='x')
 		#----INFO ----#
-		self.info = Frame(self, bg ='red')
-		self.info.pack(fill='x')
-		lblTituloGram = Label(self.info, text = 'Informacion de la gramatica'	)
-		lblTituloGram.pack(side = 'top', fill='x')
-		self.lblinfoGram = Label(self.info, text = '')
-		self.lblinfoGram.pack(side = 'top', fill='x')
+		self.info = Frame(self, bg ='black')
+		self.info.grid(row = 0,column = 1,sticky = 'nsew')
+		lblTituloGram = Label(self.info, text = 'Informacion de la gramatica'	,font = DEFAULTFONT,justify	 = 'center',bg = 'white')
+		lblTituloGram.grid(row=0)
+		self.lblinfoGram = Label(self.info, text = '',justify = 'left',font=DEFAULTFONT,bg='white')
+		self.lblinfoGram.grid(row = 1,column=0,sticky='nsew')
+		Label(self.info, text = 'Analisis' ,justify = 'left',font=DEFAULTFONT,bg='white').grid(row = 0,column=2,sticky = 'nsew')
+		self.lblanalisis = Label(self.info, text = '' ,justify = 'left',font=DEFAULTFONT,bg='white')
+		self.lblanalisis.grid(row = 1,column=2,sticky = 'nsew')
 
+
+	def analizar(self):
+		print('Analizar')
+		if self.G:
+			print('Existe G')
+			if self.G.tipo == 'LL1':
+				print('Es LL1')
+				output = self.G.analyzeLL1(self.txtCadena.get())
+				print(output)
+				self.lblanalisis.config(text = output)
 
 
 
 
 
 	def cargarGram(self):
-		f = filedialog.askopenfilename(defaultextension='.txt',initialdir = defaultdir)
+		f = filedialog.askopenfilename(defaultextension='.txt',initialdir = DEFAULTDIR)
 		if not len(f):
 			return
 		self.G = Gramatica.Gramatica(f, self.gramType.get())
@@ -613,5 +628,5 @@ tab_control.add(calcula, text = "Calculadora")
 tab_control.select(2)
 tab_control.pack(fill = "both", expand = True)
 root.mainloop()
-analizarAutomata.G =
+
 AFND.delImages()

@@ -63,26 +63,26 @@ class Gramatica:
 		res += 'Raiz: ' + self.raiz + '\n'
 		res += 'Vt: {' + ','.join(self.terminales) + '} \n'
 		res += 'Vn: {' + ','.join(self.noTerminales) + '\n'
-		res +=''.rjust(50,'-')+ '\n'
+		res +='Reglas'.center(50,'-')+ '\n'
 		i=0
 		for izq,derArr in self.reglas.items():
 			for der in derArr:
-				res += str(i)+') ' + izq + ' -> ' + ','.join(der) + '\n'
+				res += str(i)+') ' + izq + ' -> ' + ''.join(der) + '\n'
 				i+=1
 		if self.tipo == 'LL1':
-			res += ''.rjust(50,'-')+'\n'
+			res += 'Tabla LL1'.center(50,'-')+'\n'
 			terminales = self.terminales[:]
 			terminales.remove(EPS)
 			terminales.append('$')
-			res+=''.center(6)+'|'
+			res+=''.center(6)+'| '
 			for t in terminales:
-				res += t.center(6)+'|'
+				res += t.center(6)+'| '
 			res += '\n'
 			for x in self.noTerminales:
-				res += '-'*8*(len(terminales)+1)
-				res += x.center(6)+'|'
+				res += '-'*8*(len(terminales)+1) + '\n'
+				res += x.ljust(6)+'| '
 				for y in terminales:
-					res += (''.join(self.tabla[x][y][:-1])).center(6) + '|'
+					res += (''.join(self.tabla[x][y][:-1])).center(6) + '| '
 				res += '\n'
 		if self.tipo == 'LR0':
 			print(''.rjust(50,'-'))
@@ -215,14 +215,15 @@ class Gramatica:
 					self.tabla[izq][s] = (der[:]+[','+str(i)])
 
 	def analyzeLL1(self, cad):
+		output = ''
 		cad =cad+'$'
 		stack = ['$', self.raiz]
-		print('-'*85)
-		print('|','Analisis lexico'.center(81),'|')
-		print('-'*85)
+		output += '-'*85+'\n'
+		output +='| '+'Analisis lexico'.center(81)+'|\n'
+		output += '-'*85+'\n'
 		while len(stack) and len(cad):
-			print((' '.join(stack)).ljust(30),end='| ')
-			print((' '.join(cad)).ljust(50),'|')
+			output += (' '.join(stack)).ljust(30)+'| '
+			output += (' '.join(cad)).ljust(50)+ '|\n'
 			sp = stack.pop()
 			simb  = cad [0]
 			if sp == EPS:
@@ -230,19 +231,19 @@ class Gramatica:
 			elif (sp in self.terminales):
 				if simb == sp:
 					if simb == '$':
-						return True
+						return output + 'Cadena valida!'
 					cad = cad[1:]
 				else:
-					return False
+					return output+'Cadena invalida!'
 			else:
 				if not simb in self.terminales:
-					return False
+					return output+'Cadena invalida!'
 				contTabla  = self.tabla[sp][simb][:-1]
 				if(len(contTabla)):
 					stack += contTabla[::-1]
 				else:
-					return False
-		return False
+					return output+'Cadena invalida!'
+		return output+'Cadena invalida!'
 
 	# Extiende la gramatica si es necesario
 	def extendGram(self):
@@ -367,4 +368,5 @@ class Gramatica:
 
 print('Gram')
 gram = Gramatica('testFiles/Gramatica.txt', 'LL1')
+gram.print()
 gram.analyzeLL1('n+n')
