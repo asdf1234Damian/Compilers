@@ -1,2 +1,4 @@
-E->T F
-F->+ T F | - T F | eps
+E -> T F
+F -> + T F
+F -> - T F
+F -> eps

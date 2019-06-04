@@ -57,7 +57,11 @@ class Gramatica:
 		if self.LadoDerecho():
 			tok = self.lexer.getToken()
 			if tok == 70:
-				self.lista.append('|')
+				#self.lista.append('|')
+				self.tabla.append(self.lista.copy())
+				aux=self.lista[0]
+				self.lista.clear()
+				self.lista.append(aux)
 				if self.ListaLadosDerechos():
 					return True
 				return False
@@ -88,7 +92,7 @@ class Gramatica:
 		f = open("gramatica.txt", 'w')
 		for lista in self.tabla:
 			regla = " ".join(str(lista[x]) for x in range(1,len(lista)))
-			f.write(str(lista[0])+'->'+regla+'\n')
+			f.write(str(lista[0])+' -> '+regla+'\n')
 		f.close()
 
 gram = Gramatica()
