@@ -5,7 +5,7 @@ import Gramatica
 import Image
 import platform
 import os.path
-from Regex import regexLexer
+import regexLexer
 
 # -----------Guarda autómatas seleccionados-----#
 automats= {}
@@ -13,9 +13,9 @@ cantidades = list()
 currAutomat = None
 optionLists = list()
 id = 0
+DEFAULTFONT = ("Consolas", 12)
 if platform.system() == 'Linux':
 	DEFAULTDIR = '~/Documents'
-	DEFAULTFONT = ("Consolas", 12)
 else:
 	DEFAULTDIR = None
 
@@ -183,8 +183,6 @@ class Operaciones:
 
 	def Pertenece(sigma, lblResultado):
 		global currAutomat
-		# if not len(sigma):
-		# 	sigma=AFND.EPS
 		if currAutomat:
 			if automats[currAutomat].pertenece(sigma):
 				lblResultado.config(text='Cadena valida')
@@ -280,8 +278,10 @@ class Automata(Frame):
 		#------------Buttons----------#
 		btnCrear = Button(frameMenu, text = "Crear autómata")
 		btnCrear.config(command = lambda: Automata.borraTxt(txtSimbolos,txtSimbolos.get(),self.frameImagen))
-		btnImport = Button(frameMenu, text = "Importar archivo")
-		btnImport.config(command = lambda: Automata.importFile(self.frameImagen))
+		btnImportAFD = Button(frameMenu, text = "Importar AFD")
+		btnImportAFD.config(command = lambda: Automata.importAFD(self.frameImagen))
+		btnImportEXP = Button(frameMenu, text = "Importar expresiones")
+		btnImportEXP.config(command = lambda: Automata.importExpFile(self.frameImagen))
 		btnCambiar = Button(frameMenu, text = "Cambiar de autómata")
 		btnCambiar.config(command = lambda:Operaciones.cambiar_Imagen(lbCambiar.get(ACTIVE),self.frameImagen))
 		btnOpcional = Button(frameMenu, text = "Opcional (?)")
@@ -304,7 +304,8 @@ class Automata(Frame):
 		lblSimbolos.pack(fill = "x")
 		txtSimbolos.pack(fill = "x")
 		btnCrear.pack(fill = "x")
-		btnImport.pack(fill = "x")
+		btnImportAFD.pack(fill = "x")
+		btnImportEXP.pack(fill = "x")
 
 		lblCambiarAut.pack(fill = "x")
 		lbCambiar.pack(fill = "x")
@@ -327,13 +328,28 @@ class Automata(Frame):
 		txtSimbolos.delete(0, END)
 		Operaciones.basico(exp,frame)
 
-	def importFile(frame):
+	def importExpFile(frame):
 		global id
-		if platform.system() == 'Linux':
-			f = filedialog.askopenfilename( defaultextension=".txt",initialdir = '~/Documents')
+		thisid	= ''
+		f = filedialog.askopenfilename( defaultextension=".txt",initialdir = DEFAULTDIR)
+		if f is None:
+			 return
 		else:
-			f = filedialog.askopenfilename( defaultextension=".txt")
+			with open(f,'r') as file:
+				lex = regexLexer.regexLexer()
+				for line in file:
+					if lex.anlaisisLex(line.strip()):
+						thisid='Autómata: '+str(id)
+						automats[thisid] = lex.f
+						id+=1
+					else:
+						messagebox.showinfo(':c','No jala, profe, pero lo hice con amor <3 ')
+				Operaciones.cambiar_Imagen(thisid,frame)
+				OptionList.actualizar()
 
+	def importAFD(frame):
+		global id
+		f = filedialog.askopenfilename( defaultextension=".txt",initialdir = DEFAULTDIR)
 		if f is None:
 			 return
 		else:

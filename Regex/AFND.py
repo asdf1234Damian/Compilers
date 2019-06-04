@@ -77,7 +77,7 @@ class Automata:
             if exp.count('-'):
                 inicio, fin = [ord(x) for x in exp.split('-')]
                 for simb in range(inicio,fin+1):
-                    if simb in range(inicio,fin+1):
+                    if simb in range(inicio,fin+1) and chr(simb).isalnum():
                         self.alf.add(chr(simb))
             #Separado por comas
             else:
@@ -298,5 +298,29 @@ class Automata:
                 else:
                     file.write('-1\n')
                 currS += 1
-        #self = Automata('')
-        #self.crearDeTablas(path)
+
+simb = Automata('0-z')
+
+rango = Automata('-')
+rangoizq = Automata('0-z')
+rango.concat(rangoizq)
+
+conj = Automata(',')
+conjizq = Automata('0-z')
+conj.concat(conjizq)
+conj.cerradura_positiva()
+rango.unir(conj)
+rango.opcional()
+simb.concat(rango)
+pariz = Automata('(')
+parder = Automata(')')
+cerkl = Automata('*')
+cerpos = Automata('+')
+ceropc = Automata('?')
+concat = Automata('&')
+union = Automata('|')
+simb.unirM([pariz,parder,cerkl,cerpos,ceropc,concat,union])
+simb.conversion_A_Archivo('output')
+afd = Automata(',',path='output')
+afd.plot('Hola')
+# mainAutomata.plot('Hola')
