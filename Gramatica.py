@@ -366,7 +366,7 @@ class Gramatica:
 		return c
 
 
-print('Gram')
-gram = Gramatica('testFiles/Gramatica.txt', 'LL1')
-gram.print()
-gram.analyzeLL1('n+n')
+# print('Gram')
+# gram = Gramatica('testFiles/Gramatica.txt', 'LL1')
+# gram.print()
+# gram.analyzeLL1('n+n')

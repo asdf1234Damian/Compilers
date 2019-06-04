@@ -8,7 +8,7 @@ os.environ["PATH"] += os.pathsep + 'C:/Program Files (x86)/Graphviz2.38/bin/'
 EPS = 'ε'
 
 def delImages():
-    files = glob.glob('images/*')
+    files = glob.glob('cache/*')
     for f in files:
         os.remove(f)
 
@@ -82,7 +82,7 @@ class Automata:
             if exp.count('-'):
                 inicio, fin = [ord(x) for x in exp.split('-')]
                 for simb in range(inicio,fin+1):
-                    if simb in range(inicio,fin+1):
+                    if simb in range(inicio,fin+1) and chr(simb).isalnum():
                         self.alf.add(chr(simb))
             #Separado por comas
             else:
@@ -102,7 +102,7 @@ class Automata:
         self.G.clear()
         #Esto se cambia para cambiar el tamaño de la imagen
         self.G.attr(ratio='fill', size='3.8,2.77',
-                    dpi='450', rank='same', rankdir='LR',labelloc='t',label=path)
+                    dpi='1000', rank='same', rankdir='LR',labelloc='t',label=path)
         self.G.edge('S', str(self.inicial))
         for origin,dest in self.estados.items():
             if self.estados[origin].final:
@@ -112,7 +112,7 @@ class Automata:
                     self.G.edge(str(origin), str(dest), label=exp)
         self.G.node('S', label=None, shape='point', )
         self.G.render(filename=path, view=False,
-                      directory='images', cleanup=True, format='png')
+                      directory='cache', cleanup=True, format='png')
 
     # Regresa los estados alcanzables por transiciones epsilon desde cualquier estado en edos
     def cEpsilon(self,edos):

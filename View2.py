@@ -5,6 +5,7 @@ import Gramatica
 import Image
 import platform
 import os.path
+from Regex import regexLexer
 
 # -----------Guarda autómatas seleccionados-----#
 automats= {}
@@ -24,7 +25,12 @@ class Operaciones:
 		global id
 		if (len(exp)):
 			thisid='Autómata: '+str(id)
-			automats[thisid] = AFND.Automata(exp)
+			if len(exp)==1:
+				automats[thisid] = AFND.Automata(exp)
+			else:
+				lexer = regexLexer.regexLexer()
+				lexer.anlaisisLex(exp)
+				automats[thisid] = lexer.f
 			Operaciones.cambiar_Imagen(thisid,frame)
 			id+=1
 			OptionList.actualizar()
@@ -115,7 +121,7 @@ class Operaciones:
 		global currAutomat
 		if id in automats.keys():
 			automats[id].plot(id)
-			Image.ImageWidow(frame, path='images/'+id+'.png')
+			Image.ImageWidow(frame, path='cache/'+id+'.png')
 			currAutomat = id
 			OptionList.actualizar()
 		else:
@@ -131,7 +137,7 @@ class Operaciones:
 				frame = crearAutomata.frameImagen
 			else:
 				frame = analizarAutomata.frameImagen
-			Image.ImageWidow(frame, path='images/'+currAutomat+'.png')
+			Image.ImageWidow(frame, path='cache/'+currAutomat+'.png')
 
 
 	def Union(f2, frame):
@@ -527,7 +533,6 @@ class Gramaticas(Frame):
 		#----MENU ----#
 		self.menu = Frame(self)
 		self.menu.grid(row = 0, column = 0,sticky='nsew',rowspan = 2)
-		# self.menu.pack(side='left',fill='both')
 		#--------Boton para cargar Gramatica ----#
 		btnCargar = Button(self.menu,text = 'Cargar gramatica')
 		btnCargar.config(command = lambda:self.cargarGram())
@@ -546,7 +551,7 @@ class Gramaticas(Frame):
 		self.btnAnalizar.config(state='disabled',command = lambda:self.analizar())
 		self.btnAnalizar.pack(fill='x')
 		#----INFO ----#
-		self.info = Frame(self, bg ='black')
+		self.info = Frame(self, bg ='white')
 		self.info.grid(row = 0,column = 1,sticky = 'nsew')
 		lblTituloGram = Label(self.info, text = 'Informacion de la gramatica'	,font = DEFAULTFONT,justify	 = 'center',bg = 'white')
 		lblTituloGram.grid(row=0)
@@ -625,7 +630,6 @@ tab_control.add(analizarGramatica,text = 'Gramaticas')
 
 calcula = Calculadora(tab_control)
 tab_control.add(calcula, text = "Calculadora")
-tab_control.select(2)
 tab_control.pack(fill = "both", expand = True)
 root.mainloop()
 
