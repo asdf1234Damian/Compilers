@@ -102,7 +102,7 @@ class Automata:
         self.G.clear()
         #Esto se cambia para cambiar el tamaño de la imagen
         self.G.attr(ratio='fill', size='3.8,2.77',
-                    dpi='1000', rank='same', rankdir='LR',labelloc='t',label=path)
+                    dpi='500', rank='same', rankdir='LR',labelloc='t',label=path)
         self.G.edge('S', str(self.inicial))
         for origin,dest in self.estados.items():
             if self.estados[origin].final:
@@ -146,10 +146,15 @@ class Automata:
 
     def pertenece(self, sigma):
         edos = [self.inicial]
-        for s in sigma:
-            edos = self.irA(self.cEpsilon(edos), s)
+        if sigma == '':
+            edos = self.cEpsilon(edos)
             if (len(edos)==0):
                 return False
+        else:
+            for s in sigma:
+                edos = self.irA(self.cEpsilon(edos), s)
+                if (len(edos)==0):
+                    return False
         if isinstance(self.final,int):
             if self.final in edos:
                 return True
