@@ -1,17 +1,17 @@
 from analizadorLexico import Lexic
-from AFND import Automata
+import AFND
 import math
 
 SIMB   = 20
-PAR_IZ = 30
-CERKLE = 40
-CONCAT = 50
-CEROPC = 60
+CONCAT = 30
+CERPOS = 40
+CEROPC = 50
+PAR_IZ = 60
 PAR_DE = 70
-CERPOS = 80
-UNION  = 90
-RANG   = 120
-CONJ   = 130
+UNION  = 80
+CERKLE = 90
+CONJ   = 120
+RANG   = 130
 
 class regexLexer:
 	def __init__(self):
@@ -20,10 +20,10 @@ class regexLexer:
 		self.f = []
 
 	def anlaisisLex(self,cadena):
+		self.f = []
 		self.lx.loadString(cadena)
 		if(self.E(self.f)):
 			self.f = self.f[0]
-			self.f.conversion_A_Archivo('cache/lexerOutput.txt')
 			return True
 		return False
 
@@ -37,7 +37,6 @@ class regexLexer:
 		tok = self.lx.getToken()
 		if tok == UNION:
 			if self.T(f):
-				print(self.f)
 				f[0].unir(f[1])
 				f.pop()
 				if self.Ep(f):
@@ -97,8 +96,6 @@ class regexLexer:
 			return False
 		elif tok == SIMB or tok == CONJ or tok == RANG:
 			lexema = self.lx.getLexema()
-			f.append(Automata(lexema))
+			f.append(AFND.Automata(lexema))
 			return True
 		return False
-
-test = regexLexer()

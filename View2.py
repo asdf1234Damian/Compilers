@@ -5,6 +5,7 @@ import Gramatica
 import Image
 import platform
 import os.path
+import regexLexer
 
 # -----------Guarda autómatas seleccionados-----#
 automats= {}
@@ -12,9 +13,9 @@ cantidades = list()
 currAutomat = None
 optionLists = list()
 id = 0
+DEFAULTFONT = ("Consolas", 12)
 if platform.system() == 'Linux':
 	DEFAULTDIR = '~/Documents'
-	DEFAULTFONT = ("Consolas", 12)
 else:
 	DEFAULTDIR = None
 
@@ -24,7 +25,12 @@ class Operaciones:
 		global id
 		if (len(exp)):
 			thisid='Autómata: '+str(id)
-			automats[thisid] = AFND.Automata(exp)
+			if len(exp)==1:
+				automats[thisid] = AFND.Automata(exp)
+			else:
+				lexer = regexLexer.regexLexer()
+				lexer.anlaisisLex(exp)
+				automats[thisid] = lexer.f
 			Operaciones.cambiar_Imagen(thisid,frame)
 			id+=1
 			OptionList.actualizar()
@@ -115,7 +121,7 @@ class Operaciones:
 		global currAutomat
 		if id in automats.keys():
 			automats[id].plot(id)
-			Image.ImageWidow(frame, path='images/'+id+'.png')
+			Image.ImageWidow(frame, path='cache/'+id+'.png')
 			currAutomat = id
 			OptionList.actualizar()
 		else:
@@ -131,7 +137,7 @@ class Operaciones:
 				frame = crearAutomata.frameImagen
 			else:
 				frame = analizarAutomata.frameImagen
-			Image.ImageWidow(frame, path='images/'+currAutomat+'.png')
+			Image.ImageWidow(frame, path='cache/'+currAutomat+'.png')
 
 
 	def Union(f2, frame):
@@ -177,8 +183,6 @@ class Operaciones:
 
 	def Pertenece(sigma, lblResultado):
 		global currAutomat
-		# if not len(sigma):
-		# 	sigma=AFND.EPS
 		if currAutomat:
 			if automats[currAutomat].pertenece(sigma):
 				lblResultado.config(text='Cadena valida')
@@ -274,8 +278,10 @@ class Automata(Frame):
 		#------------Buttons----------#
 		btnCrear = Button(frameMenu, text = "Crear autómata")
 		btnCrear.config(command = lambda: Automata.borraTxt(txtSimbolos,txtSimbolos.get(),self.frameImagen))
-		btnImport = Button(frameMenu, text = "Importar archivo")
-		btnImport.config(command = lambda: Automata.importFile(self.frameImagen))
+		btnImportAFD = Button(frameMenu, text = "Importar AFD")
+		btnImportAFD.config(command = lambda: Automata.importAFD(self.frameImagen))
+		btnImportEXP = Button(frameMenu, text = "Importar expresiones")
+		btnImportEXP.config(command = lambda: Automata.importExpFile(self.frameImagen))
 		btnCambiar = Button(frameMenu, text = "Cambiar de autómata")
 		btnCambiar.config(command = lambda:Operaciones.cambiar_Imagen(lbCambiar.get(ACTIVE),self.frameImagen))
 		btnOpcional = Button(frameMenu, text = "Opcional (?)")
@@ -298,7 +304,8 @@ class Automata(Frame):
 		lblSimbolos.pack(fill = "x")
 		txtSimbolos.pack(fill = "x")
 		btnCrear.pack(fill = "x")
-		btnImport.pack(fill = "x")
+		btnImportAFD.pack(fill = "x")
+		btnImportEXP.pack(fill = "x")
 
 		lblCambiarAut.pack(fill = "x")
 		lbCambiar.pack(fill = "x")
@@ -321,13 +328,28 @@ class Automata(Frame):
 		txtSimbolos.delete(0, END)
 		Operaciones.basico(exp,frame)
 
-	def importFile(frame):
+	def importExpFile(frame):
 		global id
-		if platform.system() == 'Linux':
-			f = filedialog.askopenfilename( defaultextension=".txt",initialdir = '~/Documents')
+		thisid	= ''
+		f = filedialog.askopenfilename( defaultextension=".txt",initialdir = DEFAULTDIR)
+		if f is None:
+			 return
 		else:
-			f = filedialog.askopenfilename( defaultextension=".txt")
+			with open(f,'r') as file:
+				lex = regexLexer.regexLexer()
+				for line in file:
+					if lex.anlaisisLex(line.strip()):
+						thisid='Autómata: '+str(id)
+						automats[thisid] = lex.f
+						id+=1
+					else:
+						messagebox.showinfo(':c','No jala, profe, pero lo hice con amor <3 ')
+				Operaciones.cambiar_Imagen(thisid,frame)
+				OptionList.actualizar()
 
+	def importAFD(frame):
+		global id
+		f = filedialog.askopenfilename( defaultextension=".txt",initialdir = DEFAULTDIR)
 		if f is None:
 			 return
 		else:
@@ -527,7 +549,6 @@ class Gramaticas(Frame):
 		#----MENU ----#
 		self.menu = Frame(self)
 		self.menu.grid(row = 0, column = 0,sticky='nsew',rowspan = 2)
-		# self.menu.pack(side='left',fill='both')
 		#--------Boton para cargar Gramatica ----#
 		btnCargar = Button(self.menu,text = 'Cargar gramatica')
 		btnCargar.config(command = lambda:self.cargarGram())
@@ -546,7 +567,7 @@ class Gramaticas(Frame):
 		self.btnAnalizar.config(state='disabled',command = lambda:self.analizar())
 		self.btnAnalizar.pack(fill='x')
 		#----INFO ----#
-		self.info = Frame(self, bg ='black')
+		self.info = Frame(self, bg ='white')
 		self.info.grid(row = 0,column = 1,sticky = 'nsew')
 		lblTituloGram = Label(self.info, text = 'Informacion de la gramatica'	,font = DEFAULTFONT,justify	 = 'center',bg = 'white')
 		lblTituloGram.grid(row=0)
@@ -625,7 +646,6 @@ tab_control.add(analizarGramatica,text = 'Gramaticas')
 
 calcula = Calculadora(tab_control)
 tab_control.add(calcula, text = "Calculadora")
-tab_control.select(2)
 tab_control.pack(fill = "both", expand = True)
 root.mainloop()
 
