@@ -1,3 +1,4 @@
+from Calculadora.analizadorLexico import Lexic as lexic
 import itertools
 import sys
 EPS = 'ε'
@@ -19,6 +20,7 @@ class Gramatica:
 		self.tipo = type
 		self.recursiva=False
 		self.errorAlCrear = False
+		self.lexer = lexic("Calculadora/tab.txt")
 		#Crea el diccionario de reglas segun el archivo
 		with open(path, "r") as file:
 			file = file.readlines()
@@ -225,24 +227,34 @@ class Gramatica:
 			output += (' '.join(stack)).ljust(30)+'| '
 			output += (' '.join(cad)).ljust(50)+ '|\n'
 			sp = stack.pop()
-			simb  = cad [0]
+			self.lexer.changeTxt(cad)
+			tok = self.lexer.getToken()
+			if cad[0] == '$':
+				simb = '$'
+			elif tok != -1:
+				aux = self.lexer.getLexema()
+				if aux.endswith('$'):
+					aux = aux.split('$')[0]
+				simb = aux
 			if sp == EPS:
 				pass
-			elif (sp in self.terminales):
+			elif sp in self.terminales:
+				if tok == 20 or tok == 220:
+					simb = "num"
 				if simb == sp:
 					if simb == '$':
 						return output + 'Cadena valida!'
-					cad = cad[1:]
+					cad = cad[len(aux):]
 				else:
 					return output+'Cadena invalida!'
 			else:
+				if tok == 20 or tok == 220:
+					simb = "num"
 				if not simb in self.terminales:
 					return output+'Cadena invalida!'
 				contTabla  = self.tabla[sp][simb][:-1]
 				if(len(contTabla)):
 					stack += contTabla[::-1]
-				else:
-					return output+'Cadena invalida!'
 		return output+'Cadena invalida!'
 
 	# Extiende la gramatica si es necesario

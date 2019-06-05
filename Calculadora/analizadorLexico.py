@@ -21,6 +21,8 @@ class Lexic:
 
 	def changeTxt(self,text):
 		self.txt = text
+		self.indAct = 0 
+		self.iniLex = 0
 
 	def getToken(self):
 		finLex = 0
@@ -38,6 +40,7 @@ class Lexic:
 			c = self.txt[self.indAct]
 			#Si el caracter se encuentra en el alfabeto
 			if c in self.alf:
+				print(c)
 				#Se obtiene el indice de la tabla donde se encuentra el caracter
 				indice = self.alf.index(c)
 				#Se obtiene el estado al que se pasará
