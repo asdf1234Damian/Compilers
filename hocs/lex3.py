@@ -11,7 +11,8 @@ tokens = (
 	'EQUALS',
 	'POW',
 	'VAR',
-	'UMINUS'
+	'UMINUS',
+	'FUNCION'
 )
 
 t_PLUS = r'\+'
@@ -26,6 +27,10 @@ t_POW = r'\^'
 
 t_ignore = r' '
 
+def t_FUNCION(t):
+	r'sin|cos|sqrt|log|log10|exp|tan'
+	t.type = 'FUNCION'
+	return t
 
 def t_NUMBER(t):
 	r'\d+'

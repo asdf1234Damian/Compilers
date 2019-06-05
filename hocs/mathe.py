@@ -1,4 +1,4 @@
-import math
+from math import sqrt, pow, log, log10, exp
 from errno import EDOM, ERANGE
 
 errno = None
@@ -13,12 +13,11 @@ def Exp(x):
 	return errcheck(exp(x), "exponentiation")
 
 def Sqrt(x):
-	return errcheck(sqrt(x), "sqrt")
+	return errcheck(sqrt(x), 'sqrt')
 
 def Pow(x, y):
 	return errcheck(pow(x, y), "pow")
 
-#define integer
 
 def errcheck(d, s):
 	global errno
